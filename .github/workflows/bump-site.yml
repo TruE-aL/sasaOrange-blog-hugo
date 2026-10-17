@@ -1,0 +1,59 @@
+name: Bump site submodule
+
+# 主题更新后，把个人站点里的 themes/ruri 指针推到最新提交。
+#
+# 为什么需要它：站点用 submodule 引用主题，指针不会自己走。没有这个工作流，
+# 每次改完主题都得手动去站点仓库提交一次「升级主题」，很容易忘。
+#
+# 触发后站点仓库会多一个提交（由 sasaOrange 身份推），
+# 站点的 deploy 工作流随即重新构建并部署。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 主题仓库自己的提交不算，只有站点需要跟进时才跑。
+concurrency:
+  group: bump-site
+  cancel-in-progress: true
+
+jobs:
+  bump:
+    name: Point site at latest theme
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout theme
+        uses: actions/checkout@v4
+
+      - name: Checkout site
+        uses: actions/checkout@v4
+        with:
+          repository: TruE-aL/sasaOrange-blog-hugo-personalsite
+          # 需要一个能写站点仓库的 token。用仓库自带的 GITHUB_TOKEN 不行，
+          # 它只对当前仓库有权限；所以这里读 SITE_PUSH_TOKEN（PAT）。
+          token: ${{ secrets.SITE_PUSH_TOKEN }}
+          path: site
+
+      - name: Move submodule to this commit
+        working-directory: site
+        env:
+          THEME_SHA: ${{ github.sha }}
+          THEME_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git submodule update --init themes/ruri
+          git -C themes/ruri fetch --depth 1 origin "$THEME_SHA"
+          git -C themes/ruri checkout "$THEME_SHA"
+
+          if git diff --quiet -- themes/ruri; then
+            echo "站点已经指向 $THEME_SHA，无需更新。"
+            exit 0
+          fi
+
+          git config user.name "sasaOrange"
+          git config user.email "sasaOrange@users.noreply.github.com"
+          git add themes/ruri
+          git commit -m "chore: 升级主题到 ${THEME_SHA:0:7}
+
+          由 ${THEME_REPO} 的 Bump site submodule 工作流自动提交。"
+          git push origin HEAD:main
