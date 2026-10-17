@@ -1,0 +1,27 @@
+[params]
+mainSections = ["posts", "post"]
+[params.ruri]
+favicon = "favicon_io/favicon.svg"
+friendsShuffle = false
+[outputs]
+home = ["HTML", "RSS"]
+[markup.highlight]
+noClasses = false
+
+[params.culture]
+enable = false
+categories = ["book", "anime", "movie", "music", "game"]
+[params.culture.sources]
+book = "neodb"
+anime = "bangumi"
+movie = "neodb"
+music = "neodb"
+game = "neodb"
+[params.culture.bangumi]
+username = ""
+mode = "live"
+[params.culture.neodb]
+profile = ""
+[params.culture.douban]
+user = ""
+exportFile = ""

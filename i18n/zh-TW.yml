@@ -1,0 +1,180 @@
+categories: 分類
+search: 搜尋
+tags: 標籤
+prev: 上一頁
+next: 下一頁
+comment: 留言
+reading: 閲讀量
+recent_posts: 最新文章
+newer: 前一篇
+older: 後一篇
+share: 分享
+category: Category
+tag: Tag
+toc: 文章目錄
+home: 首頁
+about: 關於
+friend: 友鏈
+archives: 歸檔
+
+sidebar:
+  post: 文章
+  category: 分類
+  tag: 標籤
+
+not_found:
+  title: 4 0 4 (ﾟ⊿ﾟ)ﾂ
+  subtitle: 満 身 創 痍
+
+sticky: 置頂
+
+sponsor: 贊助
+
+article_copyright:
+  author: 本文作者：
+  permalink: 本文連結：
+  title: 本文標題：
+  date: 本文發佈時間：
+  updated: 本文更新時間：
+  license: 本文版權：
+  license_content: 本部落格所有文章除特別聲明外，均採用 {{ . }} 授權協議。轉載請註明出處！
+
+rss:
+  author: 作者：{{ .name }}（{{ .email }}）
+  date: 本文{{ .pubDate }}首發於{{ .content }}，最後修改於{{ .lastmod }}
+
+heat_map_card:
+  no_articles: 沒有文章
+  words: 字
+  total_articles: 共 $1 篇文章，$2 字
+# ruri interface
+ruri_heatmap_title: "文章更新熱力圖"
+ruri_updated: "更新於"
+ruri_scheme: "閱讀配色"
+ruri_scheme_warm: "暖黃色（護眼）"
+ruri_scheme_orange: "淡橙紅色"
+ruri_scheme_blue: "淡藍色"
+ruri_scheme_ruri: "ruri 原配色（冷青）"
+ruri_comments_jump: "直達評論區"
+ruri_player: "音樂播放器"
+ruri_play_music: "播放音樂"
+ruri_pause_music: "暫停音樂"
+ruri_cover: "歌曲封面"
+ruri_progress: "播放進度"
+ruri_prev_track: "上一首"
+ruri_next_track: "下一首"
+ruri_play: "播放"
+ruri_pause: "暫停"
+ruri_order: "切換播放順序"
+ruri_lyrics: "顯示或隱藏歌詞"
+ruri_volume_settings: "音量設定"
+ruri_volume: "音量"
+ruri_list_toggle: "打開或關閉歌單"
+ruri_mute: "靜音"
+ruri_unmute: "取消靜音"
+ruri_playlist: "歌單"
+ruri_playlist_title: "播放列表"
+ruri_list_close: "關閉歌單"
+ruri_choose_track: "選擇歌曲"
+ruri_current_lyrics: "目前歌詞"
+ruri_latest: "最新文章"
+ruri_random: "隨機文章"
+ruri_popular: "熱門文章"
+ruri_recommendations: "文章推薦"
+ruri_copied: "已複製"
+ruri_sequence: "順序"
+ruri_single: "單曲"
+ruri_shuffle: "隨機"
+ruri_order_hint: "播放，點擊切換"
+ruri_play_error: "播放失敗，請重試或切換歌曲"
+ruri_audio_error: "音訊暫不可用，請切換歌曲"
+ruri_tracks: " 首"
+ruri_comments_loading: "評論載入中…"
+ruri_comments_error: "評論載入失敗，點擊重試"
+ruri_views_loading: "讀取真實閱讀量…"
+ruri_views_sort: "按 Waline 閱讀量排序"
+ruri_views_empty: "暫無閱讀量資料"
+ruri_views_error: "閱讀量暫不可用，重新點擊可重試"
+ruri_theme: "切換明暗主題"
+ruri_language: "切換語言"
+ruri_top: "返回最上"
+ruri_words: "字"
+ruri_minutes: "分鐘閱讀"
+
+ruri_searching: "搜尋中…"
+ruri_results: "筆結果"
+ruri_retry: "暫時無法載入，請重試。"
+ruri_copy_link: "複製連結"
+ruri_close: "關閉"
+ruri_skip: "跳至正文"
+
+ruri_heat_details: "文章更新詳情"
+ruri_no_writing: "當日無更新"
+ruri_less: "少"
+ruri_more: "多"
+ruri_level: "等級"
+ruri_posts_unit: "篇文章"
+ruri_mon: "一"
+ruri_wed: "三"
+ruri_fri: "五"
+
+# Bangumi collection page
+bangumi_watching: "在看"
+bangumi_wish: "想看"
+bangumi_watched: "看過"
+bangumi_onhold: "擱置"
+bangumi_dropped: "拋棄"
+bangumi_status: "收藏狀態"
+bangumi_loading: "正在從 Bangumi 讀取收藏…"
+bangumi_error: "暫時無法讀取 Bangumi 資料，請點選「重新整理」重試。"
+bangumi_empty: "這個分類還沒有公開的動畫收藏。"
+bangumi_total: "共 {total} 部動畫"
+bangumi_score: "Bangumi"
+bangumi_rating: "我的評分"
+bangumi_progress: "已看"
+bangumi_unknown: "未知"
+bangumi_episodes: "集"
+bangumi_previous: "上一頁"
+bangumi_next: "下一頁"
+bangumi_refresh: "重新整理"
+bangumi_pages: "收藏分頁"
+bangumi_noscript: "啟用 JavaScript 查看收藏，或前往 Bangumi。"
+bangumi_configure: "請在頁面 front matter 中設定 bangumi.username。"
+bangumi_heading: "動畫"
+
+# Arts and culture collections
+culture_title: "文藝"
+culture_book: "書籍"
+culture_anime: "動畫"
+culture_movie: "電影"
+culture_music: "音樂"
+culture_game: "遊戲"
+culture_categories: "文藝分類"
+culture_all: "全部"
+culture_empty: "這個分類暫無公開記錄。"
+culture_error: "暫時無法讀取收藏資料，請重新進入此板塊重試。"
+culture_loading: "正在讀取收藏…"
+culture_total: "共 {total} 項"
+culture_updated: "同步於"
+culture_score: "NeoDB"
+culture_noscript: "啟用 JavaScript 查看收藏，或前往資料來源平台。"
+culture_configure: "請在網站 culture 設定中填入平台帳號。"
+culture_book_wishlist: "想讀"
+culture_book_progress: "在讀"
+culture_book_complete: "讀過"
+culture_book_dropped: "放棄"
+culture_movie_wishlist: "想看"
+culture_movie_progress: "在看"
+culture_movie_complete: "看過"
+culture_movie_dropped: "放棄"
+culture_music_wishlist: "想聽"
+culture_music_progress: "在聽"
+culture_music_complete: "聽過"
+culture_music_dropped: "放棄"
+culture_game_wishlist: "想玩"
+culture_game_progress: "在玩"
+culture_game_complete: "玩過"
+culture_game_dropped: "放棄"
+culture_intro: "書籍、動畫、電影、音樂與遊戲。選擇一個板塊，查看我的收藏與記錄。"
+culture_disabled: "文藝功能未啟用。"
+culture_unavailable: "資料來源暫不可用，等待下次同步。"

@@ -1,0 +1,180 @@
+categories: カテゴリー
+search: 検索
+tags: タグ
+prev: 戻る
+next: 次へ
+comment: コメント
+reading: 閲覧数
+recent_posts: 最近の投稿
+newer: 前の記事
+older: 次の記事
+share: 共有
+category: カテゴリー
+tag: タグ
+toc: 見出し
+home: ホーム
+about: プロフィール
+friend: フレンド
+archives: アーカイブ
+
+not_found:
+  title: 4 0 4 (ﾟ⊿ﾟ)ﾂ
+  subtitle: 満 身 創 痍
+
+sidebar:
+  post: 投稿
+  category: カテゴリー
+  tag: タグ
+
+sticky: 固定
+
+sponsor: スポンサー
+
+article_copyright:
+  author: "著者: "
+  permalink: "パーマリンク: "
+  title: "タイトル: "
+  date: "公開日: "
+  updated: "更新日: "
+  license: "ライセンス: "
+  license_content: 本ブログのすべての文書は、特に指定されていない限り、{{ . -}} ライセンスに従っています。引用の際は出典を明記してください！
+
+rss:
+  author: "著者: {{ .name }}({{ .email }})"
+  date: この記事は{{ .pubDate }}に{{ .content }}で公開され、最終更新日は{{ .lastmod }}です
+  
+heat_map_card:
+  no_articles: 記事がありません
+  words: 文字
+  total_articles: "$1 記事, $2 文字"
+# ruri interface
+ruri_heatmap_title: "記事更新ヒートマップ"
+ruri_updated: "更新"
+ruri_scheme: "読書配色"
+ruri_scheme_warm: "ウォームクリーム"
+ruri_scheme_orange: "ソフトオレンジ"
+ruri_scheme_blue: "ペールブルー"
+ruri_scheme_ruri: "ruri オリジナル（クールティール）"
+ruri_comments_jump: "コメントへ"
+ruri_player: "音楽プレーヤー"
+ruri_play_music: "音楽を再生"
+ruri_pause_music: "音楽を一時停止"
+ruri_cover: "アルバムアート"
+ruri_progress: "再生位置"
+ruri_prev_track: "前の曲"
+ruri_next_track: "次の曲"
+ruri_play: "再生"
+ruri_pause: "一時停止"
+ruri_order: "再生順を変更"
+ruri_lyrics: "歌詞の表示切替"
+ruri_volume_settings: "音量設定"
+ruri_volume: "音量"
+ruri_list_toggle: "プレイリストの表示切替"
+ruri_mute: "ミュート"
+ruri_unmute: "ミュート解除"
+ruri_playlist: "プレイリスト"
+ruri_playlist_title: "プレイリスト"
+ruri_list_close: "プレイリストを閉じる"
+ruri_choose_track: "曲を選択"
+ruri_current_lyrics: "現在の歌詞"
+ruri_latest: "最新の記事"
+ruri_random: "ランダム"
+ruri_popular: "人気の記事"
+ruri_recommendations: "おすすめ記事"
+ruri_copied: "コピーしました"
+ruri_sequence: "順番"
+ruri_single: "1曲リピート"
+ruri_shuffle: "シャッフル"
+ruri_order_hint: " — クリックして変更"
+ruri_play_error: "再生できません。再試行または別の曲を選択してください。"
+ruri_audio_error: "音声を利用できません。別の曲を選択してください。"
+ruri_tracks: " 曲"
+ruri_comments_loading: "コメントを読み込み中…"
+ruri_comments_error: "コメントを読み込めません。クリックして再試行。"
+ruri_views_loading: "閲覧数を読み込み中…"
+ruri_views_sort: "Walineの閲覧数順"
+ruri_views_empty: "閲覧数データがありません"
+ruri_views_error: "閲覧数を取得できません。クリックして再試行。"
+ruri_theme: "テーマを切り替え"
+ruri_language: "言語を切り替え"
+ruri_top: "トップへ"
+ruri_words: "文字"
+ruri_minutes: "分で読めます"
+
+ruri_searching: "検索中…"
+ruri_results: "件の結果"
+ruri_retry: "読み込めません。再試行してください。"
+ruri_copy_link: "リンクをコピー"
+ruri_close: "閉じる"
+ruri_skip: "本文へ移動"
+
+ruri_heat_details: "記事更新の詳細"
+ruri_no_writing: "更新なし"
+ruri_less: "少ない"
+ruri_more: "多い"
+ruri_level: "レベル"
+ruri_posts_unit: "記事"
+ruri_mon: "月"
+ruri_wed: "水"
+ruri_fri: "金"
+
+# Bangumi collection page
+bangumi_watching: "視聴中"
+bangumi_wish: "見たい"
+bangumi_watched: "視聴済み"
+bangumi_onhold: "保留"
+bangumi_dropped: "中断"
+bangumi_status: "コレクションの状態"
+bangumi_loading: "Bangumi から読み込み中…"
+bangumi_error: "Bangumi のデータを読み込めません。「更新」で再試行してください。"
+bangumi_empty: "このカテゴリーには公開アニメの記録がありません。"
+bangumi_total: "全 {total} 作品"
+bangumi_score: "Bangumi"
+bangumi_rating: "自分の評価"
+bangumi_progress: "視聴済み"
+bangumi_unknown: "不明"
+bangumi_episodes: "話"
+bangumi_previous: "前へ"
+bangumi_next: "次へ"
+bangumi_refresh: "更新"
+bangumi_pages: "コレクションのページ"
+bangumi_noscript: "JavaScript を有効にするか、Bangumi をご覧ください。"
+bangumi_configure: "ページの front matter に bangumi.username を設定してください。"
+bangumi_heading: "アニメ"
+
+# Arts and culture collections
+culture_title: "文芸"
+culture_book: "書籍"
+culture_anime: "アニメ"
+culture_movie: "映画"
+culture_music: "音楽"
+culture_game: "ゲーム"
+culture_categories: "コレクションの分類"
+culture_all: "すべて"
+culture_empty: "このカテゴリーには公開記録がまだありません。"
+culture_error: "読み込めません。カテゴリーを開き直して再試行してください。"
+culture_loading: "読み込み中…"
+culture_total: "全 {total} 件"
+culture_updated: "同期日"
+culture_score: "NeoDB"
+culture_noscript: "JavaScript を有効にするか、データ取得先をご覧ください。"
+culture_configure: "サイトの culture 設定にアカウントを入力してください。"
+culture_book_wishlist: "読みたい"
+culture_book_progress: "読書中"
+culture_book_complete: "読了"
+culture_book_dropped: "中断"
+culture_movie_wishlist: "見たい"
+culture_movie_progress: "視聴中"
+culture_movie_complete: "視聴済み"
+culture_movie_dropped: "中断"
+culture_music_wishlist: "聴きたい"
+culture_music_progress: "聴いている"
+culture_music_complete: "聴いた"
+culture_music_dropped: "中断"
+culture_game_wishlist: "遊びたい"
+culture_game_progress: "プレイ中"
+culture_game_complete: "クリア"
+culture_game_dropped: "中断"
+culture_intro: "書籍、アニメ、映画、音楽、ゲーム。カテゴリーを選んでコレクションをご覧ください。"
+culture_disabled: "文芸機能は無効です。"
+culture_unavailable: "データ取得先が利用できません。次回の同期をお待ちください。"

@@ -1,0 +1,11 @@
+{{- $src := .src | default "" -}}
+{{- $result := $src | relURL -}}
+{{- with $src -}}
+  {{- $pageKey := "" -}}
+  {{- with $.page -}}{{- $pageKey = .Path -}}{{- end -}}
+  {{- with partialCached "media-resource.html" $ $src $pageKey -}}
+    {{- $width := math.Min .Width ($.width | default 1200) | int -}}
+    {{- $result = (.Resize (printf "%dx webp q82" $width)).RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+{{- return $result -}}

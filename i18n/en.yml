@@ -1,0 +1,180 @@
+categories: Categories
+search: Search
+tags: Tags
+prev: Prev
+next: Next
+comment: Comments
+reading: Readings
+recent_posts: Recent Posts
+newer: Prev
+older: Next
+share: Share
+category: Category
+tag: Tag
+toc: Contents
+home: Home
+about: About
+friend: Friend
+archives: Archives
+
+sidebar:
+  post: Posts
+  category: Categories
+  tag: Tags
+
+not_found:
+  title: 4 0 4 (ﾟ⊿ﾟ)ﾂ
+  subtitle: NOT FOUND
+
+sticky: Sticky
+
+sponsor: Sponsor
+
+article_copyright:
+  author: "Author: "
+  permalink: "Permalink: "
+  title: "Title: "
+  date: "Published: "
+  updated: "Updated: "
+  license: "License: "
+  license_content: "All articles on this blog are licensed under the {{ . }} license agreement unless otherwise stated. Please indicate the source when reprinting!"
+
+rss:
+  author: "Author: {{ .name }}({{ .email }})"
+  date: Published on {{ .pubDate }} at {{ .content }}, last modified on {{ .lastmod }}
+
+heat_map_card:
+  no_articles: No articles
+  words: word(s)
+  total_articles: "$1 article(s), $2 word(s)"
+# ruri interface
+ruri_heatmap_title: "Article Update Heat Map"
+ruri_updated: "Updated"
+ruri_scheme: "Reading palette"
+ruri_scheme_warm: "Warm cream"
+ruri_scheme_orange: "Soft orange"
+ruri_scheme_blue: "Pale blue"
+ruri_scheme_ruri: "ruri original (cool teal)"
+ruri_comments_jump: "Jump to comments"
+ruri_player: "Music player"
+ruri_play_music: "Play music"
+ruri_pause_music: "Pause music"
+ruri_cover: "Album artwork"
+ruri_progress: "Playback position"
+ruri_prev_track: "Previous track"
+ruri_next_track: "Next track"
+ruri_play: "Play"
+ruri_pause: "Pause"
+ruri_order: "Change playback order"
+ruri_lyrics: "Toggle lyrics"
+ruri_volume_settings: "Volume settings"
+ruri_volume: "Volume"
+ruri_list_toggle: "Toggle playlist"
+ruri_mute: "Mute"
+ruri_unmute: "Unmute"
+ruri_playlist: "Playlist"
+ruri_playlist_title: "Playlist"
+ruri_list_close: "Close playlist"
+ruri_choose_track: "Choose a track"
+ruri_current_lyrics: "Current lyrics"
+ruri_latest: "Latest"
+ruri_random: "Random"
+ruri_popular: "Popular"
+ruri_recommendations: "Recommended posts"
+ruri_copied: "Copied"
+ruri_sequence: "Sequential"
+ruri_single: "Repeat one"
+ruri_shuffle: "Shuffle"
+ruri_order_hint: " — click to change"
+ruri_play_error: "Playback failed. Retry or choose another track."
+ruri_audio_error: "Audio unavailable. Choose another track."
+ruri_tracks: " tracks"
+ruri_comments_loading: "Loading comments…"
+ruri_comments_error: "Comments unavailable. Click to retry."
+ruri_views_loading: "Loading view counts…"
+ruri_views_sort: "Sorted by Waline views"
+ruri_views_empty: "No view counts yet"
+ruri_views_error: "View counts unavailable. Click to retry."
+ruri_theme: "Toggle color theme"
+ruri_language: "Change language"
+ruri_top: "Back to top"
+ruri_words: "words"
+ruri_minutes: "min read"
+
+ruri_searching: "Searching…"
+ruri_results: "results"
+ruri_retry: "Unable to load. Please retry."
+ruri_copy_link: "Copy link"
+ruri_close: "Close"
+ruri_skip: "Skip to content"
+
+ruri_heat_details: "Writing details"
+ruri_no_writing: "No writing"
+ruri_less: "Less"
+ruri_more: "More"
+ruri_level: "Level"
+ruri_posts_unit: "posts"
+ruri_mon: "Mon"
+ruri_wed: "Wed"
+ruri_fri: "Fri"
+
+# Bangumi collection page
+bangumi_watching: "Watching"
+bangumi_wish: "Want to watch"
+bangumi_watched: "Completed"
+bangumi_onhold: "On hold"
+bangumi_dropped: "Dropped"
+bangumi_status: "Collection status"
+bangumi_loading: "Loading collections from Bangumi…"
+bangumi_error: "Unable to load Bangumi data. Select Refresh to try again."
+bangumi_empty: "No public anime collections in this category."
+bangumi_total: "{total} anime"
+bangumi_score: "Bangumi"
+bangumi_rating: "My rating"
+bangumi_progress: "Watched"
+bangumi_unknown: "Unknown"
+bangumi_episodes: "episodes"
+bangumi_previous: "Previous"
+bangumi_next: "Next"
+bangumi_refresh: "Refresh"
+bangumi_pages: "Collection pages"
+bangumi_noscript: "Enable JavaScript to view collections, or visit Bangumi."
+bangumi_configure: "Set bangumi.username in this page’s front matter."
+bangumi_heading: "Anime"
+
+# Arts and culture collections
+culture_title: "Arts & Culture"
+culture_book: "Books"
+culture_anime: "Anime"
+culture_movie: "Films"
+culture_music: "Music"
+culture_game: "Games"
+culture_categories: "Collection categories"
+culture_all: "All"
+culture_empty: "No public records in this category yet."
+culture_error: "Unable to load collections. Reopen this category to try again."
+culture_loading: "Loading collections…"
+culture_total: "{total} items"
+culture_updated: "Synced"
+culture_score: "NeoDB"
+culture_noscript: "Enable JavaScript or visit the source platform."
+culture_configure: "Configure this platform account in the site culture settings."
+culture_book_wishlist: "Want to read"
+culture_book_progress: "Reading"
+culture_book_complete: "Read"
+culture_book_dropped: "Dropped"
+culture_movie_wishlist: "Want to watch"
+culture_movie_progress: "Watching"
+culture_movie_complete: "Watched"
+culture_movie_dropped: "Dropped"
+culture_music_wishlist: "Want to listen"
+culture_music_progress: "Listening"
+culture_music_complete: "Listened"
+culture_music_dropped: "Dropped"
+culture_game_wishlist: "Want to play"
+culture_game_progress: "Playing"
+culture_game_complete: "Played"
+culture_game_dropped: "Dropped"
+culture_intro: "Books, anime, films, music and games. Choose a category to explore my collections."
+culture_disabled: "Arts and culture is disabled."
+culture_unavailable: "The source is unavailable. Waiting for the next sync."
