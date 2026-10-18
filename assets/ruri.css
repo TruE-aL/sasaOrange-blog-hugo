@@ -1676,18 +1676,21 @@ html.theme-ruri .article-cover{border-radius:0}
 }
 
 /* ---- in-page navigation feedback -----------------------------------------
-   Three pieces, rendered by layouts/partials/nav-progress.html right after the
-   header, inside the page shell: the bar on the header's hairline, the veil of
-   two paper wings that closes over the whole screen with the header riding on
-   top of it, and the cog turning on it.
+   Two pieces, in two different places. The bar is rendered by
+   layouts/partials/nav-progress.html right after the header, inside the page
+   shell; the sheet is rendered by layouts/partials/nav-veil.html outside it.
+   The split is the point: in-page navigation replaces the shell, so a sheet
+   inside it would be torn away the moment the new page arrived. Out here the
+   sheet outlives every shell it covers — the new page is laid in behind the
+   paper, and the paper draws back to reveal it.
 
-   None of them may take a click, a focus ring or a layout slot of its own — the
+   Neither may take a click, a focus ring or a layout slot of its own — the
    veil has to be see-through in every sense, including input.
 
-   `#page-shell` is the positioning context, and ruri.js measures the header into
-   `--header-h` (its height plus the hairline) so the bar lands on that hairline
-   and the cog keeps its old place below it, whether the header is one row
-   (desktop) or two (phones) and whatever the toolbar does in between. */
+   `#page-shell` is the positioning context for the bar, and ruri.js measures the
+   header into `--header-h` (its height plus the hairline) so the bar lands on
+   that hairline and the cog keeps its old place below it, whether the header is
+   one row (desktop) or two (phones) and whatever the toolbar does in between. */
 /* The header rides one layer above the veil: the sheet closes over the whole
    screen, and the bar with its menu, its tools and its current-page mark stays
    on top of the paper, still clickable, so the reader can change their mind
@@ -1721,9 +1724,11 @@ html.theme-ruri .article-cover{border-radius:0}
    when the wait starts, and slide apart again when it ends. The opening used to
    be silenced here — `transition:none` snapped the sheet away so the new page
    appeared at once — but that left half a gesture: a door that closes and is
-   then simply not there. ruri.js now waits the opening out before the page swap
-   (the swap would otherwise take this veil away with the old shell), so the
-   reader sees the paper draw back and the new page behind it as one movement. A
+   then simply not there. The sheet lives outside the page shell, so the new page
+   is laid in behind the paper while it is still closed, and the paper then draws
+   back to reveal it: what the opening shows is the page the reader asked for,
+   never the one they were leaving. ruri.js gives the close its full duration
+   before laying the page in, so a fast navigation is a gesture, not a flicker. A
    cancelled wait opens the same way, over the page they stayed on. */
 /* The two wings, reimu's loader motion: each owns half the width and waits just
    off its own edge. Closing, they slide together and meet in the middle; opening,

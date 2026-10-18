@@ -358,10 +358,11 @@ let navigationController;
    taiji, and one line of text under it. The header, the menu and the sidebar
    stay above the paper, untouched and clickable, which is what makes a slow
    page feel handled rather than stuck. The veil covers the page being left —
-   not a blank rectangle — so it reads as fog over a room, and it draws back the
-   moment the new page is parsed and its scripts are ready: the swap waits for
-   the sheet to finish opening, so the gesture is seen whole rather than cut in
-   half by a page arriving under it.
+   not a blank rectangle — so it reads as fog over a room, and it lives outside
+   the page shell so the new page can be laid in behind it: the paper draws back
+   to reveal the page the reader asked for, never the one they were leaving, and
+   the close is given its full duration first so even a cache hit is a gesture
+   rather than a flicker. This is reimu's own order of operations.
 
    A hairline bar riding the header's own rule fills from left to right as the
    wait goes on. It is the quietest of the four and the one that survives a
@@ -401,13 +402,17 @@ function paintProgress(value){
 /* The visited page sits under the veil but is not gone: it keeps its scroll
    position, its sidebar and its player, so nothing is frozen or reflowed while
    the reader waits. */
-let veilLink=null,borrowedCurrent=null;
+let veilLink=null,borrowedCurrent=null,veilClosedAt=0;
 function openVeil(link){
-  /* A page swap takes the old veil away along with the shell; this also covers
-     a navigation that never gets that far. */
+  /* The sheet lives outside the page shell now, so it survives the swap rather
+     than being torn away with the old page — the opening is played out over the
+     new one. */
   const veil=$('.nav-veil');if(!veil)return;
   veilLink=link;
   veil.classList.add('is-open');
+  /* The close's own starting gun: waitForVeilClosed() gives the gesture its full
+     duration before the next page is laid in behind the paper. */
+  veilClosedAt=performance.now();
   /* One `aria-current` on the page: the borrowed mark replaces whatever the
      previous page marked, or the menu would claim two places at once. */
   if(link){
@@ -424,27 +429,22 @@ function closeVeil(){
   borrowedCurrent?.forEach(item=>{if(item.isConnected&&!item.hasAttribute('aria-current'))item.setAttribute('aria-current','page')});
   borrowedCurrent=null;veilLink=null;
 }
-/* The opening is a motion now, and a motion takes time. The swap that brings the
-   next page would take this veil with the old shell, so a caller that is about
-   to swap waits here until the wings have drawn back. The duration is read off
-   the wing's own computed transition rather than hard-coded, so the two can
-   never drift apart; a reduced-motion reader, whose transitions are silenced
-   and with them the event, gives way at once. The timeout behind the event is
-   for a transition that never reports — an interrupted one — so the page can
-   never be held hostage by a stuck sheet. */
-function waitForVeilOpen(){
+/* The close is given its full duration before the next page is laid in behind
+   the paper. Without it a fast navigation — a cache hit, a page already in
+   memory — would open almost immediately and read as a flicker rather than a
+   gesture; reimu gives its loader the same minimum showing. The duration is the
+   wing's own computed transition rather than a hard-coded number, so the two
+   can never drift apart, and a reduced-motion reader, whose transitions are
+   silenced, gives way at once. */
+function waitForVeilClosed(){
   const veil=$('.nav-veil');
   if(!veil)return Promise.resolve();
   const wing=veil.querySelector('.nav-veil-wing');
   const duration=wing&&parseFloat(getComputedStyle(wing).transitionDuration);
   if(!duration)return Promise.resolve();
-  return new Promise(resolve=>{
-    let done=false;
-    const finish=()=>{if(done)return;done=true;veil.removeEventListener('transitionend',onEnd);resolve()};
-    const onEnd=event=>{if(event.target===wing)finish()};
-    veil.addEventListener('transitionend',onEnd);
-    setTimeout(finish,duration*1000+150);
-  });
+  const remaining=duration*1000-(performance.now()-veilClosedAt);
+  if(remaining<=0)return Promise.resolve();
+  return new Promise(resolve=>setTimeout(resolve,remaining));
 }
 /* The mark belongs to the menu, not to a particular click path: a browser
    back/forward lands on a page whose own markup already carries it, and a
@@ -505,13 +505,15 @@ async function navigate(url,push=true,link){
     const doc=new DOMParser().parseFromString(await response.text(),'text/html'),next=doc.querySelector('#page-shell');
     if(!next)throw Error();
     if(controller.signal.aborted)return;
-    /* The sheet opens before the swap, not after: the wings draw back over the
-       page being left, and the new page takes their place once they are gone —
-       the swap would otherwise carry this veil away with the old shell, and the
-       opening would never be seen. The bar fills here, the moment the page is
-       ready, which is what it has always meant. */
-    finishProgress();
-    await waitForVeilOpen();
+    /* The new page is laid in behind the sheet, not in front of it: the close
+       plays out over the page being left, the swap happens under the paper —
+       invisible, because the sheet lives outside the shell and outlives it —
+       and only then does the paper draw back. What the opening reveals is the
+       page the reader asked for, never the one they were leaving, which is
+       reimu's own order of operations. The close is waited out first so a fast
+       navigation still gets the full gesture instead of a flicker. The bar fills
+       the moment the page is ready, which is what it has always meant. */
+    await waitForVeilClosed();
     if(controller.signal.aborted)return;
     window.RuriFeatures.destroy();waline?.destroy();waline=null;pageVersion++;
     document.querySelectorAll('#ruri-page-extras').forEach(x=>x.remove());
@@ -520,10 +522,10 @@ async function navigate(url,push=true,link){
     document.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>x.remove());
     doc.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>document.head.append(x.cloneNode(true)));
     if(push)history.pushState({},'',response.url+new URL(url).hash);
-    /* The veil that arrived with the new shell is closed; the menu it brought
-       carries its own mark. The borrowed marks and the old veil belong to nodes
-       that are no longer in the document, so this only stops them being reused —
-       and it must run before initPage(), which re-reads the new shell. */
+    /* The sheet is not part of the shell and survives the swap untouched — it is
+       still open, and still the one that will draw back. The borrowed marks,
+       though, belong to links that are no longer in the document, so they are
+       dropped before initPage() re-reads the new shell. */
     veilLink=null;borrowedCurrent=null;
     syncCurrent(response.url);
     initPage();
@@ -537,6 +539,9 @@ async function navigate(url,push=true,link){
     const hash=new URL(url).hash;
     const target=hash?document.getElementById(decodeURIComponent(hash.slice(1))):null;
     if(target)target.scrollIntoView();else window.scrollTo(0,0);
+    /* The page is in place behind the paper: the bar fills and the sheet draws
+       back, revealing it. */
+    finishProgress();
   }catch(e){
     if(e.name==='AbortError'){
       /* Two ways to get here. A newer click took over and owns the marks now,
