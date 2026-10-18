@@ -1341,7 +1341,14 @@ body.toc-open #toc-toggle{display:none}
 /* ---- Title page (home hero): a centred colophon, not a banner ----
    The wash fades both ways (down the page and out to the left/right) so it
    never shows a straight edge where the full-bleed band would end. */
-.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;margin:0;padding:84px 0 34px;background:radial-gradient(120% 130% at 50% 0%,var(--hero-wash),transparent 72%);text-align:center;position:relative}
+/* The hero also carries .shell, whose margin-inline:auto is what centres it.
+   `margin:0` here is a shorthand and wipes that out; on wide screens the two
+   happen to agree (1240px box in a wider viewport), but as soon as the 760px
+   breakpoint shrinks .shell to calc(100% - 32px) the hero falls to the left
+   edge and leaves a strip of page on its right. Put the centring back.
+   The bottom padding keeps a strip of the hero wash below the banner, and the
+   rule drawn by ::after closes it. */
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;margin:0 auto;padding:84px 0 34px;background:radial-gradient(120% 130% at 50% 0%,var(--hero-wash),transparent 72%);text-align:center;position:relative}
 /* The hero is a .shell, so it already sits on the 1240px track. Centring the
    rule with left:50% pushed it past the right edge instead of aligning it,
    leaving a visible gap where the line stopped short. Let it span the box. */

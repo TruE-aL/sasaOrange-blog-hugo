@@ -27,7 +27,7 @@
 {{ block "hero" . }}{{ end }}{{ $wide := eq .Params.sidebar false }}
 <div class="shell layout{{ if $wide }} no-sidebar{{ end }}{{ if eq .Params.contentWidth "narrow" }} moments-layout{{ end }}"><main id="main">{{ block "main" . }}{{ end }}</main>{{ if not $wide }}{{ partial "sidebar.html" . }}{{ end }}</div>
 {{ $totalWords := 0 }}{{ $totalMinutes := 0 }}{{ range where .Site.RegularPages "Type" "in" .Site.MainSections }}{{ $totalWords = add $totalWords .WordCount }}{{ $totalMinutes = add $totalMinutes .ReadingTime }}{{ end }}
-<footer class="shell site-footer"><div>© {{ with .Site.Params.footer.since }}{{ . }}–{{ end }}{{ now.Year }} {{ .Site.Params.author }}<br><small>{{ if .Site.Params.footer.powered }}Hugo / ruri · {{ end }}{{ .Site.Params.ruri.footerText }}{{ if .Site.Params.footer.count }}<span class="site-totals"> · {{ $totalWords }} {{ i18n "ruri_words" }} · {{ $totalMinutes }} {{ i18n "ruri_minutes" }}</span>{{ end }}</small></div><div>{{ if .Site.Params.search_visits.enable }}{{ if fileExists "static/search-visits.json" }}{{ with os.ReadFile "static/search-visits.json" | transform.Unmarshal }}<small class="visits">{{ i18n "search_visits.weekly" }} {{ .totals.weekly }} · {{ i18n "search_visits.yearly" }} {{ .totals.yearly }} · {{ i18n "search_visits.total" }} {{ .totals.total }}<br>{{ i18n "search_visits.updated" }} {{ .updatedAt }}</small>{{ end }}{{ end }}{{ end }}</div></footer>
+<footer class="shell site-footer"><div>© {{ with .Site.Params.footer.since }}{{ . }}–{{ end }}{{ now.Year }} {{ .Site.Params.author }}<br><small>{{ if .Site.Params.footer.powered }}Hugo / sasaOrange · {{ end }}{{ .Site.Params.ruri.footerText }}{{ if .Site.Params.footer.count }}<span class="site-totals"> · {{ $totalWords }} {{ i18n "ruri_words" }} · {{ $totalMinutes }} {{ i18n "ruri_minutes" }}</span>{{ end }}</small></div><div>{{ if .Site.Params.search_visits.enable }}{{ if fileExists "static/search-visits.json" }}{{ with os.ReadFile "static/search-visits.json" | transform.Unmarshal }}<small class="visits">{{ i18n "search_visits.weekly" }} {{ .totals.weekly }} · {{ i18n "search_visits.yearly" }} {{ .totals.yearly }} · {{ i18n "search_visits.total" }} {{ .totals.total }}<br>{{ i18n "search_visits.updated" }} {{ .updatedAt }}</small>{{ end }}{{ end }}{{ end }}</div></footer>
 <dialog id="search-dialog" data-index="{{ "pagefind/pagefind.js" | relURL }}"><form method="dialog"><strong>{{ i18n "search" }}</strong><button aria-label="{{ i18n "ruri_close" }}">×</button></form><label for="search-input">{{ .Site.Params.pagefind_search.placeholder | default (i18n "search") }}</label><input id="search-input" type="search" autocomplete="off"><p id="search-status" aria-live="polite"></p><div id="search-results"></div></dialog>
 {{/* The contents launcher is rendered inside #page-shell on purpose: in-page
      navigation replaces only that shell, so a button outside it would never
@@ -162,7 +162,7 @@ function refresh(){
   syncRail();
   initMobileUi();
 }
-window.RuriMobileUi={refresh};
+window.sasaOrangeMobileUi={refresh};
 document.addEventListener('DOMContentLoaded',initMobileUi);
 addEventListener('pageshow',()=>{syncRail();if(!narrow.matches)teardownToc()});
 narrow.addEventListener('change',event=>{document.documentElement.classList.toggle('mobile-ui',event.matches);drawerApi?.close();syncRail();initMobileUi()});

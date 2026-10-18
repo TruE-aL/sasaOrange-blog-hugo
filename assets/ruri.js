@@ -71,7 +71,7 @@ function shuffleFriends(){
     grid.append(...links);
   });
 }
-function initPage(){tocObserver?.disconnect();window.RuriMobileUi?.refresh();localizePlayer();paintScheme();shuffleFriends();
+function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();localizePlayer();paintScheme();shuffleFriends();
 initArchive();window.RuriFeatures.init();
 $('#theme-toggle')?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const mode=dark?'light':'dark';document.documentElement.dataset.theme=mode;try{localStorage.setItem('ruri-theme',mode)}catch{}syncDark()});
 

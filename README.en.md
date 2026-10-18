@@ -1,19 +1,19 @@
 <div align="center">
 
-# hugo-theme-ruri
+# hugo-theme-sasaOrange
 
-**A minimal, flat and lightweight Hugo blog theme.**
+**A Hugo theme for personal blogs: paper, serif type, quiet whitespace.**
 
 [![Hugo Extended](https://img.shields.io/badge/Hugo_Extended-%E2%89%A5_0.162.1-ff4088?logo=hugo)](https://gohugo.io/)
 [![MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[Author's blog](https://www.guzhengsvt.cn/) · [Example site](exampleSite) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/GuZhengSVT/hugo-theme-ruri/issues)
+[Live demo](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [Example site](exampleSite) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
 
 [简体中文](README.md) | English
 
 </div>
 
-Adapted from [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reimu), Ruri redesigns the layout, floating player and local navigation. The author's content and external services are not included.
+sasaOrange builds on [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reimu) and [hugo-theme-ruri](https://github.com/GuZhengSVT/hugo-theme-ruri). It keeps the usual blog features and ruri's page structure, and redesigns the palette and reading layout. Personal content and external services are not included.
 
 > Public release candidate. See [QA_REPORT.md](QA_REPORT.md) for verification scope and outstanding visual/browser checks.
 

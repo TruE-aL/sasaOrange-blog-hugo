@@ -1,12 +1,20 @@
-name = "ruri"
+name = "sasaOrange"
 license = "MIT"
-licenselink = "https://github.com/GuZhengSVT/hugo-theme-ruri/blob/main/LICENSE"
-description = "A minimal, flat personal journal with multilingual support and a persistent music player."
-homepage = "https://github.com/GuZhengSVT/hugo-theme-ruri"
-demosite = "https://www.guzhengsvt.cn/"
+licenselink = "https://github.com/TruE-aL/sasaOrange-blog-hugo/blob/main/LICENSE"
+description = "A quiet, paper-toned personal blog theme: serif type, four reading palettes, multilingual, with a persistent music player."
+homepage = "https://github.com/TruE-aL/sasaOrange-blog-hugo"
+demosite = "https://TruE-aL.github.io/sasaOrange-blog-hugo/"
 min_version = "0.162.1"
-tags = ["blog", "minimal", "responsive", "multilingual", "dark"]
-features = ["search", "rss", "heatmap", "music", "toc"]
+tags = ["blog", "minimal", "responsive", "multilingual", "dark", "serif"]
+features = ["search", "rss", "heatmap", "music", "toc", "reading-palettes"]
 [author]
-name = "GuZhengSVT"
-homepage = "https://www.guzhengsvt.cn/"
+name = "sasaOrange"
+homepage = "https://github.com/TruE-aL/sasaOrange-blog-hugo"
+
+# 设计源自 hugo-theme-ruri（作者 GuZhengSVT），后者由 hugo-theme-reimu
+# （作者 D-Sketon）改造而来。继承代码的许可见 LICENSE.reimu。
+# Design derived from hugo-theme-ruri by GuZhengSVT, which in turn was adapted
+# from hugo-theme-reimu by D-Sketon. See LICENSE.reimu for inherited code.
+[original]
+name = "hugo-theme-ruri"
+homepage = "https://github.com/GuZhengSVT/hugo-theme-ruri"

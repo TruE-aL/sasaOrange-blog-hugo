@@ -16,6 +16,8 @@
 - Fixed: the home hero image was capped at 960px inside a 1240px shell, so the banner stopped short of the right edge on wide screens. It now spans the shell, and its drop shadow (which read as a hard seam against the tinted page) is gone.
 - Fixed: the hairline under the hero was centred on a box that was not centred, leaving it short at the right end.
 - Fixed: the palette buttons lost their pressed state after in-site navigation.
+- Fixed: on narrow screens the hero hugged the left edge and left a strip of page on its right. `.hero` is also a `.shell`, and `margin:0` in the hero rule wiped out the `margin-inline:auto` that centres a shell; the two only agreed on wide screens.
+- Renamed the theme to sasaOrange: page title, footer credit, palette labels, `theme.toml` and both READMEs now credit hugo-theme-ruri and hugo-theme-reimu as the sources. Internal asset names (`ruri.css`, the `ruri` param block, `/ruri-media/`) are unchanged so existing sites keep working.
 - Added `ruri_updated`, `ruri_scheme*` interface strings in all four languages.
 
 - Group generated theme scripts and styles under `assets/js/` and `assets/css/`, retaining fingerprinted URLs and lazy-loaded collection modules.

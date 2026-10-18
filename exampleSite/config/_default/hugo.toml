@@ -8,7 +8,7 @@
 # This repo's demo deploys to a GitHub Pages project subpath, hence the repo name.
 baseURL = "https://TruE-aL.github.io/sasaOrange-blog-hugo/"
 # 站点标题。 / Site title.
-title = "Ruri Journal"
+title = "sasaOrange"
 # Submodule 安装到 themes/ruri；Module 用户删除此项并添加 module.imports。
 # Submodule: install into themes/ruri. Module: remove this setting and add module.imports.
 # 本仓库自带的示例站在仓库根目录用 --themesDir themes 构建，主题目录名同样是 ruri。

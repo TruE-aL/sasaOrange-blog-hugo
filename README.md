@@ -1,20 +1,20 @@
 <div align="center">
 
-# hugo-theme-ruri
+# hugo-theme-sasaOrange
 
-**极简、平面、轻量的 Hugo 个人博客主题**
+**为个人博客而做的 Hugo 主题，纸页、宋体、安静的留白**
 
 [![Hugo Extended](https://img.shields.io/badge/Hugo_Extended-%E2%89%A5_0.162.1-ff4088?logo=hugo)](https://gohugo.io/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 ![Status](https://img.shields.io/badge/Status-Release_Candidate-orange)
 
-[线上演示](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/GuZhengSVT/hugo-theme-ruri/issues)
+[线上演示](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
 
 简体中文 | [English](README.en.md)
 
 </div>
 
-Ruri 从 [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reimu) 改造而来，保留博客常用能力，重新设计页面布局、浮动播放器与站内导航。作者博客使用个人配置；文章、图片、歌单和服务不包含在主题仓库中。
+sasaOrange 源自 [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reimu) 与 [hugo-theme-ruri](https://github.com/GuZhengSVT/hugo-theme-ruri)，保留博客常用能力，沿用 ruri 的页面结构，重新设计了配色与阅读版式。个人站点使用独立配置；文章、图片、歌单和服务不包含在主题仓库中。
 
 > 当前为公开候选版。构建与部分交互已验证，完整视觉、跨浏览器和真实音源验收情况见 [QA_REPORT.md](QA_REPORT.md)。
 
@@ -477,7 +477,7 @@ Git submodule：
 ~~~sh
 git submodule update --remote themes/ruri
 git add themes/ruri
-git commit -m "chore: update ruri theme"
+git commit -m "chore: update theme"
 ~~~
 
 更新前阅读 [CHANGELOG.md](CHANGELOG.md)。个人配置、内容与覆盖模板应保存在站点仓库。Reimu 用户请逐项迁移：Ruri 不支持 Reimu 的所有配置和插件，已删除的旧字段见 [参数文件末尾](exampleSite/config/_default/params.yaml)。主题资源变动后完整刷新浏览器。
@@ -500,6 +500,11 @@ node tests/lyrics.cjs
 
 ## 致谢与许可
 
-感谢 [D-Sketon / hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reimu)。写作热力图、部分翻译、渲染 hooks、短代码、RSS 和分享等实现继承或参考 Reimu；布局、播放器与导航为 Ruri 改造。Ruri 是独立主题，不代表 Reimu 官方。
+sasaOrange 的设计源自两代主题：
+
+- [hugo-theme-ruri](https://github.com/GuZhengSVT/hugo-theme-ruri)（作者 GuZhengSVT）：页面结构、播放器、站内导航与中文排版方案来自这里。
+- [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reimu)（作者 D-Sketon）：写作热力图、部分翻译、渲染 hooks、短代码、RSS 与分享等实现，经由 ruri 继承或参考 Reimu。
+
+sasaOrange 是独立主题，不代表上述任何一方的官方版本。
 
 代码采用 [MIT License](LICENSE)，继承代码保留 [Reimu 原作者许可](LICENSE.reimu)，第三方资源保留各自许可。个人文章、图片、音乐、友链数据和第三方服务不包含在主题授权范围内。
