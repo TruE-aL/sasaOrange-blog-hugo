@@ -2,10 +2,10 @@
 const $=s=>document.querySelector(s);const tr=key=>{try{return JSON.parse(document.querySelector('#ruri-i18n').textContent)[key]||key}catch{return key}};let waline=null,pageVersion=0,menuAbort=null,menuToggle=null;
 function syncDark(){const mode=document.documentElement.dataset.theme;document.documentElement.classList.toggle('waline-dark',mode==='dark'||(mode!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches))}
 syncDark();matchMedia('(prefers-color-scheme:dark)').addEventListener('change',syncDark);
-/* Reading schemes (warm / orange / blue). The header dots live in the page shell,
+/* Reading schemes (warm / ruri). The header dots live in the page shell,
    so in-page navigation brings a fresh set; the state is read from storage each
    time instead of being cached, and applied to <html> where the CSS expects it. */
-const SCHEMES=['warm','orange','blue','ruri'];
+const SCHEMES=['warm','ruri'];
 function activeScheme(){try{const s=localStorage.getItem('ruri-scheme');return SCHEMES.includes(s)?s:'warm'}catch{return 'warm'}}
 function paintScheme(){
   const current=activeScheme();
@@ -56,6 +56,35 @@ function initArchive(){
     },{rootMargin:'0px 0px 160px 0px'});
     archiveObserver.observe(footer);
   }
+}
+/* reimu's scroll-in motion, kept for this theme's components: a card that has
+   not been reached yet waits a little below its place and rises into it. The
+   waiting state is a class on <html> set before first paint (baseof.html), so
+   the page is complete without JavaScript — this only decides when each marked
+   component gets to arrive, and the moving itself is done in CSS. */
+let revealObserver=null,revealWatch=null;
+function initReveal(){
+  revealObserver?.disconnect();revealWatch?.disconnect();
+  if(!('IntersectionObserver' in window)){
+    /* Nothing to wait for: every component is simply where it belongs. */
+    document.documentElement.classList.remove('reveal-on');
+    window.__ruriRevealReady=true;return;
+  }
+  window.__ruriRevealReady=true;
+  revealObserver=new IntersectionObserver(entries=>{
+    for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      entry.target.classList.add('is-revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  },{rootMargin:'0px 0px -8% 0px',threshold:0});
+  const scan=()=>document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(node=>revealObserver.observe(node));
+  scan();
+  /* Archive years folded away below the first one come back on demand, and a
+     year that was hidden was never observed, so the tree is watched for the
+     ones that appear. */
+  const tree=$('.archive-tree');
+  if(tree){revealWatch=new MutationObserver(scan);revealWatch.observe(tree,{attributes:true,subtree:true,attributeFilter:['hidden']})}
 }
 function localizePlayer(){
  document.querySelectorAll('[data-ruri-label]').forEach(el=>{const label=tr(el.dataset.ruriLabel);el.setAttribute('aria-label',label);if(el.hasAttribute('title'))el.title=label});
@@ -110,7 +139,7 @@ function initMenu(){
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('is-open'))closeMenu(true)},{signal});
 }
 function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();initMenu();localizePlayer();paintScheme();shuffleFriends();
-initArchive();window.RuriFeatures.init();
+initArchive();initReveal();window.RuriFeatures.init();
 $('#theme-toggle')?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const mode=dark?'light':'dark';document.documentElement.dataset.theme=mode;try{localStorage.setItem('ruri-theme',mode)}catch{}syncDark()});
 
 initTabs();initComments();document.querySelectorAll('.toc ul ul').forEach(ul=>{const li=ul.parentElement;if(!li||li.querySelector(':scope > details'))return;const link=li.querySelector(':scope > a'),d=document.createElement('details'),summary=document.createElement('summary');d.open=false;if(link){summary.innerHTML=link.outerHTML;link.remove()}d.append(summary,ul);li.append(d)});loadMusic();const toc=document.querySelector('.toc');if(toc){const links=[...toc.querySelectorAll('a[href^=\"#\"]')],heads=[...document.querySelectorAll('.prose h2,.prose h3,.prose h4,.prose h5,.prose h6')];const reveal=id=>{toc.querySelectorAll('details').forEach(d=>d.open=false);const a=links.find(x=>x.getAttribute('href')==='#'+id);if(a){let d=a.closest('details');while(d){d.open=true;d=d.parentElement.closest('details')}}};const observer=new IntersectionObserver(es=>{const hit=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(hit)reveal(hit.target.id)},{rootMargin:'-18% 0px -68% 0px',threshold:0});tocObserver=observer;heads.forEach(h=>observer.observe(h))}document.querySelectorAll('.copy-link').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.url);b.textContent=tr('copied')}catch{b.textContent=b.dataset.url}}));

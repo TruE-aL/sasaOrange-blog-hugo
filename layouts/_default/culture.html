@@ -15,7 +15,7 @@
   {{ if not $enabled }}<p class="notice">{{ i18n "culture_disabled" }}</p>
   {{ else }}
     {{ with .Content }}<div class="prose" data-pagefind-body>{{ . }}</div>{{ end }}
-    <nav class="culture-categories" aria-label="{{ i18n "culture_categories" }}">
+    <nav class="culture-categories" data-reveal aria-label="{{ i18n "culture_categories" }}">
       {{ range $categories }}{{ with $.Site.GetPage (printf "/culture/%s" .) }}<a href="{{ .RelPermalink }}"{{ if eq $category .Params.cultureCategory }} aria-current="page"{{ end }}>{{ .Title }}</a>{{ end }}{{ end }}
     </nav>
     {{ if $category }}

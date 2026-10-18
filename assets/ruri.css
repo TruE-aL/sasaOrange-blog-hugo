@@ -1,9 +1,7 @@
 /* ------------------------------------------------------------------
-   Palette: four reading schemes, switchable from the header.
+   Palette: two reading schemes, switchable from the header.
 
      warm   (default)  paper + apricot sand     — :root / .dark
-     orange            warm white + orange-red  — html.theme-orange
-     blue              pale blue                — html.theme-blue
      ruri              the original cool teal   — html.theme-ruri
 
    "ruri" is the theme's own palette as it shipped before the reading-room
@@ -26,16 +24,6 @@
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#221813;--paper:#2b2019;--ink:#e8dcd2;--muted:#c4a596;--faint:#b39a8c;--line:#483329;--accent:#f2b878;--accent-deep:#e3a06a;--tint:#2b2019;--hero-wash:rgba(242,184,120,.10);--selection:rgba(242,184,120,.26);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
 }
 
-/* orange: nearly neutral warm white, orange-red accent */
-html.theme-orange{--bg:#fff8f5;--paper:#fff;--ink:#3a2a26;--muted:#6d5049;--faint:#7d5f57;--line:#f4d8cd;--accent:#b83c1f;--accent-deep:#8a5a18;--tint:#fdeee7;--hero-wash:rgba(240,138,99,.16);--selection:rgba(240,138,99,.32);--shadow-rgb:150,62,30}
-html.theme-orange[data-theme=dark]{--bg:#241512;--paper:#2c1c17;--ink:#f0ddd6;--muted:#c0a49b;--faint:#a98d84;--line:#4a2f27;--accent:#ff9e7a;--accent-deep:#e0b877;--tint:#2c1c17;--hero-wash:rgba(255,158,122,.1);--selection:rgba(255,158,122,.28);--shadow-rgb:0,0,0}
-@media(prefers-color-scheme:dark){html.theme-orange:not([data-theme=light]){--bg:#241512;--paper:#2c1c17;--ink:#f0ddd6;--muted:#c0a49b;--faint:#a98d84;--line:#4a2f27;--accent:#ff9e7a;--accent-deep:#e0b877;--tint:#2c1c17;--hero-wash:rgba(255,158,122,.1);--selection:rgba(255,158,122,.28);--shadow-rgb:0,0,0}}
-
-/* blue: the pale-blue scheme, same structure as the licence cards over there */
-html.theme-blue{--bg:#f6fbff;--paper:#fff;--ink:#2d3e50;--muted:#4f6b85;--faint:#5c728a;--line:#d8e6f0;--accent:#2c5f8a;--accent-deep:#356f9d;--tint:#eaf4fc;--hero-wash:rgba(74,144,194,.1);--selection:rgba(74,144,194,.26);--shadow-rgb:40,86,122}
-html.theme-blue[data-theme=dark]{--bg:#16232e;--paper:#1e3040;--ink:#d6e4ef;--muted:#93aabd;--faint:#8ba3b8;--line:#2a4155;--accent:#8ec5e8;--accent-deep:#3f7ca9;--tint:#1b2a36;--hero-wash:rgba(142,197,232,.08);--selection:rgba(142,197,232,.28);--shadow-rgb:0,0,0}
-@media(prefers-color-scheme:dark){html.theme-blue:not([data-theme=light]){--bg:#16232e;--paper:#1e3040;--ink:#d6e4ef;--muted:#93aabd;--faint:#8ba3b8;--line:#2a4155;--accent:#8ec5e8;--accent-deep:#3f7ca9;--tint:#1b2a36;--hero-wash:rgba(142,197,232,.08);--selection:rgba(142,197,232,.28);--shadow-rgb:0,0,0}}
-
 /* ruri: the original palette, values copied verbatim from the first release.
    Cool ink on a faintly green paper, teal accent, flat shadows (it had none). */
 html.theme-ruri{--bg:#fafbf9;--paper:#fff;--ink:#303d45;--muted:#78858b;--faint:#6b7880;--line:#e0e6e6;--accent:#467889;--accent-deep:#3a6577;--tint:#edf3f3;--hero-wash:rgba(70,120,137,.10);--selection:rgba(70,120,137,.22);--shadow-rgb:48,61,69;--shadow-sm:0 1px 3px rgba(48,61,69,.05);--shadow-md:0 8px 22px rgba(48,61,69,.09);--shadow-lg:0 18px 40px rgba(48,61,69,.12)}
@@ -43,7 +31,7 @@ html.theme-ruri[data-theme=dark]{--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--mu
 @media(prefers-color-scheme:dark){html.theme-ruri:not([data-theme=light]){--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--muted:#92a4ac;--faint:#7d8f97;--line:#324249;--accent:#8fb9c8;--accent-deep:#6f9cae;--tint:#223138;--hero-wash:rgba(143,185,200,.08);--selection:rgba(143,185,200,.24);--shadow-rgb:0,0,0}}
 
 /* Dark schemes keep the paper tone but need black shadows to stay readable. */
-:root[data-theme=dark],html.theme-orange[data-theme=dark],html.theme-blue[data-theme=dark]{--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
+:root[data-theme=dark]{--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
 html.theme-ruri[data-theme=dark]{--shadow-sm:0 1px 4px rgba(0,0,0,.35);--shadow-md:0 10px 26px rgba(0,0,0,.4);--shadow-lg:0 20px 44px rgba(0,0,0,.45)}
 ::selection{background:var(--selection)}
 
@@ -1478,7 +1466,7 @@ body.toc-open #toc-toggle{display:none}
 .prose th{background:var(--tint);font-weight:600;letter-spacing:.02em}
 .prose td,.prose th{text-indent:0}
 .prose :not(pre)>code{background:color-mix(in srgb,var(--accent) 8%,var(--bg));color:var(--accent-deep);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.86em;text-indent:0;white-space:pre-wrap;overflow-wrap:anywhere}
-:root[data-theme=dark] .prose :not(pre)>code,html.theme-orange[data-theme=dark] .prose :not(pre)>code,html.theme-blue[data-theme=dark] .prose :not(pre)>code{color:var(--accent-deep)}
+:root[data-theme=dark] .prose :not(pre)>code{color:var(--accent-deep)}
 
 /* ---- Article tail ---- */
 .article-tags{margin:34px 0 10px}
@@ -1501,13 +1489,11 @@ dialog input{border-radius:10px}
 .site-footer small{font-size:11px}
 .site-footer a:hover{color:var(--accent)}
 
-/* ---- Scheme switcher: three paint dots, the active one ringed ---- */
+/* ---- Scheme switcher: two paint dots, the active one ringed ---- */
 .scheme-switch{display:inline-flex;align-items:center;gap:6px;margin-right:4px}
 .scheme-switch button{width:15px;height:15px;padding:0;border:1px solid var(--line);border-radius:50%;transition:transform .2s ease,box-shadow .2s ease}
 .scheme-switch button:hover{transform:scale(1.15);background:transparent}
 .scheme-switch button[data-scheme=warm]{background:linear-gradient(135deg,#fdf4e6,#9c601e)}
-.scheme-switch button[data-scheme=orange]{background:linear-gradient(135deg,#ffe2d5,#e2603a)}
-.scheme-switch button[data-scheme=blue]{background:linear-gradient(135deg,#dcebf7,#4a90c2)}
 .scheme-switch button[data-scheme=ruri]{background:linear-gradient(135deg,#eef3f3,#467889)}
 .scheme-switch button[aria-pressed=true]{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--accent)}
 .scheme-switch button[aria-pressed=true]:hover{transform:none}
@@ -1711,6 +1697,12 @@ html.theme-ruri .article-cover{border-radius:0}
    its menu still there to say where you are going. */
 .nav-veil{position:fixed;top:var(--header-h,76px);right:0;bottom:0;left:0;z-index:20;pointer-events:none;visibility:hidden}
 .nav-veil.is-open{visibility:visible}
+/* The closing is the only motion there is: the wings slide together when the
+   wait starts, and the sheet is simply gone when it ends — the page swap that
+   finishes the navigation takes the veil with it, and a cancelled wait snaps it
+   away just as fast. No slide apart, no fade: the content the reader came for
+   appears at once instead of being announced twice. */
+.nav-veil:not(.is-open) .nav-veil-wing,.nav-veil:not(.is-open) .nav-veil-core{transition:none}
 /* The two wings, reimu's loader motion: each owns half the width and waits just
    off its own edge. Closing, they slide together and meet in the middle; opening,
    they slide back out the way they came. The veil hangs from the header's rule,
@@ -1728,8 +1720,11 @@ html.theme-ruri .article-cover{border-radius:0}
 /* A big cog, not a ring, and not small: it takes the place reimu's loader gives
    its taiji. The illustrated banner above is a clockwork courier, so the gear is
    the one loading mark that belongs to this page's own imagery; it turns at a
-   reading pace rather than a spinner's blur. */
-.nav-gear{color:var(--accent);opacity:.85;transform-origin:24px 24px;animation:ruri-gear 1.6s linear infinite}
+   reading pace rather than a spinner's blur. `transform-box` is spelled out
+   because the default differs between engines: without it some read the origin
+   in the element's own pixels (24px of 112) instead of the viewBox's, and the
+   cog wobbles off-centre — a revolution, not a spin. */
+.nav-gear{color:var(--accent);opacity:.85;transform-box:view-box;transform-origin:center;animation:ruri-gear 1.6s linear infinite}
 @keyframes ruri-gear{to{transform:rotate(1turn)}}
 /* A pill rather than bare text: on a phone the gear and the words sit in the
    middle of an article, and a label with its own surface stays legible over
@@ -1753,3 +1748,25 @@ html.theme-ruri .article-cover{border-radius:0}
    to be the positioning context for that, and it has no other reason to be one. */
 #page-shell{position:relative}
 
+
+/* ---- Reveal on scroll: each component rises into place as it is reached ----
+   This is reimu's fade-up, kept because a page of cards that arrive one by one
+   reads as a room being furnished rather than a wall being pasted up. The
+   waiting state is a class on <html> that the inline script in baseof.html sets
+   before first paint: with no JavaScript at all nothing ever hides, and if the
+   script bundle itself fails to arrive the same script takes the class away
+   again — the page is never held hostage by its own animation.
+
+   The motion travels on the independent `translate` property rather than on
+   `transform`, which stays free for the hover lift the cards already have; the
+   `transform` entry in the transition list is that lift's own timing, carried
+   over so marking a card does not change how it answers the pointer. */
+html.reveal-on [data-reveal]{opacity:0;translate:0 30px;pointer-events:none;transition:opacity .4s ease,translate .4s ease,transform .3s cubic-bezier(.2,.7,.3,1)}
+html.reveal-on [data-reveal].is-revealed{opacity:1;translate:none;pointer-events:auto}
+/* Reduced motion: nothing drifts and nothing fades — a component that has been
+   reached is simply there. `translate:none` matters as much as the missing
+   transition: a 30px offset held forever would itself be a displacement the
+   reader never asked for. */
+@media(prefers-reduced-motion:reduce){
+html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition:none;translate:none}
+}
