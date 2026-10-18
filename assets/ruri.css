@@ -1747,19 +1747,21 @@ html.theme-ruri .article-cover{border-radius:0}
    the old page. Closing, they leave first; the paper follows. */
 .nav-veil-core{position:absolute;top:var(--header-h,76px);right:0;bottom:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;transition:opacity .2s ease}
 .nav-veil.is-open .nav-veil-core{opacity:1;transition:opacity .3s ease .22s}
-/* The loading mark is the reader's own cog: a line-drawn gear with a three-
-   spoked dial, in the place reimu gives its loader's taiji. It is drawn in the
-   page's own ink over a wash of its own paper — the sheet's colour — so the
-   mark reads as a print on the sheet rather than a sticker on it: the ink is
-   the deep brown of the warm reading room, and becomes each palette's own ink
-   elsewhere, dark modes included. It turns at a reading pace rather than a
-   spinner's blur. `transform-box` is spelled out because the default differs
-   between engines: without it some read the origin in the element's own pixels
-   (the viewBox is 1024 of a 132px box) instead of the viewBox's, and the cog
-   wobbles off-centre — a revolution, not a spin. */
+/* The loading mark is the second cog the reader picked: a ring gear, rim
+   toothed and hub open, in the place reimu gives its loader's taiji. It is
+   filled solid in the page's own ink — the deep brown of the warm reading
+   room, and each palette's own ink elsewhere, dark modes included — rather
+   than drawn as lines over a wash of paper: on a flat sheet the wash and the
+   sheet are one colour, and a line drawing there reads as floating strokes
+   instead of an object. The open hub is the paper showing through, which
+   keeps the solid shape light and gives the turn something to read against.
+   It turns at a reading pace rather than a spinner's blur. `transform-box` is
+   spelled out because the default differs between engines: without it some
+   read the origin in the element's own pixels (the viewBox is 1024 of a 132px
+   box) instead of the viewBox's, and the cog wobbles off-centre — a
+   revolution, not a spin. */
 .nav-gear{opacity:.9;transform-box:view-box;transform-origin:center;animation:ruri-gear 1.6s linear infinite}
-.nav-gear-fill{fill:var(--bg)}
-.nav-gear-line{fill:var(--ink)}
+.nav-gear-fill{fill:var(--ink)}
 @keyframes ruri-gear{to{transform:rotate(1turn)}}
 /* A pill rather than bare text: on a phone the gear and the words sit in the
    middle of an article, and a label with its own surface stays legible over
