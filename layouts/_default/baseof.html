@@ -20,7 +20,7 @@
 <div id="page-shell">{{ partial "interface.html" . }}{{/* The header leads the shell. In-page navigation replaces the whole shell at once, so the header, the menu and the loading bar belong together here: the old ones stay on screen, untouched and still clickable, until the new page is ready. */}}<header class="site-header shell">
 <a class="brand" href="{{ .Site.Home.RelPermalink }}"><span class="brand-mark">{{ .Site.Params.ruri.brandMark | default "r." }}</span><span>{{ .Site.Title }}<small>{{ .Site.Params.ruri.tagline }}</small></span></a>
 <nav class="main-nav" aria-label="{{ i18n "home" }}">{{ range .Site.Params.menu }}{{ if or (ne .name "culture_title") $.Site.Params.culture.enable }}{{ $href := strings.TrimPrefix "/" .url | relLangURL }}{{ if hasPrefix .url "https://" }}{{ $href = .url }}{{ end }}<a href="{{ $href }}" {{ if eq $href $.RelPermalink }}aria-current="page"{{ end }}>{{ i18n .name | default .name }}</a>{{ end }}{{ end }}</nav>
-<div class="tools"><span class="scheme-switch" role="group" aria-label="{{ i18n "ruri_scheme" }}"><button type="button" data-scheme="warm" aria-pressed="false" title="{{ i18n "ruri_scheme_warm" }}" aria-label="{{ i18n "ruri_scheme_warm" }}"></button><button type="button" data-scheme="orange" aria-pressed="false" title="{{ i18n "ruri_scheme_orange" }}" aria-label="{{ i18n "ruri_scheme_orange" }}"></button><button type="button" data-scheme="blue" aria-pressed="false" title="{{ i18n "ruri_scheme_blue" }}" aria-label="{{ i18n "ruri_scheme_blue" }}"></button><button type="button" data-scheme="ruri" aria-pressed="false" title="{{ i18n "ruri_scheme_ruri" }}" aria-label="{{ i18n "ruri_scheme_ruri" }}"></button></span><a class="rss-link" href="{{ "index.xml" | relLangURL }}" aria-label="RSS" title="RSS"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="19" r="1" fill="currentColor"/><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/></svg></a><button type="button" id="search-open" aria-label="{{ i18n "search" }}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button><button type="button" id="theme-toggle" aria-label="{{ i18n "ruri_theme" }}" title="Light / Dark"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor" stroke="none"/></svg></button><details class="languages"><summary aria-label="Language" title="{{ i18n "ruri_language" }}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h12M9 3v2M5 5c0 6 4 9 8 11M13 5c0 5-4 9-10 12M14 21l4-10 4 10M15.5 17h5"/></svg></summary><div>{{ range hugo.Sites }}{{ $home := .Home }}{{ $target := $home }}{{ range $.AllTranslations }}{{ if eq .Language.Lang $home.Language.Lang }}{{ $target = . }}{{ end }}{{ end }}<a href="{{ $target.RelPermalink }}" lang="{{ .Language.Lang }}">{{ .Language.Label }}</a>{{ end }}</div></details></div>
+<div class="tools"><span class="scheme-switch" role="group" aria-label="{{ i18n "ruri_scheme" }}"><button type="button" data-scheme="warm" aria-pressed="false" title="{{ i18n "ruri_scheme_warm" }}" aria-label="{{ i18n "ruri_scheme_warm" }}"></button><button type="button" data-scheme="orange" aria-pressed="false" title="{{ i18n "ruri_scheme_orange" }}" aria-label="{{ i18n "ruri_scheme_orange" }}"></button><button type="button" data-scheme="blue" aria-pressed="false" title="{{ i18n "ruri_scheme_blue" }}" aria-label="{{ i18n "ruri_scheme_blue" }}"></button><button type="button" data-scheme="ruri" aria-pressed="false" title="{{ i18n "ruri_scheme_ruri" }}" aria-label="{{ i18n "ruri_scheme_ruri" }}"></button></span><a class="rss-link" href="{{ "index.xml" | relLangURL }}" aria-label="RSS" title="RSS"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="19" r="1" fill="currentColor"/><path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16"/></svg></a><button type="button" id="search-open" aria-label="{{ i18n "search" }}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button><button type="button" id="theme-toggle" aria-label="{{ i18n "ruri_theme" }}" title="Light / Dark"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor" stroke="none"/></svg></button><details class="languages"><summary aria-label="Language" title="{{ i18n "ruri_language" }}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h12M9 3v2M5 5c0 6 4 9 8 11M13 5c0 5-4 9-10 12M14 21l4-10 4 10M15.5 17h5"/></svg></summary><div>{{ range hugo.Sites }}{{ $home := .Home }}{{ $target := $home }}{{ range $.AllTranslations }}{{ if eq .Language.Lang $home.Language.Lang }}{{ $target = . }}{{ end }}{{ end }}<a href="{{ $target.RelPermalink }}" lang="{{ .Language.Lang }}">{{ .Language.Label }}</a>{{ end }}</div></details><button type="button" id="nav-menu-toggle" aria-controls="nav-drawer" aria-expanded="false" aria-label="{{ i18n "ruri_menu" }}" title="{{ i18n "ruri_menu" }}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></div>
 </header>{{ partial "nav-progress.html" (dict "page" . "text" (i18n "ruri_loading_wait")) }}
 {{ block "hero" . }}{{ end }}{{ $wide := eq .Params.sidebar false }}
 <div class="shell layout{{ if $wide }} no-sidebar{{ end }}{{ if eq .Params.contentWidth "narrow" }} moments-layout{{ end }}"><main id="main">{{ block "main" . }}{{ end }}</main>{{ if not $wide }}{{ partial "sidebar.html" . }}{{ end }}</div>
@@ -32,7 +32,7 @@
      exist for a reader arriving from another page. Pages without a reading
      sidebar (sidebar:false) and pages with the contents switched off render
      nothing, so the launcher always matches the sidebar it depends on. */}}{{ if and (not $wide) .IsPage (ne .Params.toc false) (findRE "<a href=" .TableOfContents) }}{{ with .TableOfContents }}<button id="toc-toggle" type="button" aria-controls="ruri-toc" aria-expanded="false" aria-label="{{ i18n "toc" }}" title="{{ i18n "toc" }}"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>{{ end }}{{ end }}</div>{{ partial "player.html" . }}{{/* Only an article detail page offers the contents launcher; standalone pages
-     keep the sidebar listing they have always had. */}}<a class="back-top" href="#top" aria-label="{{ i18n "ruri_top" }}" title="{{ i18n "ruri_top" }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a><template id="ruri-toc-template"><div class="toc-head"><span class="toc-head-title">{{ i18n "toc" }}</span><button type="button" class="toc-close" aria-label="{{ i18n "ruri_close" }}">×</button></div></template><script>/* Mobile-only reading aids: a slim tappable player rail and a contents drawer.
+     keep the sidebar listing they have always had. */}}<a class="back-top" href="#top" aria-label="{{ i18n "ruri_top" }}" title="{{ i18n "ruri_top" }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a><template id="ruri-toc-template"><div class="toc-head"><span class="toc-head-title">{{ i18n "toc" }}</span><button type="button" class="toc-close" aria-label="{{ i18n "ruri_close" }}">×</button></div></template><template id="nav-drawer-template"><div class="nav-drawer-head"><span class="nav-drawer-head-title">{{ i18n "ruri_menu" }}</span><button type="button" class="nav-drawer-close" aria-label="{{ i18n "ruri_close" }}">×</button></div></template><script>/* Mobile-only reading aids: a slim tappable player rail and a contents drawer.
    Both are decided before first paint so the player never flashes its desktop
    shape on a narrow viewport, and they stay completely inert above 760px. */
 (()=>{
@@ -106,9 +106,83 @@ function teardownToc(){
   dropTocDrawer();
   document.body.classList.remove('player-expanded');
 }
+/* The header menu folds into a slide-in drawer on a phone, opened from the
+   toggle the tools carry. As with the contents, the live menu is moved rather
+   than copied: the header's own links are what the drawer shows, so the current
+   page keeps a single aria-current and a page without JavaScript simply keeps
+   its menu in the header row where it has always been. The moved menu is put
+   back on the desktop layout, and dropped (never restored) when a page swap
+   brings a fresh one inside the new shell. */
+let navApi=null,navAbort=null,navShell=null;
+function buildNavDrawer(shell){
+  const existing=document.getElementById('nav-drawer');if(existing)return existing;
+  const template=document.getElementById('nav-drawer-template');if(!template)return null;
+  const menu=shell?shell.querySelector('.site-header .main-nav'):null;
+  /* An empty menu (culture off) has nothing to fold. */
+  if(!menu||!menu.querySelector('a'))return null;
+  const drawer=document.createElement('aside');
+  drawer.id='nav-drawer';drawer.className='nav-drawer';
+  drawer.setAttribute('aria-label',menu.getAttribute('aria-label')||document.title);
+  drawer.hidden=true;
+  drawer.append(template.content.cloneNode(true),menu);
+  document.body.append(drawer);
+  return drawer;
+}
+/* Take the drawer away without handing the menu back: the shell it belonged to
+   is gone, so its menu is stale and the incoming shell carries its own. */
+function dropNavDrawer(){
+  navAbort?.abort();navAbort=null;
+  document.getElementById('nav-drawer')?.remove();
+  document.body.classList.remove('nav-open');
+  navApi=null;
+}
+/* A wide viewport is the same page seen differently: the menu goes back into
+   the header, ahead of the tools, which is where it started. */
+function teardownNav(){
+  const drawer=document.getElementById('nav-drawer');
+  const menu=drawer?.querySelector('.main-nav');
+  const header=document.querySelector('.site-header');
+  if(menu&&header){const tools=header.querySelector('.tools');tools?header.insertBefore(menu,tools):header.append(menu)}
+  dropNavDrawer();
+}
+function initNavDrawer(){
+  const shell=document.getElementById('page-shell');
+  if(!narrow.matches){teardownNav();navShell=null;return}
+  /* initPage() bootstraps before DOMContentLoaded, so this can arrive twice for
+     one shell; the drawer already built from its menu makes the second a no-op. */
+  if(shell&&shell===navShell&&document.getElementById('nav-drawer'))return;
+  navShell=shell;
+  dropNavDrawer();
+  const button=document.getElementById('nav-menu-toggle');
+  const drawer=buildNavDrawer(shell);
+  /* An empty menu has nothing to fold, so its launcher is withdrawn rather than
+     left standing over a drawer that never opens. */
+  if(!button||!drawer){if(button)button.style.display='none';return}
+  button.style.display='';
+  const setOpen=open=>{
+    if(open===drawer.classList.contains('is-open'))return;
+    if(open&&drawer.hidden){drawer.hidden=false;void drawer.offsetWidth}
+    drawer.classList.toggle('is-open',open);
+    document.body.classList.toggle('nav-open',open);
+    button.setAttribute('aria-expanded',String(open));
+    if(open)drawer.querySelector('.nav-drawer-close')?.focus();
+    else drawer.addEventListener('transitionend',()=>{if(!drawer.classList.contains('is-open'))drawer.hidden=true},{once:true});
+  };
+  navAbort=new AbortController();const signal=navAbort.signal;
+  button.addEventListener('click',()=>navApi.open(),{signal});
+  drawer.querySelector('.nav-drawer-close')?.addEventListener('click',()=>{navApi.close();button.focus()},{signal});
+  drawer.addEventListener('click',event=>{if(event.target.closest('a'))navApi.close()},{signal});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('is-open')){navApi.close();button.focus()}},{signal});
+  document.addEventListener('click',event=>{
+    if(!drawer.classList.contains('is-open'))return;
+    if(!drawer.contains(event.target)&&!button.contains(event.target))navApi.close();
+  },{signal});
+  navApi={open:()=>setOpen(true),close:()=>setOpen(false)};
+}
 let drawerApi=null,uiAbort=null,activeShell=null;
 function initMobileUi(){
   syncRail();
+  initNavDrawer();
   const shell=document.getElementById('page-shell');
   /* initPage() bootstraps before DOMContentLoaded, so this can arrive twice for
      the same shell. The contents have already moved into the drawer by then and
@@ -162,6 +236,6 @@ function refresh(){
 }
 window.sasaOrangeMobileUi={refresh};
 document.addEventListener('DOMContentLoaded',initMobileUi);
-addEventListener('pageshow',()=>{syncRail();if(!narrow.matches)teardownToc()});
+addEventListener('pageshow',()=>{syncRail();if(!narrow.matches)teardownToc();initNavDrawer()});
 narrow.addEventListener('change',event=>{document.documentElement.classList.toggle('mobile-ui',event.matches);drawerApi?.close();syncRail();initMobileUi()});
 })();</script></body></html>

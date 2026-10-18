@@ -1098,7 +1098,7 @@ body.player-expanded #music-lyrics{bottom:118px}
 /* Desktop baseline: the mobile-only furniture stays inert outside the query. The
    rail title is included because it is an added node, not a restyled one: without
    a hide rule out here it would render inside the desktop artwork box. */
-#toc-toggle,.toc-drawer,#player-rail-window{display:none}
+#toc-toggle,.toc-drawer,#nav-menu-toggle,#nav-drawer,#player-rail-window{display:none}
 
 @media(max-width:760px){
 
@@ -1254,22 +1254,71 @@ body.player-expanded #toc-toggle{display:none}
 /* The article's own summary is kept for desktop; the drawer header replaces it. */
 .toc-drawer .toc>summary{display:none}
 
-.toc-head{display:flex;align-items:center;gap:10px;padding:0 0 12px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.toc-head,.nav-drawer-head{display:flex;align-items:center;gap:10px;padding:0 0 12px;margin-bottom:12px;border-bottom:1px solid var(--line)}
 
-.toc-head-title{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--ink)}
+.toc-head-title,.nav-drawer-head-title{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--ink)}
 
-.toc-close{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;padding:0;border:0;border-radius:6px;font-size:20px;line-height:1;color:var(--muted)}
+.toc-close,.nav-drawer-close{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;padding:0;border:0;border-radius:6px;font-size:20px;line-height:1;color:var(--muted)}
 
-.toc-close:hover,.toc-close:focus-visible{background:var(--tint);color:var(--accent)}
+.toc-close:hover,.toc-close:focus-visible,.nav-drawer-close:hover,.nav-drawer-close:focus-visible{background:var(--tint);color:var(--accent)}
 
 body.toc-open{overflow:hidden}
 
 body.toc-open:before{content:"";position:fixed;inset:0;z-index:68;background:#0e1b2266}
 
 body.toc-open #toc-toggle{display:none}
+
+/* --- Menu: the header's own links, folded into a left drawer. ---
+   The drawer opens from the toggle among the tools; the links inside are the
+   header's live menu, moved here by script, so the row they freed on the narrow
+   header is never replaced by a second copy. */
+#nav-menu-toggle{display:grid}
+
+#nav-drawer{
+  position:fixed;
+  top:0;
+  right:auto;
+  bottom:0;
+  left:0;
+  z-index:69;
+  display:block;
+  width:min(84vw,320px);
+  padding:18px 20px 40px;
+  border-right:1px solid var(--line);
+  background:var(--paper);
+  box-shadow:10px 0 30px #0002;
+  transform:translateX(-105%);
+  transition:transform .26s ease;
+  overflow-y:auto;
+  overscroll-behavior:contain
 }
 
-@media(prefers-reduced-motion:reduce){#floating-player.rail,.toc-drawer{transition:none}
+#nav-drawer.is-open{transform:none}
+
+/* The moved menu is the header's flex row; in the drawer it reads as a list. */
+#nav-drawer .main-nav{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  width:100%;
+  margin-left:0;
+  gap:0;
+  font-size:15px;
+  padding-bottom:0
+}
+
+#nav-drawer .main-nav a{display:block;padding:14px 4px 14px 14px;white-space:normal;border-bottom:1px solid var(--line)}
+
+/* The lived-in mark stays the palette accent, moved to the leading edge so a
+   row reads as current from the drawer's own margin rather than a rule below. */
+#nav-drawer .main-nav a[aria-current]{color:var(--accent);border-bottom:1px solid var(--line);border-left:3px solid var(--accent);padding-left:11px}
+
+body.nav-open{overflow:hidden}
+
+body.nav-open:before{content:"";position:fixed;inset:0;z-index:68;background:#0e1b2266}
+}
+
+@media(prefers-reduced-motion:reduce){#floating-player.rail,.toc-drawer,#nav-drawer{transition:none}
 }
 .culture-page{max-width:1100px;margin-inline:auto}
 .bangumi-heading{font-size:20px;font-weight:500;margin:0 0 16px}
