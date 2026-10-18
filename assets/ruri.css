@@ -1620,3 +1620,36 @@ html.theme-ruri .article-cover{border-radius:0}
 .article .article-heading,.article .article-heading h1,.post-card,.post-card h2 a,.term-grid>a,.back-top,.brand-mark{animation:none;transition:none}
 .post-card:hover,.term-grid>a:hover,.back-top:hover{transform:none}
 }
+
+/* ---- in-page navigation feedback -----------------------------------------
+   The bar at the top of the window and the dots on the link that was clicked.
+   Both are driven from ruri.js; everything here is decoration, so nothing in
+   this block may take a click, a focus ring or a layout slot of its own.
+
+   The shell variant narrows the bar to the banner's own box, because the banner
+   is narrower than the header and the bar should read as belonging to the page
+   below it rather than to the window. Same gutters as `.shell`, so the two line
+   up exactly; the breakpoints at the end repeat the two narrowed values. */
+#ruri-progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:120;pointer-events:none;opacity:0;transition:opacity .18s ease}
+#ruri-progress span{display:block;height:100%;transform:scaleX(var(--value,0));transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear,background-color .3s ease}
+body.is-loading #ruri-progress{opacity:1}
+body.progress-done #ruri-progress{opacity:0;transition:opacity .22s ease}
+/* The gutter above is the desktop one; the 1100px and 760px breakpoints tighten
+   .shell, and the bar has to tighten with it or it would overhang the banner. */
+#ruri-progress.is-shell{left:0;right:0;width:auto;margin-inline:max(0px,calc((100% - min(1240px,100% - 96px)) / 2))}
+@media(max-width:1100px){#ruri-progress.is-shell{margin-inline:24px}}
+@media(max-width:760px){#ruri-progress.is-shell{margin-inline:16px}}
+
+/* Waiting on the link itself: a row of dots marching beside the label. The link
+   keeps its colour, weight and position — only a small gap opens on its right —
+   so the menu strip does not shift when one of its items starts loading. */
+a.is-loading-link{position:relative;color:var(--accent)}
+/* The dots are drawn as a ring with one dot lit at a time rather than as an
+   animation of the background position: the whole row stays in place, which is
+   easier to read at 11px than a scrolling strip. */
+a.is-loading-link::after{content:"";position:absolute;top:50%;right:-.9em;width:.66em;height:.22em;margin-top:-.11em;background:radial-gradient(circle,currentColor 1.1px,transparent 1.5px) 0 50%/.22em .22em repeat-x;opacity:.45;animation:ruri-dots .9s steps(1,end) infinite}
+@keyframes ruri-dots{0%{opacity:.3}25%{opacity:.55}50%{opacity:.8}75%{opacity:.55}}
+@media(prefers-reduced-motion:reduce){
+#ruri-progress span{transition:none}
+a.is-loading-link::after{animation:none;opacity:.45}
+}

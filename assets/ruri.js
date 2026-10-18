@@ -267,8 +267,115 @@ async function initComments(){const button=$('#comments-load');if(!button)return
 function initTabs(){const widget=$('.post-tabs');if(!widget)return;const candidates=JSON.parse(widget.querySelector('.post-candidates').textContent);function render(list,items){list.replaceChildren();items.forEach(x=>{const li=document.createElement('li'),a=document.createElement('a');a.href=x.url;a.textContent=x.title+(x.count===undefined?'':' · '+x.count);li.append(a);list.append(li)})}const shuffled=[...candidates];for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}render(widget.querySelector('[data-panel="random"] ol'),shuffled.slice(0,5));let popularLoaded=false;
 widget.querySelectorAll('[role=tab]').forEach(button=>{button.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const tabs=[...widget.querySelectorAll('[role=tab]')],i=tabs.indexOf(button);tabs[(i+(e.key==='ArrowRight'?1:2))%3].focus();tabs[(i+(e.key==='ArrowRight'?1:2))%3].click()});button.addEventListener('click',async()=>{widget.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));widget.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==button.dataset.tab);if(button.dataset.tab!=='popular'||popularLoaded)return;const status=widget.querySelector('.popular-status');status.textContent=tr('views_loading');try{const counts=[];for(let i=0;i<candidates.length;i+=20){const batch=candidates.slice(i,i+20),url=new URL(widget.dataset.server.replace(/\/$/,'')+'/api/article');url.searchParams.set('path',batch.map(x=>x.url).join(','));url.searchParams.set('type','time');const r=await fetch(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error();const payload=await r.json();if(!Array.isArray(payload.data))throw Error();counts.push(...payload.data.map((item,j)=>({...item,url:batch[j]?.url})))}const mapped=candidates.map(x=>({...x,count:Number(counts.find(c=>decodeURI(c.url||c.path||'')===decodeURI(x.url))?.time||0)})).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);render(widget.querySelector('[data-panel="popular"] ol'),mapped.slice(0,5));status.textContent=mapped.length?tr('views_sort'):tr('views_empty');popularLoaded=true}catch{status.textContent=tr('views_error')}})})}
 let navigationController;
-async function navigate(url,push=true){navigationController?.abort();const controller=new AbortController();navigationController=controller;try{const response=await fetch(url,{signal:controller.signal,headers:{'X-Ruri-Navigation':'1'}});if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw Error();const doc=new DOMParser().parseFromString(await response.text(),'text/html'),next=doc.querySelector('#page-shell');if(!next)throw Error();if(controller.signal.aborted)return;window.RuriFeatures.destroy();waline?.destroy();waline=null;pageVersion++;document.querySelectorAll('#ruri-page-extras').forEach(x=>x.remove());$('#page-shell').replaceWith(next);document.title=doc.title;document.documentElement.lang=doc.documentElement.lang;document.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>x.remove());doc.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>document.head.append(x.cloneNode(true)));if(push)history.pushState({},'',response.url+new URL(url).hash);initPage();for(const old of next.querySelectorAll('script[data-page-script]')){const script=document.createElement('script');for(const attr of old.attributes)script.setAttribute(attr.name,attr.value);script.textContent=old.textContent;if(script.src){await new Promise(resolve=>{script.onload=()=>{if(!controller.signal.aborted&&script.src.includes('auto-render')&&window.renderMathInElement)window.renderMathInElement($('.prose'),{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false});resolve()};script.onerror=resolve;old.replaceWith(script)})}else old.replaceWith(script);if(controller.signal.aborted)return}const hash=new URL(url).hash;const target=hash?document.getElementById(decodeURIComponent(hash.slice(1))):null;if(target)target.scrollIntoView();else window.scrollTo(0,0)}catch(e){if(e.name!=='AbortError')location.assign(url)}}
-document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin||!/^https?:$/.test(u.protocol)||/\.[a-z0-9]+$/i.test(u.pathname))return;if(u.pathname===location.pathname&&u.search===location.search&&u.hash)return;e.preventDefault();navigate(u.href)});
+/* ---- in-page navigation feedback -------------------------------------------
+   Clicking a link used to do nothing visible until the next page had been
+   fetched, parsed and swapped in. On the archive that is a second or more of a
+   frozen screen, which reads as a broken link. Two things now mark the wait:
+   a hairline bar at the very top of the window, and a staggered row of dots on
+   the link that was clicked.
+
+   The waiting state is deliberately narrow. The header, the menu and the
+   sidebar belong to the page being left, so they keep their content and their
+   place: nothing is hidden, faded or replaced, and the reader can still click
+   another link while the first one loads. The page being left also stays put
+   with its scroll position, sidebar and player, and is covered by the new one
+   only once that one is parsed and its scripts are ready. The bar narrows
+   itself to the banner when the link had a shell to belong to, and is removed
+   again the moment the new page is in place.
+
+   Both marks are skipped when the reader asked for reduced motion, and both are
+   decoration only: `aria-hidden`, no focus, no hit area. Screen readers get the
+   busy state on <main> instead of a progress indicator called "Loading" with no
+   percentage to report. */
+const progressBar=$('#ruri-progress');
+let progressTimer=0,progressValue=0,busyShell=null,progressToken=0;
+/* The busy flag goes on the article column: the rest of the shell is not going
+   anywhere, so announcing it as busy would be wrong. */
+function busyTarget(){return $('main')}
+function startProgress(host){
+  document.documentElement.classList.add('is-loading');
+  busyTarget()?.setAttribute('aria-busy','true');
+  /* A second click while the first page is still loading: the older bar owns
+     nothing any more, and its late timeout must not clear the new one. */
+  const token=++progressToken;
+  clearInterval(progressTimer);
+  if(!progressBar)return;
+  const shell=host?.closest('.shell');
+  if(shell!==busyShell){
+    progressBar.classList.toggle('is-shell',!!shell);
+    busyShell=shell;
+  }
+  document.body.classList.add('is-loading');
+  progressValue=0;
+  /* Slow down as the bar approaches the end: a fetch that finishes in 80ms
+     should not have the bar most of the way across, and one that hangs must not
+     sit still either. 0.82 is where it waits for the swap. */
+  const paint=()=>{if(token!==progressToken)return;progressBar.style.setProperty('--value',progressValue.toFixed(3))};
+  progressValue=.12;paint();
+  progressTimer=setInterval(()=>{progressValue+=(.82-progressValue)*(1-progressValue)*.16+progressValue*.004;progressValue=Math.min(progressValue,.82);paint()},90);
+}
+function finishProgress(){
+  const token=++progressToken;
+  clearInterval(progressTimer);progressTimer=0;
+  document.documentElement.classList.remove('is-loading');
+  document.body.classList.remove('is-loading');
+  document.querySelectorAll('[aria-busy="true"]').forEach(node=>node.removeAttribute('aria-busy'));
+  document.querySelectorAll('.is-loading-link').forEach(link=>link.classList.remove('is-loading-link'));
+  busyShell=null;
+  if(!progressBar)return;
+  progressValue=1;
+  progressBar.style.setProperty('--value','1');
+  window.setTimeout(()=>{
+    if(token!==progressToken)return;/* a newer navigation already restarted it */
+    document.body.classList.add('progress-done');
+    window.setTimeout(()=>{
+      if(token!==progressToken)return;
+      document.body.classList.remove('progress-done');
+      progressBar.style.setProperty('--value','0');
+    },220);
+  },120);
+}
+async function navigate(url,push=true,link){
+  navigationController?.abort();
+  const controller=new AbortController();navigationController=controller;
+  if(link)link.classList.add('is-loading-link');
+  startProgress(link);
+  try{
+    const response=await fetch(url,{signal:controller.signal,headers:{'X-Ruri-Navigation':'1'}});
+    if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw Error();
+    const doc=new DOMParser().parseFromString(await response.text(),'text/html'),next=doc.querySelector('#page-shell');
+    if(!next)throw Error();
+    if(controller.signal.aborted)return;
+    window.RuriFeatures.destroy();waline?.destroy();waline=null;pageVersion++;
+    document.querySelectorAll('#ruri-page-extras').forEach(x=>x.remove());
+    $('#page-shell').replaceWith(next);
+    document.title=doc.title;document.documentElement.lang=doc.documentElement.lang;
+    document.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>x.remove());
+    doc.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>document.head.append(x.cloneNode(true)));
+    if(push)history.pushState({},'',response.url+new URL(url).hash);
+    initPage();
+    for(const old of next.querySelectorAll('script[data-page-script]')){
+      const script=document.createElement('script');
+      for(const attr of old.attributes)script.setAttribute(attr.name,attr.value);
+      script.textContent=old.textContent;
+      if(script.src){await new Promise(resolve=>{script.onload=()=>{if(!controller.signal.aborted&&script.src.includes('auto-render')&&window.renderMathInElement)window.renderMathInElement($('.prose'),{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\[',right:'\\]',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false});resolve()};script.onerror=resolve;old.replaceWith(script)})}else old.replaceWith(script);
+      if(controller.signal.aborted)return;
+    }
+    const hash=new URL(url).hash;
+    const target=hash?document.getElementById(decodeURIComponent(hash.slice(1))):null;
+    if(target)target.scrollIntoView();else window.scrollTo(0,0);
+    finishProgress();
+  }catch(e){
+    if(e.name==='AbortError'){/* superseded by a newer click: this one owns nothing now */ if(navigationController!==controller)return}
+    else finishProgress()
+    if(e.name!=='AbortError')location.assign(url);
+  }
+}
+/* Coming back from the back/forward cache gives back the page exactly as it was
+   left, including the bar and the dots of a navigation that the browser then
+   took over. Clear them; the page itself needs nothing. */
+window.addEventListener('pageshow',event=>{if(event.persisted)finishProgress()});
+document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin||!/^https?:$/.test(u.protocol)||/\.[a-z0-9]+$/i.test(u.pathname))return;if(u.pathname===location.pathname&&u.search===location.search&&u.hash)return;e.preventDefault();navigate(u.href,true,a)});
 window.addEventListener('popstate',()=>navigate(location.href,false));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();$('#search-open')?.click()}});
 initPage();
 })();

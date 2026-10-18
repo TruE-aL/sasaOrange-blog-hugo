@@ -106,6 +106,7 @@ ruri_results: "results"
 ruri_retry: "Unable to load. Please retry."
 ruri_copy_link: "Copy link"
 ruri_close: "Close"
+ruri_loading: "Loading"
 ruri_skip: "Skip to content"
 
 ruri_heat_details: "Writing details"
