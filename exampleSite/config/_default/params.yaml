@@ -13,7 +13,7 @@ description: Notes, ideas, and everyday life.
 mainSections: [posts]
 # 首页大图与默认封面：相对 static 的路径或 HTTPS URL；空 cover 回退 banner。
 # Hero and fallback cover: static-relative paths or HTTPS URLs; empty cover falls back to banner.
-banner: ""
+banner: images/banner.webp
 cover: ""
 # 头像文件名，相对 static/avatar/；点击跳转 /about/。
 # Avatar filename relative to static/avatar/; links to /about/.
@@ -71,6 +71,9 @@ ruri:
   # 主标题下方细线处的出处文字。
   # Attribution on the rule below the main heading.
   homeSource: ""
+  # 大图按原图比例完整显示（true）还是裁成 16:7 横带（false）。宽图建议 true。
+  # Show the whole artwork at its own ratio (true) or crop it into a 16:7 band (false).
+  bannerFit: true
   # 大图左下角原文和译文；无 banner 时不显示。
   # Original and translated captions at lower left of hero; requires banner.
   caption: ""

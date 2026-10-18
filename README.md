@@ -22,7 +22,7 @@ sasaOrange 源自 [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reim
 
 | 分类 | 功能 |
 | --- | --- |
-| 页面 | 响应式布局、纸感阅读配色（暖黄／淡橙红／淡蓝）、深浅色模式、封面、分类与标签、归档时间树、写作热力图 |
+| 页面 | 响应式布局、纸感阅读配色（暖沙杏金／淡橙红／淡蓝）、深浅色模式、封面、分类与标签、归档时间树、写作热力图 |
 | 阅读 | 可折叠目录、代码语言栏／复制／折叠、PhotoSwipe 图片灯箱、KaTeX、Mermaid |
 | 搜索与订阅 | 多语言 Pagefind 搜索、RSS |
 | 评论与统计 | Waline 评论、阅读数／评论数、真实阅读数据热门文章、页脚总字数／阅读时长 |
@@ -32,13 +32,13 @@ sasaOrange 源自 [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reim
 
 ## 外观与配色
 
-默认外观是"纸感书页"：米黄底色、暖褐文字、宋体正文，首页居中排成一张扉页，正文首行缩进两格、两端对齐。
+默认外观是"纸感书页"：近白纸底、暖褐文字、宋体正文，首页居中排成一张扉页，正文首行缩进两格、两端对齐。默认这套配色的色值取自首页插画——杏金的分隔线、赭石褐的强调色，整页和那张画是同一副调子。
 
 顶栏右侧的四枚小圆点是**阅读配色**，可随时切换；再点一次当前选中的那枚即恢复默认。选择存在浏览器本地，刷新与站内跳转都会保持。
 
 | 配色 | 底色 | 强调色 | 适合 |
 | --- | --- | --- | --- |
-| 暖黄（默认） | 米黄纸感 | 琥珀 | 长时间阅读 |
+| 暖沙杏金（默认） | 近白纸感 | 赭石褐 | 长时间阅读，与插画同调 |
 | 淡橙红 | 暖白 | 橙红 | 与"orange"类站点呼应 |
 | 淡蓝 | 淡蓝白 | 蓝 | 冷静、夜间 |
 | 冷青（原版） | 冷白 | 青蓝 | 喜欢主题改造前那套平面风格 |
@@ -175,6 +175,7 @@ avatar: avatar.webp
 ruri:
   brandMark: "r."
   tagline: Per aspera ad astra.
+  bannerFit: true
   homeEyebrow: NOTE, TECH & POEM
   homeHeading: [A quiet place, for your words.]
   footerText: Made with care.
@@ -191,6 +192,8 @@ menu:
 ~~~
 
 `banner` 对应 `static/images/banner.webp`；`avatar` 对应 `static/avatar/avatar.webp`。不配置时不显示对应图片。文章 `cover` 可指定图片路径／URL，`false` 关闭。添加导航后需要创建对应页面。
+
+`ruri.bannerFit` 为 `true` 时大图按原图比例整张铺满（不裁切），适合宽幅插画；为 `false` 时退回旧的 16:7 横带裁切，适合照片。示例站用的是 `true`。
 
 远程图片会在构建时下载并生成 WebP 多档尺寸。若文章使用的是 CDN 地址而构建时无法抓取，可用 `ruri.images.remoteSources` 把前缀改写到原始地址，文章中的链接不必修改：
 
