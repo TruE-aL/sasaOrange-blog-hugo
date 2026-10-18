@@ -46,10 +46,14 @@ html.theme-ruri[data-theme=dark]{--shadow-sm:0 1px 4px rgba(0,0,0,.35);--shadow-
    CJK text — baseof.html adds data-font on the <html> element for CN/TW/JP —
    so a Latin-only site never pays for it. Rare characters outside the subset
    fall back through the system list below. */
-/* 相对路径：CSS 在 /assets/css/，字体在 /fonts/，上两级即可。
-   写成 "/fonts/..." 这种根路径时，部署在子路径（GitHub Pages 项目站是
-   /<repo>/）会 404，因为根路径指向的是域名根而不是站点根。 */
-@font-face{font-family:"Ruri Serif SC";src:url("../../fonts/ruri-serif-sc.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2460-24FF,U+25A0-25FF,U+2600-26FF,U+2E80-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF00-FFEF}
+/* 两个来源，按顺序试：
+   1. Cloudflare Pages 上的同名个人站——同一个 1.8MB 文件在那边 3 秒就传完，
+      GitHub Pages 要 100 秒以上（实测 130 秒仍未下完），演示站就是受害者。
+   2. 同源副本。CF 挂了或没给 CORS 头时退回这里：慢，但字形是对的，
+      不会悄悄换成系统宋体。
+   注意不要写成 "/fonts/..."：那是域名根，子路径部署（GitHub Pages 项目站
+   是 /<repo>/）会 404。相对路径以 CSS 所在的 /assets/css/ 为基准，上两级。 */
+@font-face{font-family:"Ruri Serif SC";src:url("https://sasaorange-blog-hugo-personalsite.pages.dev/fonts/ruri-serif-sc.woff2") format("woff2"),url("../../fonts/ruri-serif-sc.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2460-24FF,U+25A0-25FF,U+2600-26FF,U+2E80-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF00-FFEF}
 html[data-font=serif]{--serif:"Ruri Serif SC","Noto Serif CJK SC","Source Han Serif SC","Songti SC","SimSun",Georgia,"Times New Roman",serif}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:24px}
@@ -1338,7 +1342,10 @@ body.toc-open #toc-toggle{display:none}
    The wash fades both ways (down the page and out to the left/right) so it
    never shows a straight edge where the full-bleed band would end. */
 .hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;margin:0;padding:84px 0 34px;background:radial-gradient(120% 130% at 50% 0%,var(--hero-wash),transparent 72%);text-align:center;position:relative}
-.hero::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:min(1240px,calc(100% - 96px));height:1px;background:linear-gradient(90deg,transparent,var(--line) 18%,var(--line) 82%,transparent)}
+/* The hero is a .shell, so it already sits on the 1240px track. Centring the
+   rule with left:50% pushed it past the right edge instead of aligning it,
+   leaving a visible gap where the line stopped short. Let it span the box. */
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--line) 18%,var(--line) 82%,transparent)}
 .hero-copy{display:flex;flex-direction:column;align-items:center;padding:0;max-width:44rem}
 .hero .eyebrow{margin:0 0 22px;color:var(--accent);font-size:11px;letter-spacing:.28em;font-weight:500}
 .hero h1{margin:0;font-size:2.7rem;font-weight:600;line-height:1.45;letter-spacing:.16em;text-indent:.16em;color:var(--ink);background:linear-gradient(120deg,var(--accent) 20%,var(--accent-deep));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
@@ -1351,8 +1358,14 @@ body.toc-open #toc-toggle{display:none}
 .hero .hero-link{display:inline-flex;align-items:center;gap:8px;margin:0;max-width:none;border:0;padding:0;font-size:0;color:var(--accent);width:auto}
 .hero .hero-link::after{content:"";display:block;width:68px;height:3px;margin:28px auto 0;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent-deep),transparent)}
 .hero .hero-link span{display:none}
-.hero-image{width:100%;max-width:960px;margin-top:40px;border-radius:16px;overflow:hidden;box-shadow:var(--shadow-md);aspect-ratio:16/7;position:relative}
-.hero-image img{position:absolute;inset:0;width:100%;height:100%}
+/* Full bleed inside the shell: a fixed 960px cap left gutters on wide screens,
+   and the 16/7 box then cropped the artwork twice — once by the cap, once by
+   object-fit. Now the box is the shell width and the ratio is the source's.
+   No drop shadow either: a soft shadow on an 1240px panel reads as a hard
+   right-edge seam against the page (the warm palette tints the page, so the
+   shadow's own tint shows), which looked like the image stopped short. */
+.hero-image{width:100%;margin-top:40px;border-radius:16px;overflow:hidden;box-shadow:none;aspect-ratio:16/7;position:relative;background:var(--bg)}
+.hero-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
 /* The caption sits on top of the banner image, not on the page, so it keeps a
    paper-white chip in both modes — tying it to --bg turned it into light text
    on a light photo once dark mode was on. */

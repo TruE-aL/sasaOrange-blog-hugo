@@ -12,6 +12,9 @@
 - Article headers are centred with a short accent rule; prose is justified with a two-character first-line indent, article `h2`/`h3` read as marginal notes, quotes and inline code took the accent tint.
 - Home cards drop the cover thumbnail for a text-first list; tags, pagination, sidebar blocks, archive years, term and friend grids follow the same quiet style.
 - Ship a self-hosted Noto Serif CJK SC subset (GB 2312, OFL 1.1) for CJK pages, with `scripts/build-font.py` to rebuild it.
+- Bundled serif now loads from the Cloudflare-hosted site first and falls back to the same-origin copy: GitHub Pages needs 130s+ for the 1.8MB file, Cloudflare delivers it in about 3s.
+- Fixed: the home hero image was capped at 960px inside a 1240px shell, so the banner stopped short of the right edge on wide screens. It now spans the shell, and its drop shadow (which read as a hard seam against the tinted page) is gone.
+- Fixed: the hairline under the hero was centred on a box that was not centred, leaving it short at the right end.
 - Fixed: the palette buttons lost their pressed state after in-site navigation.
 - Added `ruri_updated`, `ruri_scheme*` interface strings in all four languages.
 
