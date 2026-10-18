@@ -107,6 +107,7 @@ ruri_retry: "暂时无法加载，请重试。"
 ruri_copy_link: "复制链接"
 ruri_close: "关闭"
 ruri_loading: "加载中"
+ruri_loading_wait: "正在努力加载中"
 ruri_skip: "跳转至正文"
 
 ruri_heat_details: "文章更新详情"

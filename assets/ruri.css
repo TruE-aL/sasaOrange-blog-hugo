@@ -1327,8 +1327,11 @@ body.toc-open #toc-toggle{display:none}
 :root[data-theme=dark] .brand-mark{color:#241512}
 .brand small{font-family:var(--serif);font-style:italic;font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--muted);margin-top:1px;text-transform:none}
 .main-nav{font-size:14px;letter-spacing:.06em}
-.main-nav a{transition:color .2s ease}
-.main-nav a[aria-current]{border-bottom:1px solid var(--accent);padding-bottom:2px}
+.main-nav a{transition:color .2s ease,border-bottom-color .2s ease}
+/* The mark under the item is drawn even before it is current, in transparent
+   ink, so borrowing it for the page being fetched costs no layout shift. */
+.main-nav a{border-bottom:1px solid transparent;padding-bottom:2px}
+.main-nav a[aria-current]{border-bottom-color:var(--accent)}
 .tools{gap:4px}
 .tools>a,.tools>button,.tools summary{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;color:var(--muted);transition:color .2s ease,background-color .2s ease}
 .tools>a:hover,.tools>button:hover,.tools summary:hover{color:var(--accent);background:var(--tint)}
@@ -1622,43 +1625,57 @@ html.theme-ruri .article-cover{border-radius:0}
 }
 
 /* ---- in-page navigation feedback -----------------------------------------
-   The loading bar and the dots beside the link that was clicked. The bar is
-   rendered by layouts/partials/nav-progress.html, right after the header inside
-   the page shell, so it travels with the header it belongs to.
+   Three pieces, rendered by layouts/partials/nav-progress.html right after the
+   header, inside the page shell: the bar on the header's hairline, the sheet
+   that unfolds below the header, and the turning ring on it.
 
-   Both marks are decoration: neither may take a click, a focus ring or a layout
-   slot of its own.
+   None of them may take a click, a focus ring or a layout slot of its own — the
+   sheet has to be readable-through in every sense, including input.
 
    `#page-shell` is the positioning context, and ruri.js measures the header into
-   `--header-h` (its height plus the hairline) so the bar covers that hairline
-   exactly, whether the header is one row (desktop) or two (phone) and whatever
-   the toolbar does in between. Because it is out of the flow it takes no space
-   and leaves the page exactly as it was.
-
-   Width follows the header, not the reading column. The header's own box is the
-   shell, so the bar spans the shell; the hero banner below it is narrower, and a
-   line that shrank to match would read as belonging to the banner. */
-.nav-progress{position:absolute;top:calc(var(--header-h,76px) - 2px);left:0;right:0;z-index:1;height:2px;overflow:hidden;pointer-events:none;background:transparent}
+   `--header-h` (its height plus the hairline) so both the bar and the top edge of
+   the sheet land on that hairline, whether the header is one row (desktop) or two
+   (phones) and whatever the toolbar does in between. */
+.nav-progress{position:absolute;top:calc(var(--header-h,76px) - 2px);left:0;right:0;z-index:35;height:2px;overflow:hidden;pointer-events:none;background:transparent}
 /* The track is the header's own hairline, lightened; the fill is the accent, so
-   the bar reads as that rule coming to life rather than as a new line. */
+   the bar reads as that rule coming to life rather than as a new line. Width
+   follows the header, not the reading column: a bar that shrank to the article
+   would read as belonging to the article. */
 .nav-progress::before{content:"";position:absolute;inset:0;background:var(--line);opacity:.55}
 .nav-progress i{position:relative;display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear}
 .nav-progress.is-running i{transition:transform .16s linear}
 
-a.is-loading-link{position:relative;color:var(--accent)}
-/* The dots are drawn as a ring with one dot lit at a time rather than as an
-   animation of the background position: the whole row stays in place, which is
-   easier to read at 11px than a scrolling strip. */
-a.is-loading-link::after{content:"";position:absolute;top:50%;right:-.9em;width:.66em;height:.22em;margin-top:-.11em;background:radial-gradient(circle,currentColor 1.1px,transparent 1.5px) 0 50%/.22em .22em repeat-x;opacity:.45;animation:ruri-dots .9s steps(1,end) infinite}
-@keyframes ruri-dots{0%{opacity:.3}25%{opacity:.55}50%{opacity:.8}75%{opacity:.55}}
-/* One block for both marks: a reader who asked for less motion gets the states
-   without the travel. */
+/* The sheet. It starts on the header's rule and covers everything under it. It
+   is paper, not film: no blur, no dimming, because a blurred page reads as a
+   broken render rather than as a wait. The tint is light enough to hint at the
+   words underneath — the reader can see that there is already a page there,
+   which is what makes "still loading" believable instead of a blank screen. */
+.nav-veil{position:fixed;top:var(--header-h,76px);right:0;bottom:0;left:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:color-mix(in srgb,var(--bg) 88%,transparent);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s}
+.nav-veil.is-open{opacity:1;visibility:visible}
+/* The sheet arrives rather than switching on: it is pulled down from the rule it
+   hangs from, which reads as the page being covered instead of as a flash. */
+@supports(clip-path:inset(0)){
+.nav-veil.is-open{clip-path:inset(0 0 0 0);transition:opacity .18s ease,visibility .18s,clip-path .26s ease}
+.nav-veil{opacity:1;clip-path:inset(0 0 100% 0);transition:opacity .18s ease,visibility .18s,clip-path .22s ease}
+}
+/* A ring with one arc lit, turning at a reading pace. Drawn from the palette so
+   it belongs to the page rather than to the browser. */
+.nav-spinner{width:26px;height:26px;border-radius:50%;border:2px solid color-mix(in srgb,var(--ink) 14%,transparent);border-top-color:var(--accent);animation:ruri-spin .78s linear infinite}
+@keyframes ruri-spin{to{transform:rotate(1turn)}}
+/* A pill rather than bare text: on a phone the spinner and the words sit in the
+   middle of an article, and a label with its own surface stays legible over
+   whatever wording happens to be underneath. */
+.nav-veil-text{margin:0;padding:7px 16px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-size:.86rem;letter-spacing:.08em;color:var(--muted)}
+
+/* Reduced motion: the ring stops turning and the sheet simply appears. The text
+   still says what is happening, so nothing is lost with the motion gone. */
 @media(prefers-reduced-motion:reduce){
 .nav-progress i{transition:none}
-a.is-loading-link::after{animation:none;opacity:.45}
+.nav-veil,.nav-veil.is-open{transition:none;clip-path:none}
+.nav-spinner{animation:none;border-top-color:color-mix(in srgb,var(--ink) 22%,transparent)}
 }
 
-/* The loading bar is pinned to the bottom of the header it hangs from. The shell
-   has to be the positioning context for that, and it has no other reason to be
-   one. */
+/* The bar and the sheet are pinned to the header they hang from. The shell has
+   to be the positioning context for that, and it has no other reason to be one. */
 #page-shell{position:relative}
+

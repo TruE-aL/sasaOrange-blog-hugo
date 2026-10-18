@@ -270,23 +270,32 @@ let navigationController;
 /* ---- in-page navigation feedback -------------------------------------------
    Clicking a link used to do nothing visible until the next page had been
    fetched, parsed and swapped in. On the archive that is a second or more of a
-   frozen screen, which reads as a broken link. Two things now mark the wait:
-   a hairline bar at the very top of the window, and a staggered row of dots on
-   the link that was clicked.
+   frozen screen, which reads as a broken link.
 
-   The waiting state is deliberately narrow. The header, the menu and the
-   sidebar belong to the page being left, so they keep their content and their
-   place: nothing is hidden, faded or replaced, and the reader can still click
-   another link while the first one loads. The page being left also stays put
-   with its scroll position, sidebar and player, and is covered by the new one
-   only once that one is parsed and its scripts are ready. The bar narrows
-   itself to the banner when the link had a shell to belong to, and is removed
-   again the moment the new page is in place.
+   Four things now mark the wait, and they answer two different questions.
 
-   Both marks are skipped when the reader asked for reduced motion, and both are
-   decoration only: `aria-hidden`, no focus, no hit area. Screen readers get the
-   busy state on <main> instead of a progress indicator called "Loading" with no
-   percentage to report. */
+   "Where am I going?" is answered by the header itself: the menu item that was
+   clicked takes the current-page mark straight away, so the reader sees where
+   they are headed before a single byte arrives. The mark is borrowed, not
+   moved — every other item keeps its own, and the swapped-in page brings the
+   real one. Link clicks have always been cancelable (`defaultPrevented` guards
+   this listener), so a plain link is marked and the navigation proceeds.
+
+   "Is it working?" is answered below the menu: a paper sheet unfolds over the
+   page, with a small turning ring and one line of text. The header, the menu and
+   the sidebar stay above it, untouched and clickable, which is what makes a slow
+   page feel handled rather than stuck. The sheet covers the page being left —
+   not a blank rectangle — so it reads as fog over a room, and it leaves the
+   moment the new page is parsed and its scripts are ready.
+
+   A hairline bar riding the header's own rule fills from left to right as the
+   wait goes on. It is the quietest of the four and the one that survives a
+   cancelled navigation.
+
+   All of it is skipped or stilled when the reader asked for reduced motion, and
+   none of it takes a click: clicking the page mid-wait cancels the navigation.
+   Screen readers get `aria-busy` on <main> and the sheet's own live region
+   instead of a progress indicator with no percentage to report. */
 let progressTimer=0,progressValue=0,progressToken=0;
 /* The bar is pinned to the bottom of the header, and the header's height depends
    on the viewport (one row on a desktop, two on a phone), on how much the
@@ -300,8 +309,9 @@ function measureHeader(){
 measureHeader();
 addEventListener('resize',measureHeader,{passive:true});
 addEventListener('orientationchange',measureHeader);
-/* The bar lives inside the page shell, so a fresh one arrives with every page
-   and the reference has to be re-read rather than cached across navigations. */
+/* The bar and the sheet live inside the page shell, so fresh copies arrive with
+   every page and the references have to be re-read rather than cached across
+   navigations. */
 function progressFill(){return $('.nav-progress i')}
 function progressBar(){return $('.nav-progress')}
 function paintProgress(value){
@@ -309,13 +319,50 @@ function paintProgress(value){
   bar.classList.add('is-running');
   progressFill().style.transform='scaleX('+value.toFixed(3)+')';
 }
+/* The visited page sits under the sheet but is not gone: it keeps its scroll
+   position, its sidebar and its player, so nothing is frozen or reflowed while
+   the reader waits. */
+let veilLink=null,borrowedCurrent=null;
+function openVeil(link){
+  /* A page swap takes the old sheet away along with the shell; this also covers
+     a navigation that never gets that far. */
+  const veil=$('.nav-veil');if(!veil)return;
+  veilLink=link;
+  veil.classList.add('is-open');
+  /* One `aria-current` on the page: the borrowed mark replaces whatever the
+     previous page marked, or the menu would claim two places at once. */
+  if(link){
+    borrowedCurrent=[...document.querySelectorAll('.main-nav a[aria-current]')];
+    borrowedCurrent.forEach(item=>item.removeAttribute('aria-current'));
+    link.setAttribute('aria-current','page');
+  }
+}
+function closeVeil(){
+  const veil=$('.nav-veil');if(veil)veil.classList.remove('is-open');
+  /* Hand the marks back to the page: either the swap already brought the real
+     one (the old links are detached and this is a no-op) or the navigation was
+     cancelled and the reader is still where they were. */
+  borrowedCurrent?.forEach(item=>{if(item.isConnected&&!item.hasAttribute('aria-current'))item.setAttribute('aria-current','page')});
+  borrowedCurrent=null;veilLink=null;
+}
+/* The mark belongs to the menu, not to a particular click path: a browser
+   back/forward lands on a page whose own markup already carries it, and a
+   navigation that was cancelled puts it back where it was. */
+function syncCurrent(url){
+  const path=new URL(url,location.href).pathname;
+  document.querySelectorAll('.main-nav a').forEach(item=>{
+    const target=new URL(item.href,location.href).pathname;
+    item.toggleAttribute('aria-current',target===path);
+  });
+}
 /* The busy flag goes on the article column: the rest of the shell is not going
    anywhere, so announcing it as busy would be wrong. */
 function busyTarget(){return $('main')}
-function startProgress(){
+function startProgress(link){
   measureHeader();
   document.documentElement.classList.add('is-loading');
   busyTarget()?.setAttribute('aria-busy','true');
+  openVeil(link);
   /* A second click while the first page is still loading: the older bar owns
      nothing any more, and its late timeout must not clear the new one. */
   const token=++progressToken;
@@ -336,7 +383,7 @@ function finishProgress(){
   clearInterval(progressTimer);progressTimer=0;
   document.documentElement.classList.remove('is-loading');
   document.querySelectorAll('[aria-busy="true"]').forEach(node=>node.removeAttribute('aria-busy'));
-  document.querySelectorAll('.is-loading-link').forEach(link=>link.classList.remove('is-loading-link'));
+  closeVeil();
   paintProgress(1);
   /* The fill is taken away by the page swap, which is the point: the new page
      arrives with an empty bar rather than with a finished one fading out. A
@@ -346,8 +393,7 @@ function finishProgress(){
 async function navigate(url,push=true,link){
   navigationController?.abort();
   const controller=new AbortController();navigationController=controller;
-  if(link)link.classList.add('is-loading-link');
-  startProgress();
+  startProgress(link);
   try{
     const response=await fetch(url,{signal:controller.signal,headers:{'X-Ruri-Navigation':'1'}});
     if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw Error();
@@ -361,6 +407,12 @@ async function navigate(url,push=true,link){
     document.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>x.remove());
     doc.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>document.head.append(x.cloneNode(true)));
     if(push)history.pushState({},'',response.url+new URL(url).hash);
+    /* The sheet that arrived with the new shell is closed; the menu it brought
+       carries its own mark. The borrowed marks and the old sheet belong to nodes
+       that are no longer in the document, so this only stops them being reused —
+       and it must run before initPage(), which re-reads the new shell. */
+    veilLink=null;borrowedCurrent=null;
+    syncCurrent(response.url);
     initPage();
     for(const old of next.querySelectorAll('script[data-page-script]')){
       const script=document.createElement('script');
@@ -385,20 +437,24 @@ async function navigate(url,push=true,link){
     location.assign(url);
   }
 }
-/* Nothing is covered while a page loads, so the reader is free to change their
-   mind: clicking anything that is not a link means "stay here", and the fetch is
-   dropped so the page is handed back as it was. A link click is left alone — the
-   listener below starts a fresh navigation, which is how a second choice beats
-   the first rather than cancelling both. The header and the menu are outside
-   #main, so the same rule keeps the tools, the language menu and the search
-   button usable mid-wait. */
+/* The sheet covers the page but swallows nothing, so the reader is free to
+   change their mind: clicking anything that is not a link means "stay here",
+   and the fetch is dropped so the page is handed back as it was. A link click is
+   left alone — the listener below starts a fresh navigation, which is how a
+   second choice beats the first rather than cancelling both. The header and the
+   menu sit above the sheet for the same reason: the tools, the language menu
+   and the search button stay usable mid-wait, and a tool is not a change of
+   mind — pressing the theme button while the next page loads switches the theme
+   and leaves the navigation alone. */
+const TOOLS='.site-header button,.site-header summary,.site-header a';
 document.addEventListener('click',event=>{
-  if(!document.documentElement.classList.contains('is-loading')||event.target.closest('a'))return;
+  if(!document.documentElement.classList.contains('is-loading'))return;
+  if(event.target.closest('a')||event.target.closest(TOOLS))return;
   navigationController?.abort();
   finishProgress();
 },true);
 /* Coming back from the back/forward cache gives back the page exactly as it was
-   left, including the bar and the dots of a navigation that the browser then
+   left, including the sheet and the bar of a navigation that the browser then
    took over. Clear them; the page itself needs nothing. */
 window.addEventListener('pageshow',event=>{if(event.persisted)finishProgress()});
 document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin||!/^https?:$/.test(u.protocol)||/\.[a-z0-9]+$/i.test(u.pathname))return;if(u.pathname===location.pathname&&u.search===location.search&&u.hash)return;e.preventDefault();navigate(u.href,true,a)});
