@@ -1,0 +1,81 @@
+name: Deploy demo to GitHub Pages
+
+# 把 exampleSite/ 构建成主题的线上演示站。
+#
+#   https://true-a-l.github.io/sasaOrange-blog-hugo/
+#
+# 和个人站点（Cloudflare Pages）完全独立：这里只发主题的示例内容，
+# 那边的文章、配置变动不会影响这里。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# 允许由 Pages 官方链路发布（不需要额外建 gh-pages 分支）。
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Pages 同时只接受一个发布，新的推送让旧的排队而不是互相取消。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  HUGO_VERSION: 0.162.1
+
+jobs:
+  build:
+    name: Build demo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          extended: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 主题就在本仓库根目录，把它挂成 themes/ruri 供 exampleSite 引用。
+      # 这样示例站与用户「把主题装进 themes/」的用法完全一致。
+      - name: Link theme
+        run: |
+          mkdir -p exampleSite/themes
+          ln -s "$PWD" exampleSite/themes/ruri
+
+      - name: Build
+        run: |
+          cd exampleSite
+          hugo --gc --minify --themesDir themes \
+            --baseURL "https://true-a-l.github.io/sasaOrange-blog-hugo/"
+
+      # Pagefind 读的是构建后的 HTML，必须在 hugo 之后。
+      - name: Build search index
+        run: npx -y pagefind@1.4.0 --site exampleSite/public --glob '**/*.html'
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: exampleSite/public
+
+  deploy:
+    name: Deploy to Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
