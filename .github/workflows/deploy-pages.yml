@@ -2,7 +2,7 @@ name: Deploy demo to GitHub Pages
 
 # 把 exampleSite/ 构建成主题的线上演示站。
 #
-#   https://true-a-l.github.io/sasaOrange-blog-hugo/
+#   https://TruE-aL.github.io/sasaOrange-blog-hugo/
 #
 # 和个人站点（Cloudflare Pages）完全独立：这里只发主题的示例内容，
 # 那边的文章、配置变动不会影响这里。
@@ -57,7 +57,7 @@ jobs:
         run: |
           cd exampleSite
           hugo --gc --minify --themesDir themes \
-            --baseURL "https://true-a-l.github.io/sasaOrange-blog-hugo/"
+            --baseURL "https://TruE-aL.github.io/sasaOrange-blog-hugo/"
 
       # Pagefind 读的是构建后的 HTML，必须在 hugo 之后。
       - name: Build search index

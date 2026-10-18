@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 ![Status](https://img.shields.io/badge/Status-Release_Candidate-orange)
 
-[线上演示](https://true-a-l.github.io/sasaOrange-blog-hugo/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/GuZhengSVT/hugo-theme-ruri/issues)
+[线上演示](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/GuZhengSVT/hugo-theme-ruri/issues)
 
 简体中文 | [English](README.en.md)
 
@@ -454,7 +454,7 @@ python3 -m http.server 8080 --directory public
 
 | 仓库 | 部署到 | 内容 | 工作流 |
 | --- | --- | --- | --- |
-| `sasaOrange-blog-hugo`（本仓库） | [GitHub Pages](https://true-a-l.github.io/sasaOrange-blog-hugo/) | `exampleSite/` 的通用示例 | `deploy-pages.yml` |
+| `sasaOrange-blog-hugo`（本仓库） | [GitHub Pages](https://TruE-aL.github.io/sasaOrange-blog-hugo/) | `exampleSite/` 的通用示例 | `deploy-pages.yml` |
 | `sasaOrange-blog-hugo-personalsite` | Cloudflare Pages | 真实文章与个人配置 | 站点仓库的 `deploy.yml` |
 
 演示站用 `--themesDir themes` 把仓库根目录挂成 `themes/ruri` 再构建 `exampleSite`，所以 `exampleSite` 始终是一份可以整目录复制走的独立站点。它的 `baseURL` 带仓库名（`/sasaOrange-blog-hugo/` 子路径），部署到自己的域名时要改掉。
