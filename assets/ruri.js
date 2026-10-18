@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const $=s=>document.querySelector(s);const tr=key=>{try{return JSON.parse(document.querySelector('#ruri-i18n').textContent)[key]||key}catch{return key}};let waline=null,pageVersion=0;
+const $=s=>document.querySelector(s);const tr=key=>{try{return JSON.parse(document.querySelector('#ruri-i18n').textContent)[key]||key}catch{return key}};let waline=null,pageVersion=0,menuAbort=null,menuToggle=null;
 function syncDark(){const mode=document.documentElement.dataset.theme;document.documentElement.classList.toggle('waline-dark',mode==='dark'||(mode!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches))}
 syncDark();matchMedia('(prefers-color-scheme:dark)').addEventListener('change',syncDark);
 /* Reading schemes (warm / orange / blue). The header dots live in the page shell,
@@ -71,7 +71,45 @@ function shuffleFriends(){
     grid.append(...links);
   });
 }
-function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();localizePlayer();paintScheme();shuffleFriends();
+/* Narrow-screen menu drawer. Same trick as the contents drawer: the listeners
+   hang off a controller that is dropped on every navigation, because the shell
+   (and with it the button and the panel) is replaced; anything left open is
+   closed before the swap so the next page never starts behind a scrim. */
+function closeMenu(restoreFocus){
+  const drawer=$('#ruri-menu');if(!drawer)return;
+  if(!drawer.classList.contains('is-open'))return;
+  drawer.classList.remove('is-open');drawer.setAttribute('aria-hidden','true');
+  $('#menu-scrim')?.classList.remove('is-open');
+  document.body.classList.remove('menu-open');
+  menuToggle?.setAttribute('aria-expanded','false');
+  if(restoreFocus)menuToggle?.focus();
+}
+function openMenu(){
+  const drawer=$('#ruri-menu');if(!drawer)return;
+  drawer.classList.add('is-open');drawer.setAttribute('aria-hidden','false');
+  $('#menu-scrim')?.classList.add('is-open');
+  document.body.classList.add('menu-open');
+  menuToggle?.setAttribute('aria-expanded','true');
+  drawer.querySelector('a[aria-current],a')?.focus({preventScroll:true});
+}
+function initMenu(){
+  const drawer=$('#ruri-menu'),button=$('#menu-toggle'),scrim=$('#menu-scrim');
+  if(!drawer||!button)return;
+  /* The old controller belongs to nodes that no longer exist. */
+  menuAbort?.abort();
+  if(button===menuToggle&&drawer.classList.contains('is-open'))return;
+  menuToggle=button;
+  closeMenu(false);
+  const controller=new AbortController();menuAbort=controller;const signal=controller.signal;
+  button.addEventListener('click',()=>drawer.classList.contains('is-open')?closeMenu(true):openMenu(),{signal});
+  scrim?.addEventListener('click',()=>closeMenu(true),{signal});
+  drawer.querySelector('.menu-close')?.addEventListener('click',()=>closeMenu(true),{signal});
+  /* Picking a destination closes the panel first, so the sheet that starts
+     covering the page does not have to be seen sliding out from under it. */
+  drawer.addEventListener('click',event=>{if(event.target.closest('a'))closeMenu(false)},{signal});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('is-open'))closeMenu(true)},{signal});
+}
+function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();initMenu();localizePlayer();paintScheme();shuffleFriends();
 initArchive();window.RuriFeatures.init();
 $('#theme-toggle')?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const mode=dark?'light':'dark';document.documentElement.dataset.theme=mode;try{localStorage.setItem('ruri-theme',mode)}catch{}syncDark()});
 
@@ -348,9 +386,12 @@ function closeVeil(){
 /* The mark belongs to the menu, not to a particular click path: a browser
    back/forward lands on a page whose own markup already carries it, and a
    navigation that was cancelled puts it back where it was. */
+/* Both menus carry the mark: the header's inline links on wide screens and the
+   drawer's rows on narrow ones. Re-marking only one of them left the other
+   pointing at the page just left. */
 function syncCurrent(url){
   const path=new URL(url,location.href).pathname;
-  document.querySelectorAll('.main-nav a').forEach(item=>{
+  document.querySelectorAll('.main-nav a,#ruri-menu a').forEach(item=>{
     const target=new URL(item.href,location.href).pathname;
     item.toggleAttribute('aria-current',target===path);
   });
@@ -391,6 +432,7 @@ function finishProgress(){
   window.setTimeout(()=>{if(token===progressToken)paintProgress(0)},180);
 }
 async function navigate(url,push=true,link){
+  closeMenu(false);
   navigationController?.abort();
   const controller=new AbortController();navigationController=controller;
   startProgress(link);

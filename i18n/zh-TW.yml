@@ -108,6 +108,8 @@ ruri_copy_link: "複製連結"
 ruri_close: "關閉"
 ruri_loading: "載入中"
 ruri_loading_wait: "正在努力載入中"
+ruri_menu: "導覽"
+ruri_menu_open: "開啟選單"
 ruri_skip: "跳至正文"
 
 ruri_heat_details: "文章更新詳情"

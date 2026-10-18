@@ -21,7 +21,7 @@ sasaOrange builds on [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-r
 
 | Area | Features |
 | --- | --- |
-| Pages | Responsive layout, light/dark mode, covers, taxonomies, archive timeline, writing heatmap |
+| Pages | Responsive layout with a bottom drawer for menus on narrow screens, light/dark mode, covers, taxonomies, archive timeline, writing heatmap |
 | Reading | Collapsible TOC, code language/copy/collapse tools, PhotoSwipe, KaTeX, Mermaid |
 | Search | Multilingual Pagefind search, RSS |
 | Comments and stats | Waline comments/views/counts, popular posts using real data, footer word/reading totals |
@@ -160,6 +160,8 @@ menu:
 ~~~
 
 Place the banner at `static/images/banner.webp` and avatar at `static/avatar/avatar.webp`. Missing settings hide the images. Article `cover` accepts a path/URL or `false` to hide it. Create a page for each internal menu link.
+
+On narrow screens (≤760px) the header keeps three things: the menu button on the left, the site name, and the tools on the right (palette, RSS, search, light/dark, language). Every `menu` entry moves into a bottom drawer: it slides up from the bottom edge behind a translucent scrim, the current page is bold in the accent with a small bar, and it closes on the scrim, the × button, Esc, or any menu item — with focus returning to the button. The drawer reads the same `menu` list as the desktop header, so the two can never disagree; above 760px neither the button nor the drawer is rendered and the links stay inline.
 
 Fetched originals and their generated image variants are published together under `ruri-media/remote/`, keeping the site root clear.
 

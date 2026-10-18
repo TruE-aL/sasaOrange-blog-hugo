@@ -108,6 +108,8 @@ ruri_copy_link: "Copy link"
 ruri_close: "Close"
 ruri_loading: "Loading"
 ruri_loading_wait: "Still loading"
+ruri_menu: "Menu"
+ruri_menu_open: "Open menu"
 ruri_skip: "Skip to content"
 
 ruri_heat_details: "Writing details"

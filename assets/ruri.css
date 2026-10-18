@@ -1588,20 +1588,68 @@ html.theme-ruri{--serif:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC
 .hero{padding:56px 0 26px}
 .hero h1{font-size:2.35rem}
 }
+/* ---- Narrow screens: the menu moves into a drawer ----
+   The header keeps one row: menu button, brand, tools. The links leave the
+   header entirely rather than wrapping onto a second line, which is what used to
+   make the bar two rows tall on a phone. Both the button and the panel are
+   inert above 760px; the desktop header still lists the pages inline. */
+.menu-toggle,.menu-scrim,.menu-drawer{display:none}
 @media(max-width:760px){
 .shell{width:calc(100% - 32px)}
-.site-header{padding:12px 0 4px;gap:8px 10px;min-height:0;flex-wrap:wrap}
+.site-header{padding:12px 0;gap:8px 10px;min-height:0;flex-wrap:nowrap}
+.main-nav{display:none}
+/* The button leads the row, then the brand, then the tools pushed to the right.
+   A hair of negative margin pulls it into the gutter so the icon optically
+   lines up with the text edge below it; the box stays 44px tall so the target
+   is thumb-sized even though the icon inside is not. */
+.menu-toggle{display:grid;place-items:center;order:0;flex:0 0 auto;width:36px;height:44px;margin:-6px 0 -6px -9px;padding:0;border:0;border-radius:9px;background:transparent;color:var(--ink);font-size:0;transition:color .2s ease,background-color .2s ease}
+.menu-toggle:hover,.menu-toggle:focus-visible{color:var(--accent);background:var(--tint)}
+.menu-toggle svg{display:block;width:20px;height:20px}
+/* The name may give way (ellipsis) before the tagline does: a truncated name is
+   still recognisable, a tagline cut mid-word is not. */
+.brand{order:1;min-width:0}
+.brand>span:last-child{min-width:0}
+.tools{order:2;gap:2px;margin-left:auto;min-width:0}
+/* The drawer rises from the bottom edge: a thumb reaches the bottom of a phone,
+   and a sheet that slides up from there needs no reaching into the top corner
+   twice. Round top corners and a grab handle say it can be dismissed. */
+.menu-drawer{display:block;position:fixed;left:0;right:0;bottom:0;z-index:76;padding:10px 16px calc(22px + env(safe-area-inset-bottom));text-align:left;border-top:1px solid var(--line);border-radius:18px 18px 0 0;background:var(--paper);box-shadow:0 -14px 38px rgba(var(--shadow-rgb),.18);transform:translateY(102%);transition:transform .28s cubic-bezier(.2,.7,.3,1);visibility:hidden;overscroll-behavior:contain;max-height:82vh;overflow-y:auto}
+.menu-drawer.is-open{transform:none;visibility:visible}
+.menu-drawer::before{content:"";display:block;width:38px;height:4px;margin:0 auto 10px;border-radius:2px;background:var(--line)}
+.menu-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:0 0 8px 4px;font-size:12px;letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
+.menu-close{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:50%;font-size:22px;line-height:1;color:var(--muted)}
+.menu-close:hover,.menu-close:focus-visible{background:var(--tint);color:var(--accent)}
+/* The links read as a stack of ruled rows, the same language as the home list,
+   with the current page marked by the accent and a bar on the left. */
+.menu-drawer a{display:flex;align-items:center;min-height:50px;padding:0 4px 0 0;border-bottom:1px solid var(--line);font-size:15px;letter-spacing:.06em;color:var(--ink);transition:color .2s ease}
+.menu-drawer a:last-child{border-bottom:0}
+.menu-drawer a:hover,.menu-drawer a:focus-visible{color:var(--accent)}
+.menu-drawer a[aria-current]{color:var(--accent);font-weight:600}
+/* The mark is always drawn, transparent when the row is not current, so marking
+   a page never shifts its label sideways against the other rows. */
+.menu-drawer a::before{content:"";flex:0 0 3px;width:3px;height:16px;margin-right:11px;border-radius:2px;background:transparent;transition:background-color .2s ease}
+.menu-drawer a[aria-current]::before{background:var(--accent)}
+.menu-scrim{position:fixed;inset:0;z-index:75;background:#0e1b2252;opacity:0;transition:opacity .28s ease;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.menu-scrim.is-open{display:block;opacity:1}
+body.menu-open{overflow:hidden}
 .brand{font-size:15px}
 .brand-mark{width:22px;height:22px;font-size:11px}
-.brand small{font-size:9.5px;letter-spacing:.04em}
-/* Phones: the logo and the tools share the first row, the menu becomes the
-   second one. The palette dots stay up top but shrink, so four quiet colours
-   never push the navigation onto a third line. */
-.main-nav{order:3;width:100%;justify-content:center;gap:22px;font-size:13px;padding-bottom:8px}
+/* The tagline wraps to two lines beside the tools on a phone; keep it on one. */
+.brand small{font-size:9.5px;letter-spacing:.04em;white-space:nowrap}
+/* The palette dots shrink on a phone so four colours fit beside the brand. */
 .tools{gap:2px;margin-left:auto}
 .tools>a,.tools>button,.tools summary{width:30px;height:30px;padding:5px}
 .scheme-switch{gap:5px;margin-right:2px}
 .scheme-switch button{width:12px;height:12px}
+/* A 320px phone cannot hold the seal, the name, four dots and four icons in one
+   row, and something has to give: the name does. Below 380px it gives way whole
+   rather than truncating to "sasaOra…", which reads as a bug, and the dots lose
+   most of their padding so the icons stay full size. */
+@media(max-width:379px){
+.brand>span:last-child{display:none}
+.scheme-switch{gap:4px;margin-right:0}
+.tools>a,.tools>button,.tools summary{width:28px;height:28px;padding:4px}
+}
 .hero{padding:46px 0 22px}
 .hero::after{width:calc(100% - 32px)}
 .hero h1{font-size:1.85rem;letter-spacing:.1em}
@@ -1683,6 +1731,7 @@ html.theme-ruri .article-cover{border-radius:0}
 /* Reduced motion: the cog stands still and the sheet simply appears. The text
    still says what is happening, so nothing is lost with the motion gone. */
 @media(prefers-reduced-motion:reduce){
+.menu-drawer,.menu-scrim{transition:none}
 .nav-progress i{transition:none}
 .nav-veil,.nav-veil.is-open{transition:none;clip-path:none}
 .nav-gear{animation:none}
