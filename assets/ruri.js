@@ -358,8 +358,10 @@ let navigationController;
    taiji, and one line of text under it. The header, the menu and the sidebar
    stay above the paper, untouched and clickable, which is what makes a slow
    page feel handled rather than stuck. The veil covers the page being left —
-   not a blank rectangle — so it reads as fog over a room, and it leaves the
-   moment the new page is parsed and its scripts are ready.
+   not a blank rectangle — so it reads as fog over a room, and it draws back the
+   moment the new page is parsed and its scripts are ready: the swap waits for
+   the sheet to finish opening, so the gesture is seen whole rather than cut in
+   half by a page arriving under it.
 
    A hairline bar riding the header's own rule fills from left to right as the
    wait goes on. It is the quietest of the four and the one that survives a
@@ -422,6 +424,28 @@ function closeVeil(){
   borrowedCurrent?.forEach(item=>{if(item.isConnected&&!item.hasAttribute('aria-current'))item.setAttribute('aria-current','page')});
   borrowedCurrent=null;veilLink=null;
 }
+/* The opening is a motion now, and a motion takes time. The swap that brings the
+   next page would take this veil with the old shell, so a caller that is about
+   to swap waits here until the wings have drawn back. The duration is read off
+   the wing's own computed transition rather than hard-coded, so the two can
+   never drift apart; a reduced-motion reader, whose transitions are silenced
+   and with them the event, gives way at once. The timeout behind the event is
+   for a transition that never reports — an interrupted one — so the page can
+   never be held hostage by a stuck sheet. */
+function waitForVeilOpen(){
+  const veil=$('.nav-veil');
+  if(!veil)return Promise.resolve();
+  const wing=veil.querySelector('.nav-veil-wing');
+  const duration=wing&&parseFloat(getComputedStyle(wing).transitionDuration);
+  if(!duration)return Promise.resolve();
+  return new Promise(resolve=>{
+    let done=false;
+    const finish=()=>{if(done)return;done=true;veil.removeEventListener('transitionend',onEnd);resolve()};
+    const onEnd=event=>{if(event.target===wing)finish()};
+    veil.addEventListener('transitionend',onEnd);
+    setTimeout(finish,duration*1000+150);
+  });
+}
 /* The mark belongs to the menu, not to a particular click path: a browser
    back/forward lands on a page whose own markup already carries it, and a
    navigation that was cancelled puts it back where it was. */
@@ -481,6 +505,14 @@ async function navigate(url,push=true,link){
     const doc=new DOMParser().parseFromString(await response.text(),'text/html'),next=doc.querySelector('#page-shell');
     if(!next)throw Error();
     if(controller.signal.aborted)return;
+    /* The sheet opens before the swap, not after: the wings draw back over the
+       page being left, and the new page takes their place once they are gone —
+       the swap would otherwise carry this veil away with the old shell, and the
+       opening would never be seen. The bar fills here, the moment the page is
+       ready, which is what it has always meant. */
+    finishProgress();
+    await waitForVeilOpen();
+    if(controller.signal.aborted)return;
     window.RuriFeatures.destroy();waline?.destroy();waline=null;pageVersion++;
     document.querySelectorAll('#ruri-page-extras').forEach(x=>x.remove());
     $('#page-shell').replaceWith(next);
@@ -505,7 +537,6 @@ async function navigate(url,push=true,link){
     const hash=new URL(url).hash;
     const target=hash?document.getElementById(decodeURIComponent(hash.slice(1))):null;
     if(target)target.scrollIntoView();else window.scrollTo(0,0);
-    finishProgress();
   }catch(e){
     if(e.name==='AbortError'){
       /* Two ways to get here. A newer click took over and owns the marks now,
