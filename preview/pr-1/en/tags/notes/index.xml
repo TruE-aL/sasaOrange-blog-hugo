@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Notes on sasaOrange</title><link>https://TruE-aL.github.io/sasaOrange-blog-hugo/preview/pr-1/en/tags/notes/</link><description>Recent content from sasaOrange</description><generator>Hugo</generator><language>en</language><copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright><lastBuildDate>Wed, 01 Jan 2025 12:00:00 +0800</lastBuildDate><atom:link href="https://TruE-aL.github.io/sasaOrange-blog-hugo/preview/pr-1/en/tags/notes/index.xml" rel="self" type="application/rss+xml"/><item><title>Hello, sasaOrange</title><link>https://TruE-aL.github.io/sasaOrange-blog-hugo/preview/pr-1/en/posts/hello/</link><pubDate>Wed, 01 Jan 2025 12:00:00 +0800</pubDate><guid>https://TruE-aL.github.io/sasaOrange-blog-hugo/preview/pr-1/en/posts/hello/</guid><description>
+<![CDATA[<h1>Hello, sasaOrange</h1><p>Author: sasaOrange()</p>
+        
+          <h2 id="welcome">
+<a class="header-anchor" href="#welcome"></a>
+Welcome
+</h2><p>A minimal multilingual journal. No remote services are required.</p>
+<h3 id="details">
+<a class="header-anchor" href="#details"></a>
+Details
+</h3><p>Write in Markdown.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;Hello, sasaOrange&#34;</span><span class="p">)</span>
+</span></span></code></pre></div>
+        
+        <hr><p>Published on 2025-01-01 at <a href='https://TruE-aL.github.io/sasaOrange-blog-hugo/preview/pr-1/'>sasaOrange</a>, last modified on 2025-01-01</p>]]></description><category>Journal</category></item></channel></rss>
