@@ -287,59 +287,67 @@ let navigationController;
    decoration only: `aria-hidden`, no focus, no hit area. Screen readers get the
    busy state on <main> instead of a progress indicator called "Loading" with no
    percentage to report. */
-const progressBar=$('#ruri-progress');
-let progressTimer=0,progressValue=0,busyShell=null,progressToken=0;
+let progressTimer=0,progressValue=0,progressToken=0;
+/* The bar is pinned to the bottom of the header, and the header's height depends
+   on the viewport (one row on a desktop, two on a phone), on how much the
+   toolbar holds and on which page it is sitting over. Measured rather than
+   guessed, and re-measured on every load and every resize. */
+function measureHeader(){
+  const header=$('.site-header');
+  if(!header)return;
+  document.documentElement.style.setProperty('--header-h',Math.round(header.getBoundingClientRect().height+2)+'px');
+}
+measureHeader();
+addEventListener('resize',measureHeader,{passive:true});
+addEventListener('orientationchange',measureHeader);
+/* The bar lives inside the page shell, so a fresh one arrives with every page
+   and the reference has to be re-read rather than cached across navigations. */
+function progressFill(){return $('.nav-progress i')}
+function progressBar(){return $('.nav-progress')}
+function paintProgress(value){
+  const bar=progressBar();if(!bar)return;
+  bar.classList.add('is-running');
+  progressFill().style.transform='scaleX('+value.toFixed(3)+')';
+}
 /* The busy flag goes on the article column: the rest of the shell is not going
    anywhere, so announcing it as busy would be wrong. */
 function busyTarget(){return $('main')}
-function startProgress(host){
+function startProgress(){
+  measureHeader();
   document.documentElement.classList.add('is-loading');
   busyTarget()?.setAttribute('aria-busy','true');
   /* A second click while the first page is still loading: the older bar owns
      nothing any more, and its late timeout must not clear the new one. */
   const token=++progressToken;
   clearInterval(progressTimer);
-  if(!progressBar)return;
-  const shell=host?.closest('.shell');
-  if(shell!==busyShell){
-    progressBar.classList.toggle('is-shell',!!shell);
-    busyShell=shell;
-  }
-  document.body.classList.add('is-loading');
   progressValue=0;
   /* Slow down as the bar approaches the end: a fetch that finishes in 80ms
      should not have the bar most of the way across, and one that hangs must not
      sit still either. 0.82 is where it waits for the swap. */
-  const paint=()=>{if(token!==progressToken)return;progressBar.style.setProperty('--value',progressValue.toFixed(3))};
-  progressValue=.12;paint();
-  progressTimer=setInterval(()=>{progressValue+=(.82-progressValue)*(1-progressValue)*.16+progressValue*.004;progressValue=Math.min(progressValue,.82);paint()},90);
+  progressValue=.12;paintProgress(progressValue);
+  progressTimer=setInterval(()=>{
+    progressValue+=(.82-progressValue)*(1-progressValue)*.16+progressValue*.004;
+    progressValue=Math.min(progressValue,.82);
+    if(token===progressToken)paintProgress(progressValue);
+  },90);
 }
 function finishProgress(){
   const token=++progressToken;
   clearInterval(progressTimer);progressTimer=0;
   document.documentElement.classList.remove('is-loading');
-  document.body.classList.remove('is-loading');
   document.querySelectorAll('[aria-busy="true"]').forEach(node=>node.removeAttribute('aria-busy'));
   document.querySelectorAll('.is-loading-link').forEach(link=>link.classList.remove('is-loading-link'));
-  busyShell=null;
-  if(!progressBar)return;
-  progressValue=1;
-  progressBar.style.setProperty('--value','1');
-  window.setTimeout(()=>{
-    if(token!==progressToken)return;/* a newer navigation already restarted it */
-    document.body.classList.add('progress-done');
-    window.setTimeout(()=>{
-      if(token!==progressToken)return;
-      document.body.classList.remove('progress-done');
-      progressBar.style.setProperty('--value','0');
-    },220);
-  },120);
+  paintProgress(1);
+  /* The fill is taken away by the page swap, which is the point: the new page
+     arrives with an empty bar rather than with a finished one fading out. A
+     navigation that failed instead has to put its own bar away. */
+  window.setTimeout(()=>{if(token===progressToken)paintProgress(0)},180);
 }
 async function navigate(url,push=true,link){
   navigationController?.abort();
   const controller=new AbortController();navigationController=controller;
   if(link)link.classList.add('is-loading-link');
-  startProgress(link);
+  startProgress();
   try{
     const response=await fetch(url,{signal:controller.signal,headers:{'X-Ruri-Navigation':'1'}});
     if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw Error();
@@ -366,11 +374,29 @@ async function navigate(url,push=true,link){
     if(target)target.scrollIntoView();else window.scrollTo(0,0);
     finishProgress();
   }catch(e){
-    if(e.name==='AbortError'){/* superseded by a newer click: this one owns nothing now */ if(navigationController!==controller)return}
-    else finishProgress()
-    if(e.name!=='AbortError')location.assign(url);
+    if(e.name==='AbortError'){
+      /* Two ways to get here. A newer click took over and owns the marks now,
+         so this call must keep its hands off them. Or the reader clicked the
+         sheet to stay where they are: that call already cleaned up. */
+      if(navigationController!==controller)return;
+      return;
+    }
+    finishProgress();
+    location.assign(url);
   }
 }
+/* Nothing is covered while a page loads, so the reader is free to change their
+   mind: clicking anything that is not a link means "stay here", and the fetch is
+   dropped so the page is handed back as it was. A link click is left alone — the
+   listener below starts a fresh navigation, which is how a second choice beats
+   the first rather than cancelling both. The header and the menu are outside
+   #main, so the same rule keeps the tools, the language menu and the search
+   button usable mid-wait. */
+document.addEventListener('click',event=>{
+  if(!document.documentElement.classList.contains('is-loading')||event.target.closest('a'))return;
+  navigationController?.abort();
+  finishProgress();
+},true);
 /* Coming back from the back/forward cache gives back the page exactly as it was
    left, including the bar and the dots of a navigation that the browser then
    took over. Clear them; the page itself needs nothing. */

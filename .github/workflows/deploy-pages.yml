@@ -6,9 +6,18 @@ name: Deploy demo to GitHub Pages
 #
 # 和个人站点（Cloudflare Pages）完全独立：这里只发主题的示例内容，
 # 那边的文章、配置变动不会影响这里。
+#
+# 本工作流同时负责发布 **PR 预览**：github-pages 环境的部署策略只放行 main，
+# 预览无法由 preview-pr.yml 自己发布（会因分支策略被拒）。所以 preview-pr.yml
+# 只负责构建 + 回归校验并把产物上传成 artifact，由这里的 `publish-preview` 任务
+# 用 `workflow_run` 接过来发布到 `/preview/pr-<编号>/`。这样预览也走 main，
+# 分支策略不必放宽，预览和正式站共用同一条 Pages 链路。
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: [Preview pull request]
+    types: [completed]
   workflow_dispatch:
 
 # 允许由 Pages 官方链路发布（不需要额外建 gh-pages 分支）。
@@ -16,6 +25,8 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
+  pull-requests: write
 
 # Pages 同时只接受一个发布，新的推送让旧的排队而不是互相取消。
 concurrency:
@@ -28,6 +39,7 @@ env:
 jobs:
   build:
     name: Build demo
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -71,6 +83,7 @@ jobs:
   deploy:
     name: Deploy to Pages
     needs: build
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -79,3 +92,84 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # PR 预览：接 preview-pr.yml 构建好的站点，发布到同一站点的子路径。
+  #
+  # 子路径不影响主题：所有资源都用 relURL/relLangURL，和正式站的子路径部署
+  # 是同一套机制。预览期间根路径看到的也是这份预览，下次推送 main 时自动恢复。
+  publish-preview:
+    name: Publish preview
+    if: >-
+      github.event_name == 'workflow_run'
+      && github.event.workflow_run.conclusion == 'success'
+      && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download preview artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: dist
+
+      - name: Unpack artifact
+        run: |
+          cd dist
+          tar --numeric-owner -xf artifact.tar
+          rm artifact.tar
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
+          path: dist
+
+      - name: Comment on pull request
+        uses: actions/github-script@v7
+        env:
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+
+            // 预览产物里带着 PR 编号和工作流 token，PR 号拿它最稳：
+            // 预览站的 baseURL 就是 .../preview/pr-<编号>/。
+            const fs = require('fs');
+            const home = fs.readFileSync('dist/index.html', 'utf8');
+            const path = (home.match(/\/preview\/pr-(\d+)\//) || [])[1];
+            const head = process.env.HEAD_SHA;
+
+            const { data: pulls } = await github.rest.pulls.list({
+              owner, repo, head: `${owner}:${process.env.HEAD_BRANCH}`, state: 'open',
+            });
+            const pr = path ? Number(path) : pulls[0]?.number;
+            if (!pr) {
+              console.log('找不到对应的 PR，跳过评论。');
+              return;
+            }
+
+            const url = `https://${owner.toLowerCase()}.github.io/${repo}/preview/pr-${pr}/`;
+            const body = [
+              '### 预览已就绪',
+              '',
+              `- 预览站：${url}`,
+              `- 提交：\`${head.slice(0, 7)}\``,
+              '',
+              '构建 + 五项回归（smoke / features / media / culture / module）全过才会发布。',
+              '预览与正式演示站共用同一条 Pages 链路，预览期间根路径看到的也是这份预览；',
+              '下次推送 main（或手动触发本工作流）时正式站会自动恢复。',
+            ].join('\n');
+            const marker = '<!-- sasaorange-preview -->';
+            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: pr });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: marker + '\n' + body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: pr, body: marker + '\n' + body });
+            }
