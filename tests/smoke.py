@@ -37,11 +37,23 @@ with tempfile.TemporaryDirectory(prefix='ruri-smoke-') as d:
             (site/'content/posts/hello.md').write_text(chr(10).join(['---','title: Hello','date: 2025-01-01','---','Hello world.']))
         else:shutil.copytree(THEME/'exampleSite',site)
         (site/'themes').mkdir();(site/'themes/ruri').symlink_to(THEME)
+        # exampleSite 自身部署在 GitHub Pages 的项目子路径，链接会带 /<repo>/ 前缀。
+        # 从它的 baseURL 里取出该前缀，交给 build() 剥掉，避免把「部署路径」误判成坏链。
+        prefix=''
+        if kind!='minimal':
+            base_url=tomllib.loads((site/'config/_default/hugo.toml').read_text())['baseURL']
+            prefix=urlsplit(base_url).path
+            if prefix=='/':prefix=''
         if kind=='subpath':
-            config=site/'config/_default/hugo.toml';config.write_text(config.read_text().replace('https://example.org/','https://example.org/blog/'))
+            # 不依赖 exampleSite 里具体写的哪个域名：直接把 baseURL 换成任意子路径，
+            # 这样才能真的验证「部署在子路径时链接是否自洽」。
+            import re
+            config=site/'config/_default/hugo.toml'
+            config.write_text(re.sub(r'^baseURL\s*=.*$','baseURL = "https://example.org/blog/"',config.read_text(),count=1,flags=re.M))
+            prefix='/blog/'
         with (site/('hugo.toml' if kind=='minimal' else 'config/_default/hugo.toml')).open('a') as f:
             if kind=='minimal':f.write(chr(10)+'[outputs]'+chr(10)+'home=["HTML","RSS"]'+chr(10))
-        out=build(site,'/blog/' if kind=='subpath' else '')
+        out=build(site,prefix)
         if kind=='minimal':
             assert not (out/'index.json').exists()
         else:

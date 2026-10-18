@@ -46,7 +46,10 @@ html.theme-ruri[data-theme=dark]{--shadow-sm:0 1px 4px rgba(0,0,0,.35);--shadow-
    CJK text — baseof.html adds data-font on the <html> element for CN/TW/JP —
    so a Latin-only site never pays for it. Rare characters outside the subset
    fall back through the system list below. */
-@font-face{font-family:"Ruri Serif SC";src:url("/fonts/ruri-serif-sc.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2460-24FF,U+25A0-25FF,U+2600-26FF,U+2E80-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF00-FFEF}
+/* 相对路径：CSS 在 /assets/css/，字体在 /fonts/，上两级即可。
+   写成 "/fonts/..." 这种根路径时，部署在子路径（GitHub Pages 项目站是
+   /<repo>/）会 404，因为根路径指向的是域名根而不是站点根。 */
+@font-face{font-family:"Ruri Serif SC";src:url("../../fonts/ruri-serif-sc.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2460-24FF,U+25A0-25FF,U+2600-26FF,U+2E80-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF00-FFEF}
 html[data-font=serif]{--serif:"Ruri Serif SC","Noto Serif CJK SC","Source Han Serif SC","Songti SC","SimSun",Georgia,"Times New Roman",serif}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:24px}
