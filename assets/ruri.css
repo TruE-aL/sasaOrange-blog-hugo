@@ -1645,12 +1645,12 @@ html.theme-ruri .article-cover{border-radius:0}
 .nav-progress i{position:relative;display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear}
 .nav-progress.is-running i{transition:transform .16s linear}
 
-/* The sheet. It starts on the header's rule and covers everything under it. It
-   is paper, not film: no blur, no dimming, because a blurred page reads as a
-   broken render rather than as a wait. The tint is light enough to hint at the
-   words underneath — the reader can see that there is already a page there,
-   which is what makes "still loading" believable instead of a blank screen. */
-.nav-veil{position:fixed;top:var(--header-h,76px);right:0;bottom:0;left:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:color-mix(in srgb,var(--bg) 88%,transparent);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s}
+/* The sheet. It starts on the header's rule and covers everything under it, in
+   the page's own paper colour and nothing else: no blur, no dimming, no tint of
+   the words underneath. A wash left the old page half-visible and read as a
+   broken render; opaque paper reads as a clean page being laid over the last one,
+   with the header and its menu still there to say where you are going. */
+.nav-veil{position:fixed;top:var(--header-h,76px);right:0;bottom:0;left:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--bg);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s}
 .nav-veil.is-open{opacity:1;visibility:visible}
 /* The sheet arrives rather than switching on: it is pulled down from the rule it
    hangs from, which reads as the page being covered instead of as a flash. */
