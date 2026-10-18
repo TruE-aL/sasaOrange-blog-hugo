@@ -49,15 +49,11 @@ sasaOrange 源自 [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reim
 
 ### 阅读字体
 
-中文（简繁）与日文页面默认使用主题自带的思源宋体子集 `static/fonts/ruri-serif-sc.woff2`（约 1.8 MB，覆盖 GB 2312 全部汉字与主题界面用字，OFL 1.1 许可）。它只在 CJK 页面加载，英文站不会请求这个文件；正文里出现的生僻字会回退到读者系统的衬线字体。
+正文用读者系统的字体，和 ruri 原本的做法一致：CJK 走系统衬线栈（macOS / iOS 的宋体、Windows 的 SimSun、Linux 的 Noto Serif CJK），西文走 Georgia。**主题不再自带任何字体文件**，页面也就不必为字重付下载成本。
 
-界面文字改动后需要重建子集（需要 Python 的 fontTools 与 brotli，以及系统里的 Noto Serif CJK）：
+早先版本曾打包一份 1.8 MB 的思源宋体子集（GB 2312，OFL 1.1）。实测下来，子集化后笔画密集的字容易发虚，行距里看着比系统字更"糊"，密度高的文章页显得杂乱，因此连同 `scripts/build-font.py` 一起移除了。需要自托管字体时，在 `assets/ruri.css` 开头的 `--serif` 变量里把自己的字体名放到最前，并自行补 `@font-face`。
 
-~~~sh
-python3 scripts/build-font.py
-~~~
-
-不想用自带字体，把 `baseof.html` 里的 `data-font="serif"` 去掉即可，届时回落到系统宋体／明体栈。
+冷青（原版）配色另有自己的字体规则：它沿用主题改造前的系统无衬线字体，切到这套配色时正文会变成无衬线。
 
 主题使用 Hugo 模板、原生 JavaScript、CSS 与少量 SCSS。基础阅读不依赖 JavaScript；搜索、灯箱和播放器等交互需要 JavaScript。刷新或新开标签页不共享正在播放的音频实例。
 

@@ -1,7 +1,5 @@
 <!doctype html>
-{{- /* CJK sites read in the bundled serif; Latin-only sites keep the system stack. */ -}}
-{{- $cjk := hasPrefix .Language.Lang "zh" | or (eq .Language.Lang "ja") -}}
-<html lang="{{ .Language.Locale | default .Language.Lang }}"{{ if $cjk }} data-font="serif"{{ end }}>
+<html lang="{{ .Language.Locale | default .Language.Lang }}">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{{ if not .IsHome }}{{ .Title }} · {{ end }}{{ .Site.Title }}</title>

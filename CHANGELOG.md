@@ -11,8 +11,8 @@
 - Section labels became book-style headings: an accent bar, the title, then a hairline that fades to the right.
 - Article headers are centred with a short accent rule; prose is justified with a two-character first-line indent, article `h2`/`h3` read as marginal notes, quotes and inline code took the accent tint.
 - Home cards drop the cover thumbnail for a text-first list; tags, pagination, sidebar blocks, archive years, term and friend grids follow the same quiet style.
-- Ship a self-hosted Noto Serif CJK SC subset (GB 2312, OFL 1.1) for CJK pages, with `scripts/build-font.py` to rebuild it.
-- Bundled serif now loads from the Cloudflare-hosted site first and falls back to the same-origin copy: GitHub Pages needs 130s+ for the 1.8MB file, Cloudflare delivers it in about 3s.
+- CJK pages read in the reader's own serif (`Songti SC` / `Noto Serif CJK SC` / `SimSun`), as ruri shipped; Latin stays Georgia. A bundled 1.8 MB Noto Serif CJK subset was shipped earlier and removed again: subsetting left dense glyphs looking washed out next to the system faces, and the file cost every CJK page a 1.8 MB download. `scripts/build-font.py` and `static/fonts/` are gone with it.
+- Fixed: the bundled serif (since removed, see above) was throttled to 130s+ by GitHub Pages; it had been mirrored to the Cloudflare site and is now moot.
 - The demo site moved from GitHub Pages to Cloudflare Pages (`sasaorange-blog-hugo-demo`), bringing previews with it: a pull request deploys to `<branch>.sasaorange-blog-hugo-demo.pages.dev` while the main site stays up. GitHub Pages is gone because one repository has one live site, so previews and the real site could never coexist there.
 - Fixed: the home hero image was capped at 960px inside a 1240px shell, so the banner stopped short of the right edge on wide screens. It now spans the shell, and its drop shadow (which read as a hard seam against the tinted page) is gone.
 - Fixed: the hairline under the hero was centred on a box that was not centred, leaving it short at the right end.
