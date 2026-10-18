@@ -27,7 +27,7 @@ sasaOrange builds on [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-r
 | Comments and stats | Waline comments/views/counts, popular posts using real data, footer word/reading totals |
 | Social | Categorized friend links, WeChat share QR, personal QR dialogs, donations |
 | Music | Native player, direct playlist/Meting, lyrics/translations, progress/volume/order controls |
-| Navigation | Local navigation preserving the player; English, Simplified/Traditional Chinese and Japanese UI |
+| Navigation | Local navigation preserving the player; reimu-style loading feedback — two paper halves slide together while a big cog turns between them; English, Simplified/Traditional Chinese and Japanese UI |
 
 Hugo templates, vanilla JavaScript, CSS and a little SCSS. Basic reading works without JavaScript; interactive features require it. Refreshing or opening a new tab does not share the playing audio instance.
 

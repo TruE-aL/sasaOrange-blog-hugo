@@ -1685,15 +1685,15 @@ html.theme-ruri .article-cover{border-radius:0}
 
 /* ---- in-page navigation feedback -----------------------------------------
    Three pieces, rendered by layouts/partials/nav-progress.html right after the
-   header, inside the page shell: the bar on the header's hairline, the sheet
-   that unfolds below the header, and the turning ring on it.
+   header, inside the page shell: the bar on the header's hairline, the veil of
+   two paper wings that closes below the header, and the cog turning on it.
 
    None of them may take a click, a focus ring or a layout slot of its own — the
-   sheet has to be readable-through in every sense, including input.
+   veil has to be see-through in every sense, including input.
 
    `#page-shell` is the positioning context, and ruri.js measures the header into
    `--header-h` (its height plus the hairline) so both the bar and the top edge of
-   the sheet land on that hairline, whether the header is one row (desktop) or two
+   the veil land on that hairline, whether the header is one row (desktop) or two
    (phones) and whatever the toolbar does in between. */
 .nav-progress{position:absolute;top:calc(var(--header-h,76px) - 2px);left:0;right:0;z-index:35;height:2px;overflow:hidden;pointer-events:none;background:transparent}
 /* The track is the header's own hairline, lightened; the fill is the accent, so
@@ -1704,23 +1704,31 @@ html.theme-ruri .article-cover{border-radius:0}
 .nav-progress i{position:relative;display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear}
 .nav-progress.is-running i{transition:transform .16s linear}
 
-/* The sheet. It starts on the header's rule and covers everything under it, in
-   the page's own paper colour and nothing else: no blur, no dimming, no tint of
-   the words underneath. A wash left the old page half-visible and read as a
-   broken render; opaque paper reads as a clean page being laid over the last one,
-   with the header and its menu still there to say where you are going. */
-.nav-veil{position:fixed;top:var(--header-h,76px);right:0;bottom:0;left:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:var(--bg);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s}
-.nav-veil.is-open{opacity:1;visibility:visible}
-/* The sheet arrives rather than switching on: it is pulled down from the rule it
-   hangs from, which reads as the page being covered instead of as a flash. */
-@supports(clip-path:inset(0)){
-.nav-veil.is-open{clip-path:inset(0 0 0 0);transition:opacity .18s ease,visibility .18s,clip-path .26s ease}
-.nav-veil{opacity:1;clip-path:inset(0 0 100% 0);transition:opacity .18s ease,visibility .18s,clip-path .22s ease}
-}
-/* A cog, not a ring. The illustrated banner above is a clockwork courier, so the
-   gear is the one loading mark that belongs to this page's own imagery; it turns
-   at a reading pace rather than a spinner's blur. The opacity ramp keeps it quiet
-   against the paper while still reading as "working". */
+/* The veil covers everything under the header's rule, in the page's own paper
+   colour and nothing else: no blur, no dimming, no tint of the words underneath.
+   A wash left the old page half-visible and read as a broken render; opaque
+   paper reads as a clean page being laid over the last one, with the header and
+   its menu still there to say where you are going. */
+.nav-veil{position:fixed;top:var(--header-h,76px);right:0;bottom:0;left:0;z-index:20;pointer-events:none;visibility:hidden}
+.nav-veil.is-open{visibility:visible}
+/* The two wings, reimu's loader motion: each owns half the width and waits just
+   off its own edge. Closing, they slide together and meet in the middle; opening,
+   they slide back out the way they came. The veil hangs from the header's rule,
+   so the bar of the header stays above the paper the whole time. */
+.nav-veil-wing{position:absolute;top:0;bottom:0;width:50%;background:var(--bg);transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.nav-veil-wing-left{left:0;transform:translateX(-100%)}
+.nav-veil-wing-right{right:0;transform:translateX(100%)}
+.nav-veil.is-open .nav-veil-wing{transform:none}
+/* The mark and the words ride on the veil, not on either wing, so they stay
+   centred while the paper closes. Opening, they wait for the wings to be most of
+   the way in — a label that appeared before its background read as floating over
+   the old page. Closing, they leave first; the paper follows. */
+.nav-veil-core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;transition:opacity .2s ease}
+.nav-veil.is-open .nav-veil-core{opacity:1;transition:opacity .3s ease .22s}
+/* A big cog, not a ring, and not small: it takes the place reimu's loader gives
+   its taiji. The illustrated banner above is a clockwork courier, so the gear is
+   the one loading mark that belongs to this page's own imagery; it turns at a
+   reading pace rather than a spinner's blur. */
 .nav-gear{color:var(--accent);opacity:.85;transform-origin:24px 24px;animation:ruri-gear 1.6s linear infinite}
 @keyframes ruri-gear{to{transform:rotate(1turn)}}
 /* A pill rather than bare text: on a phone the gear and the words sit in the
@@ -1728,17 +1736,20 @@ html.theme-ruri .article-cover{border-radius:0}
    whatever wording happens to be underneath. */
 .nav-veil-text{margin:0;padding:7px 16px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-size:.86rem;letter-spacing:.08em;color:var(--muted)}
 
-/* Reduced motion: the cog stands still and the sheet simply appears. The text
-   still says what is happening, so nothing is lost with the motion gone. */
+/* Reduced motion: the cog stands still and the paper simply appears. The text
+   still says what is happening, so nothing is lost with the motion gone. The
+   selectors have to match the specificity of the rules they silence — the veil
+   opens through `.nav-veil.is-open .nav-veil-core`, and a plain `.nav-veil-core`
+   here would lose to it and leave the fade running. */
 @media(prefers-reduced-motion:reduce){
 .menu-drawer,.menu-scrim{transition:none}
-.nav-progress i{transition:none}
-.nav-veil,.nav-veil.is-open{transition:none;clip-path:none}
-.nav-gear{animation:none}
-.nav-gear{opacity:.6}
+.nav-progress i,.nav-progress.is-running i{transition:none}
+.nav-veil-wing,.nav-veil.is-open .nav-veil-wing{transition:none}
+.nav-veil-core,.nav-veil.is-open .nav-veil-core{transition:none}
+.nav-gear{animation:none;opacity:.6}
 }
 
-/* The bar and the sheet are pinned to the header they hang from. The shell has
+/* The bar and the veil are pinned to the header they hang from. The shell has
    to be the positioning context for that, and it has no other reason to be one. */
 #page-shell{position:relative}
 

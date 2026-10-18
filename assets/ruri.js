@@ -319,10 +319,12 @@ let navigationController;
    real one. Link clicks have always been cancelable (`defaultPrevented` guards
    this listener), so a plain link is marked and the navigation proceeds.
 
-   "Is it working?" is answered below the menu: a paper sheet unfolds over the
-   page, with a small turning ring and one line of text. The header, the menu and
-   the sidebar stay above it, untouched and clickable, which is what makes a slow
-   page feel handled rather than stuck. The sheet covers the page being left —
+   "Is it working?" is answered below the menu: two opaque halves of paper slide
+   in from the sides and close over the page — the loader motion of
+   hugo-theme-reimu — with a big cog turning in the middle where reimu puts its
+   taiji, and one line of text under it. The header, the menu and the sidebar
+   stay above the paper, untouched and clickable, which is what makes a slow
+   page feel handled rather than stuck. The veil covers the page being left —
    not a blank rectangle — so it reads as fog over a room, and it leaves the
    moment the new page is parsed and its scripts are ready.
 
@@ -332,7 +334,7 @@ let navigationController;
 
    All of it is skipped or stilled when the reader asked for reduced motion, and
    none of it takes a click: clicking the page mid-wait cancels the navigation.
-   Screen readers get `aria-busy` on <main> and the sheet's own live region
+   Screen readers get `aria-busy` on <main> and the veil's own live region
    instead of a progress indicator with no percentage to report. */
 let progressTimer=0,progressValue=0,progressToken=0;
 /* The bar is pinned to the bottom of the header, and the header's height depends
@@ -347,7 +349,7 @@ function measureHeader(){
 measureHeader();
 addEventListener('resize',measureHeader,{passive:true});
 addEventListener('orientationchange',measureHeader);
-/* The bar and the sheet live inside the page shell, so fresh copies arrive with
+/* The bar and the veil live inside the page shell, so fresh copies arrive with
    every page and the references have to be re-read rather than cached across
    navigations. */
 function progressFill(){return $('.nav-progress i')}
@@ -357,12 +359,12 @@ function paintProgress(value){
   bar.classList.add('is-running');
   progressFill().style.transform='scaleX('+value.toFixed(3)+')';
 }
-/* The visited page sits under the sheet but is not gone: it keeps its scroll
+/* The visited page sits under the veil but is not gone: it keeps its scroll
    position, its sidebar and its player, so nothing is frozen or reflowed while
    the reader waits. */
 let veilLink=null,borrowedCurrent=null;
 function openVeil(link){
-  /* A page swap takes the old sheet away along with the shell; this also covers
+  /* A page swap takes the old veil away along with the shell; this also covers
      a navigation that never gets that far. */
   const veil=$('.nav-veil');if(!veil)return;
   veilLink=link;
@@ -449,8 +451,8 @@ async function navigate(url,push=true,link){
     document.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>x.remove());
     doc.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>document.head.append(x.cloneNode(true)));
     if(push)history.pushState({},'',response.url+new URL(url).hash);
-    /* The sheet that arrived with the new shell is closed; the menu it brought
-       carries its own mark. The borrowed marks and the old sheet belong to nodes
+    /* The veil that arrived with the new shell is closed; the menu it brought
+       carries its own mark. The borrowed marks and the old veil belong to nodes
        that are no longer in the document, so this only stops them being reused —
        and it must run before initPage(), which re-reads the new shell. */
     veilLink=null;borrowedCurrent=null;
@@ -471,7 +473,7 @@ async function navigate(url,push=true,link){
     if(e.name==='AbortError'){
       /* Two ways to get here. A newer click took over and owns the marks now,
          so this call must keep its hands off them. Or the reader clicked the
-         sheet to stay where they are: that call already cleaned up. */
+         veil to stay where they are: that call already cleaned up. */
       if(navigationController!==controller)return;
       return;
     }
@@ -479,12 +481,12 @@ async function navigate(url,push=true,link){
     location.assign(url);
   }
 }
-/* The sheet covers the page but swallows nothing, so the reader is free to
+/* The veil covers the page but swallows nothing, so the reader is free to
    change their mind: clicking anything that is not a link means "stay here",
    and the fetch is dropped so the page is handed back as it was. A link click is
    left alone — the listener below starts a fresh navigation, which is how a
    second choice beats the first rather than cancelling both. The header and the
-   menu sit above the sheet for the same reason: the tools, the language menu
+   menu sit above the veil for the same reason: the tools, the language menu
    and the search button stay usable mid-wait, and a tool is not a change of
    mind — pressing the theme button while the next page loads switches the theme
    and leaves the navigation alone. */
@@ -496,7 +498,7 @@ document.addEventListener('click',event=>{
   finishProgress();
 },true);
 /* Coming back from the back/forward cache gives back the page exactly as it was
-   left, including the sheet and the bar of a navigation that the browser then
+   left, including the veil and the bar of a navigation that the browser then
    took over. Clear them; the page itself needs nothing. */
 window.addEventListener('pageshow',event=>{if(event.persisted)finishProgress()});
 document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin||!/^https?:$/.test(u.protocol)||/\.[a-z0-9]+$/i.test(u.pathname))return;if(u.pathname===location.pathname&&u.search===location.search&&u.hash)return;e.preventDefault();navigate(u.href,true,a)});

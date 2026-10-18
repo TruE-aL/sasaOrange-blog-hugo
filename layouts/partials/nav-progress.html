@@ -1,4 +1,4 @@
-{{/* The loading sheet for in-page navigation, with the bar that sits on the
+{{/* The loading veil for in-page navigation, with the bar that sits on the
      header's hairline above it.
 
      Both belong to the page shell, so a fresh copy arrives with every page and the
@@ -7,29 +7,49 @@
      left and right to the header's own gutters and up onto its hairline without
      the header itself becoming a positioning context for it.
 
-     The sheet is decoration plus one line of text: it never catches a click (the
-     reader must stay able to cancel by clicking the page), and its live region is
-     kept out of the accessibility tree while the sheet is hidden, so the message
-     is announced once — when the sheet opens — instead of on every page load. */}}
+     The motion is reimu's, not a generic spinner's: two opaque halves of paper
+     slide in from the sides and close over the page, and slide apart again when
+     the next page is ready — the header stays above them, still clickable. The
+     mark in the middle is reimu's taiji's place, taken by a cog.
+
+     None of it may take a click, a focus ring or a layout slot of its own — the
+     reader must stay able to cancel by clicking the page, and the live region is
+     kept out of the accessibility tree while the veil is hidden, so the message
+     is announced once — when the veil opens — instead of on every page load. */}}
 <div class="nav-progress" aria-hidden="true"><i></i></div>
-{{/* The loading mark is a gear: the illustration that owns this palette is a
-     clockwork courier, so the turning cog reads as the same world rather than a
-     generic ring. Teeth are drawn as eight blocks positioned around the rim; the
-     SVG is inline so it inherits currentColor and needs no extra request. */}}
+{{/* The two wings close from the left and right edges, the way reimu's loader
+     does: each covers half the space under the header's rule, in the page's own
+     paper colour and nothing else — no blur, no dimming, no tint of the words
+     underneath. A wash left the old page half-visible and read as a broken
+     render; opaque paper reads as a clean page being laid over the last one,
+     with the header and its menu still there to say where you are going. */}}
 <div class="nav-veil" aria-hidden="true">
-  <svg class="nav-gear" viewBox="0 0 48 48" width="34" height="34" aria-hidden="true" focusable="false">
-    <g fill="currentColor">
-      <rect x="21.5" y="1" width="5" height="8" rx="1.4"/>
-      <rect x="21.5" y="39" width="5" height="8" rx="1.4"/>
-      <rect x="1" y="21.5" width="8" height="5" rx="1.4"/>
-      <rect x="39" y="21.5" width="8" height="5" rx="1.4"/>
-      <rect x="21.5" y="1" width="5" height="8" rx="1.4" transform="rotate(45 24 24)"/>
-      <rect x="21.5" y="39" width="5" height="8" rx="1.4" transform="rotate(45 24 24)"/>
-      <rect x="1" y="21.5" width="8" height="5" rx="1.4" transform="rotate(45 24 24)"/>
-      <rect x="39" y="21.5" width="8" height="5" rx="1.4" transform="rotate(45 24 24)"/>
-    </g>
-    <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="5"/>
-    <circle cx="24" cy="24" r="3.6" fill="currentColor" fill-opacity=".22"/>
-  </svg>
-  <p class="nav-veil-text" role="status" aria-live="polite">{{ .text }}</p>
+  <div class="nav-veil-wing nav-veil-wing-left"></div>
+  <div class="nav-veil-wing nav-veil-wing-right"></div>
+  <div class="nav-veil-core">
+    {{/* The loading mark is a big cog, in the place where reimu puts its
+         taiji: the illustration that owns this palette is a clockwork courier,
+         so the turning gear reads as the same world rather than a generic
+         ring. Teeth are drawn as eight blocks positioned around the rim; the
+         SVG is inline so it inherits currentColor and needs no extra
+         request. */}}
+    <svg class="nav-gear" viewBox="0 0 48 48" width="112" height="112" aria-hidden="true" focusable="false">
+      <g fill="currentColor">
+        <rect x="21.2" y="1" width="5.6" height="8.4" rx="1.5"/>
+        <rect x="21.2" y="38.6" width="5.6" height="8.4" rx="1.5"/>
+        <rect x="1" y="21.2" width="8.4" height="5.6" rx="1.5"/>
+        <rect x="38.6" y="21.2" width="8.4" height="5.6" rx="1.5"/>
+        <rect x="21.2" y="1" width="5.6" height="8.4" rx="1.5" transform="rotate(45 24 24)"/>
+        <rect x="21.2" y="38.6" width="5.6" height="8.4" rx="1.5" transform="rotate(45 24 24)"/>
+        <rect x="1" y="21.2" width="8.4" height="5.6" rx="1.5" transform="rotate(45 24 24)"/>
+        <rect x="38.6" y="21.2" width="8.4" height="5.6" rx="1.5" transform="rotate(45 24 24)"/>
+      </g>
+      <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="5.4"/>
+      <circle cx="24" cy="24" r="3.8" fill="currentColor" fill-opacity=".22"/>
+    </svg>
+    {{/* A pill rather than bare text: on a phone the gear and the words sit in
+         the middle of an article, and a label with its own surface stays legible
+         over whatever wording happens to be underneath. */}}
+    <p class="nav-veil-text" role="status" aria-live="polite">{{ .text }}</p>
+  </div>
 </div>
