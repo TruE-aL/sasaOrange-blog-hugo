@@ -1,28 +1,31 @@
 name: Preview pull request
 
-# 给 PR 出一份可点开看的预览站，顺便把构建和示例站回归都跑一遍。
+# 给 PR 出一份可点开看的预览站，顺便把构建和示例站回归跑一遍。
 #
-# 预览地址：https://TruE-aL.github.io/sasaOrange-blog-hugo/preview/pr-<编号>/
+# 预览地址：https://true-al.github.io/sasaOrange-blog-hugo/preview/pr-<编号>/
 #
-# 为什么用 gh-pages 分支而不是 Pages 官方链路：官方链路一个仓库同一时间只有一个
-# 线上站点，预览会把正式演示站顶掉。这里把预览作为普通静态文件提交到独立的
-# gh-pages 分支的 preview/ 下，正式站仍由 deploy-pages.yml 发布，两者互不影响。
-# gh-pages 分支不带 workflow 文件，不会被 GitHub 当成页面自动构建。
+# 和正式演示站共用同一条 Pages 链路（deploy-pages.yml 那套）。官方链路一个仓库
+# 同时只有一个线上站点，所以两者不能并存：本工作流发布预览时，正式站会暂时变成
+# 这份预览；预览清理后，由 deploy-pages.yml 在下次 main 推送（或手动触发）时把
+# 正式站放回去。
 #
-# PR 关闭（含合并）时清理对应目录，分支空了就删掉。
+# 为什么不把预览作为普通文件提交到 gh-pages 分支：本仓库 Pages 的 build_type 是
+# workflow，那条分支不会被服务，预览目录访问一律 404。这一点已实测确认。
 on:
   pull_request:
-    types: [opened, synchronize, reopened, closed]
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
   pull-requests: write
 
-# 同一个 PR 只保留最新一次构建；关闭事件单独走清理，不参与取消。
+# 与正式发布共用 pages 组：预览和正式站排队，而不是互相取消。
 concurrency:
-  group: preview-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: pages
+  cancel-in-progress: false
 
 env:
   HUGO_VERSION: 0.162.1
@@ -30,7 +33,6 @@ env:
 jobs:
   build:
     name: Build preview
-    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -63,11 +65,11 @@ jobs:
       # 和正式发布同一条命令，构建不过就是回归失败，PR 上直接能看到。
       - name: Build example site
         env:
-          PR: ${{ github.event.pull_request.number }}
+          PR: ${{ github.event.pull_request.number || 0 }}
         run: |
           cd exampleSite
           hugo --gc --minify --themesDir themes \
-            --baseURL "https://TruE-aL.github.io/sasaOrange-blog-hugo/preview/pr-${PR}/"
+            --baseURL "https://true-al.github.io/sasaOrange-blog-hugo/preview/pr-${PR}/"
 
       - name: Build search index
         run: npx -y pagefind@1.4.0 --site exampleSite/public --glob '**/*.html'
@@ -81,75 +83,42 @@ jobs:
           python3 tests/culture-build.py
           python3 tests/module-build.py
 
-      # 预览是静态文件，路径前缀必须与 baseURL 一致，否则样式和图片会 404。
-      - name: Upload preview
-        uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: preview
           path: exampleSite/public
-          retention-days: 7
 
-  publish:
+  deploy:
     name: Publish preview
     needs: build
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Download preview
-        uses: actions/download-artifact@v4
-        with:
-          name: preview
-          path: preview
-
-      - name: Publish to gh-pages
-        env:
-          PR: ${{ github.event.pull_request.number }}
-          SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          set -euo pipefail
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          # 工作区里是 PR 的文件树，不能直接在上面切分支；另开一个干净目录放 gh-pages。
-          work="$(mktemp -d)"
-          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
-            git worktree add --detach "$work" origin/gh-pages
-            git -C "$work" checkout -B gh-pages
-          else
-            git worktree add --detach "$work"
-            git -C "$work" checkout --orphan gh-pages
-            git -C "$work" rm -rf . >/dev/null 2>&1 || true
-          fi
-          rm -rf "$work/preview/pr-$PR"
-          mkdir -p "$work/preview"
-          cp -r preview "$work/preview/pr-$PR"
-          echo "PR #$PR preview at $SHA" > "$work/preview/pr-$PR/.preview"
-          git -C "$work" add -A preview
-          if git -C "$work" diff --cached --quiet; then
-            echo "No change to publish."
-          else
-            git -C "$work" commit -m "preview: PR #$PR @ ${SHA:0:7}"
-            git -C "$work" push origin gh-pages
-          fi
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
 
       - name: Comment on pull request
+        if: github.event.pull_request.number
         uses: actions/github-script@v7
         env:
           PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
         with:
           script: |
             const { owner, repo } = context.repo;
             const pr = Number(process.env.PR);
-            const url = `https://${owner}.github.io/${repo}/preview/pr-${pr}/`;
+            const url = `https://${owner.toLowerCase()}.github.io/${repo}/preview/pr-${pr}/`;
             const body = [
               '### 预览已就绪',
               '',
               `- 预览站：${url}`,
-              `- 提交：\`${context.payload.pull_request.head.sha.slice(0, 7)}\``,
+              `- 提交：\`${process.env.SHA.slice(0, 7)}\``,
               '',
-              '构建与示例站回归（smoke / features / media / culture / module）全部通过才会发布到这里。',
-              '合并后本目录会被自动清理。',
+              '构建 + 五项回归（smoke / features / media / culture / module）全过才会发布。',
+              '预览与正式演示站共用同一条 Pages 链路：预览期间根路径看到的也是这份预览，恢复方式见工作流说明。',
             ].join('\n');
             const marker = '<!-- sasaorange-preview -->';
             const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: pr });
@@ -159,39 +128,3 @@ jobs:
             } else {
               await github.rest.issues.createComment({ owner, repo, issue_number: pr, body: marker + '\n' + body });
             }
-
-  cleanup:
-    name: Remove preview
-    if: github.event.action == 'closed'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Drop the preview directory
-        env:
-          PR: ${{ github.event.pull_request.number }}
-        run: |
-          set -euo pipefail
-          if ! git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
-            echo "No gh-pages branch, nothing to clean."
-            exit 0
-          fi
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          work="$(mktemp -d)"
-          git worktree add --detach "$work" origin/gh-pages
-          git -C "$work" checkout -B gh-pages
-          rm -rf "$work/preview/pr-$PR"
-          git -C "$work" add -A preview
-          if git -C "$work" diff --cached --quiet; then
-            echo "Nothing to remove."
-            exit 0
-          fi
-          git -C "$work" commit -m "preview: drop PR #$PR"
-          # 只剩预览目录之外的零散文件时，连同分支一起收掉。
-          if [ -z "$(ls -A "$work/preview" 2>/dev/null)" ]; then
-            git -C "$work" push origin --delete gh-pages || true
-          else
-            git -C "$work" push origin gh-pages
-          fi
