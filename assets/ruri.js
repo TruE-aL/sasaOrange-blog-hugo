@@ -11,6 +11,10 @@ function paintScheme(){
   const current=activeScheme();
   SCHEMES.forEach(name=>document.documentElement.classList.toggle('theme-'+name,name!=='warm'&&name===current));
   document.querySelectorAll('.scheme-switch button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scheme===current)));
+  /* The bar is measured, not guessed, and a scheme can change its metrics —
+     the rail and the veil hang off --header-h, so it is taken again the moment
+     a palette lands rather than waiting for a resize that may never come. */
+  measureHeader();
 }
 /* Clicking the scheme already in use clears the choice and hands the page back
    to its default, which is how the novel site behaves too. */
@@ -378,6 +382,10 @@ function measureHeader(){
 measureHeader();
 addEventListener('resize',measureHeader,{passive:true});
 addEventListener('orientationchange',measureHeader);
+/* A face that arrives after the first measurement can change the bar's height
+   (the brand sets in the reader's own serif); take it again once the faces
+   that are going to load have loaded. */
+document.fonts?.ready.then(measureHeader);
 /* The bar and the veil live inside the page shell, so fresh copies arrive with
    every page and the references have to be re-read rather than cached across
    navigations. */

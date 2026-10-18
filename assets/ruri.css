@@ -1561,7 +1561,13 @@ html.theme-ruri .archive-year>h2::before,html.theme-ruri .archive-heatmap>h2::be
 html.theme-ruri .archive-taxonomies,html.theme-ruri .term-grid>a,html.theme-ruri .friend-grid>a,html.theme-ruri .link-card,html.theme-ruri .culture-categories a{border-radius:0}
 html.theme-ruri .term-grid>a:hover{transform:none;box-shadow:none;border-color:var(--accent)}
 html.theme-ruri .skills,.html.theme-ruri .skip{border-radius:0}
-html.theme-ruri .site-header{min-height:88px}
+/* The header's height belongs to the layout, not to the palette: ruri keeps
+   the reading-room band it shares with warm. The 88px compact band was the
+   pre-redesign height, and restoring it here moved the hairline, the progress
+   rail and the veil's top edge every time the palette changed — the rail hangs
+   off a measured `--header-h`, so a bar that grows under it leaves the rail
+   stranded inside the header as a second line. Flat frames, sans-serif type
+   and square corners carry the original look; the bar's metrics do not. */
 /* The original palette keeps the system sans-serif it was designed with: the
    face ruri actually published, taken from its last release (its `:root` sets
    the font-family directly). The serif stack above is this blog's own addition. */
