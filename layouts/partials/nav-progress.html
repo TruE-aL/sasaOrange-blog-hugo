@@ -8,9 +8,10 @@
      the header itself becoming a positioning context for it.
 
      The motion is reimu's, not a generic spinner's: two opaque halves of paper
-     slide in from the sides and close over the page, and slide apart again when
-     the next page is ready — the header stays above them, still clickable. The
-     mark in the middle is reimu's taiji's place, taken by a cog.
+     slide in from the sides and close over the whole screen, and slide apart
+     again when the next page is ready — the header rides on top of them the
+     whole time, still clickable. The mark in the middle is reimu's taiji's
+     place, taken by a cog.
 
      None of it may take a click, a focus ring or a layout slot of its own — the
      reader must stay able to cancel by clicking the page, and the live region is
@@ -18,11 +19,13 @@
      is announced once — when the veil opens — instead of on every page load. */}}
 <div class="nav-progress" aria-hidden="true"><i></i></div>
 {{/* The two wings close from the left and right edges, the way reimu's loader
-     does: each covers half the space under the header's rule, in the page's own
-     paper colour and nothing else — no blur, no dimming, no tint of the words
+     does: each covers half the screen, full height, in the page's own paper
+     colour and nothing else — no blur, no dimming, no tint of the words
      underneath. A wash left the old page half-visible and read as a broken
-     render; opaque paper reads as a clean page being laid over the last one,
-     with the header and its menu still there to say where you are going. */}}
+     render; opaque paper reads as a clean page being laid over the last one.
+     The header has no background of its own, so the paper the wings bring is
+     the paper it already sits on; it stays above them, with its menu still
+     there to say where you are going. */}}
 <div class="nav-veil" aria-hidden="true">
   <div class="nav-veil-wing nav-veil-wing-left"></div>
   <div class="nav-veil-wing nav-veil-wing-right"></div>

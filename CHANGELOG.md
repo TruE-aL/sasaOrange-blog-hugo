@@ -4,6 +4,7 @@
 
 ### Reading-room redesign
 
+- Changed: the loading sheet now closes over the whole screen instead of starting below the header's rule, and the header rides on top of the closing paper. The bar used to hang outside the motion with the old page still showing above it, which read as a strip the sheet had missed. The header carries no background of its own and the wings bring the page's own paper colour, so the sheet that covers the bar is the same paper it already sits on — no seam, no band — and the menu, the tools and the current-page mark stay visible and clickable mid-wait. The cog keeps its old place below the bar.
 - Fixed: switching between the two reading schemes moved the header on narrow screens — `html.theme-ruri .site-header{min-height:88px}` outranked the compact phone rule on specificity, so choosing the original palette grew the bar by 22px. The header's height belongs to the layout, not the palette; the rule is gone and both schemes share the reading-room band at every width. The 88px compact band was the pre-redesign height; flat frames, sans-serif type and square corners still carry the original look.
 - Fixed: the progress rail and the veil's top edge hung off a measured `--header-h` that was only taken on load and resize, so after a scheme change (or a late-arriving font) they stayed at the old height and the rail showed up as a second line stranded inside the header. The measurement is now taken again the moment a palette lands, and once more when the faces have loaded.
 

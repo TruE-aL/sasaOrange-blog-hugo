@@ -1678,15 +1678,24 @@ html.theme-ruri .article-cover{border-radius:0}
 /* ---- in-page navigation feedback -----------------------------------------
    Three pieces, rendered by layouts/partials/nav-progress.html right after the
    header, inside the page shell: the bar on the header's hairline, the veil of
-   two paper wings that closes below the header, and the cog turning on it.
+   two paper wings that closes over the whole screen with the header riding on
+   top of it, and the cog turning on it.
 
    None of them may take a click, a focus ring or a layout slot of its own — the
    veil has to be see-through in every sense, including input.
 
    `#page-shell` is the positioning context, and ruri.js measures the header into
-   `--header-h` (its height plus the hairline) so both the bar and the top edge of
-   the veil land on that hairline, whether the header is one row (desktop) or two
-   (phones) and whatever the toolbar does in between. */
+   `--header-h` (its height plus the hairline) so the bar lands on that hairline
+   and the cog keeps its old place below it, whether the header is one row
+   (desktop) or two (phones) and whatever the toolbar does in between. */
+/* The header rides one layer above the veil: the sheet closes over the whole
+   screen, and the bar with its menu, its tools and its current-page mark stays
+   on top of the paper, still clickable, so the reader can change their mind
+   mid-wait. It sits one layer below the rail, which is the hairline's own
+   progress bar and outranks everything in the bar. The header carries no
+   background of its own, so the paper that closes over the screen is the same
+   paper it already sits on — no seam, no band, nothing left uncovered. */
+.site-header{position:relative;z-index:22}
 .nav-progress{position:absolute;top:calc(var(--header-h,76px) - 2px);left:0;right:0;z-index:35;height:2px;overflow:hidden;pointer-events:none;background:transparent}
 /* The track is the header's own hairline, lightened; the fill is the accent, so
    the bar reads as that rule coming to life rather than as a new line. Width
@@ -1696,12 +1705,13 @@ html.theme-ruri .article-cover{border-radius:0}
 .nav-progress i{position:relative;display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear}
 .nav-progress.is-running i{transition:transform .16s linear}
 
-/* The veil covers everything under the header's rule, in the page's own paper
-   colour and nothing else: no blur, no dimming, no tint of the words underneath.
-   A wash left the old page half-visible and read as a broken render; opaque
-   paper reads as a clean page being laid over the last one, with the header and
-   its menu still there to say where you are going. */
-.nav-veil{position:fixed;top:var(--header-h,76px);right:0;bottom:0;left:0;z-index:20;pointer-events:none;visibility:hidden}
+/* The veil covers the whole screen, in the page's own paper colour and nothing
+   else: no blur, no dimming, no tint of the words underneath. A wash left the
+   old page half-visible and read as a broken render; opaque paper reads as a
+   clean page being laid over the last one. It closes from the very top rather
+   than from below the header's rule: a sheet that started halfway down left the
+   bar hanging outside the motion, with the old page still showing above it. */
+.nav-veil{position:fixed;top:0;right:0;bottom:0;left:0;z-index:20;pointer-events:none;visibility:hidden}
 .nav-veil.is-open{visibility:visible}
 /* The closing is the only motion there is: the wings slide together when the
    wait starts, and the sheet is simply gone when it ends — the page swap that
@@ -1711,17 +1721,20 @@ html.theme-ruri .article-cover{border-radius:0}
 .nav-veil:not(.is-open) .nav-veil-wing,.nav-veil:not(.is-open) .nav-veil-core{transition:none}
 /* The two wings, reimu's loader motion: each owns half the width and waits just
    off its own edge. Closing, they slide together and meet in the middle; opening,
-   they slide back out the way they came. The veil hangs from the header's rule,
-   so the bar of the header stays above the paper the whole time. */
+   they slide back out the way they came. They run the full height of the screen
+   so the sheet closes over everything at once — the header simply stays above
+   the paper while it does. */
 .nav-veil-wing{position:absolute;top:0;bottom:0;width:50%;background:var(--bg);transition:transform .5s cubic-bezier(.2,.7,.3,1)}
 .nav-veil-wing-left{left:0;transform:translateX(-100%)}
 .nav-veil-wing-right{right:0;transform:translateX(100%)}
 .nav-veil.is-open .nav-veil-wing{transform:none}
 /* The mark and the words ride on the veil, not on either wing, so they stay
-   centred while the paper closes. Opening, they wait for the wings to be most of
+   centred while the paper closes. They keep their old place — the middle of the
+   space below the header — so the cog does not jump now that the veil reaches
+   the top of the screen. Opening, they wait for the wings to be most of
    the way in — a label that appeared before its background read as floating over
    the old page. Closing, they leave first; the paper follows. */
-.nav-veil-core{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;transition:opacity .2s ease}
+.nav-veil-core{position:absolute;top:var(--header-h,76px);right:0;bottom:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;transition:opacity .2s ease}
 .nav-veil.is-open .nav-veil-core{opacity:1;transition:opacity .3s ease .22s}
 /* A big cog, not a ring, and not small: it takes the place reimu's loader gives
    its taiji. The illustrated banner above is a clockwork courier, so the gear is
