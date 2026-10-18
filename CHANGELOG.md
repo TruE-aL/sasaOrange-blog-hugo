@@ -13,6 +13,7 @@
 - Home cards drop the cover thumbnail for a text-first list; tags, pagination, sidebar blocks, archive years, term and friend grids follow the same quiet style.
 - Ship a self-hosted Noto Serif CJK SC subset (GB 2312, OFL 1.1) for CJK pages, with `scripts/build-font.py` to rebuild it.
 - Bundled serif now loads from the Cloudflare-hosted site first and falls back to the same-origin copy: GitHub Pages needs 130s+ for the 1.8MB file, Cloudflare delivers it in about 3s.
+- The demo site moved from GitHub Pages to Cloudflare Pages (`sasaorange-blog-hugo-demo`), bringing previews with it: a pull request deploys to `<branch>.sasaorange-blog-hugo-demo.pages.dev` while the main site stays up. GitHub Pages is gone because one repository has one live site, so previews and the real site could never coexist there.
 - Fixed: the home hero image was capped at 960px inside a 1240px shell, so the banner stopped short of the right edge on wide screens. It now spans the shell, and its drop shadow (which read as a hard seam against the tinted page) is gone.
 - Fixed: the hairline under the hero was centred on a box that was not centred, leaving it short at the right end.
 - Fixed: the palette buttons lost their pressed state after in-site navigation.
@@ -20,6 +21,7 @@
 - Renamed the theme to sasaOrange: page title, footer credit, palette labels, `theme.toml` and both READMEs now credit hugo-theme-ruri and hugo-theme-reimu as the sources. Internal asset names (`ruri.css`, the `ruri` param block, `/ruri-media/`) are unchanged so existing sites keep working.
 - Added `ruri_updated`, `ruri_scheme*` interface strings in all four languages.
 - Added in-page navigation feedback: the header's own hairline becomes a progress bar, and a few dots breathe beside the clicked link. The header, the menu and the sidebar stay in place, keep their content and stay usable while the next page loads, which is what makes a slow page feel stuck. The bar is measured onto the header's bottom edge (one-row and wrapped headers alike), is stilled under `prefers-reduced-motion`, and never covers anything: clicking the page mid-wait cancels the navigation instead. `<main>` carries `aria-busy` during the wait. The theme still ships no full-screen loading overlay.
+- Fixed: `ruri.css` ended with a duplicated `prefers-reduced-motion` block for the loading bar.
 
 - Group generated theme scripts and styles under `assets/js/` and `assets/css/`, retaining fingerprinted URLs and lazy-loaded collection modules.
 

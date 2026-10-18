@@ -7,7 +7,7 @@
 [![Hugo Extended](https://img.shields.io/badge/Hugo_Extended-%E2%89%A5_0.162.1-ff4088?logo=hugo)](https://gohugo.io/)
 [![MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[Live demo](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [Example site](exampleSite) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
+[Live demo](https://sasaorange-blog-hugo-demo.pages.dev/) · [Example site](exampleSite) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
 
 [简体中文](README.md) | English
 

@@ -1,0 +1,156 @@
+name: Deploy demo to Cloudflare Pages
+
+# 把 exampleSite/ 构建成主题的线上演示站。
+#
+#   https://sasaorange-blog-hugo-demo.pages.dev/
+#
+# 分支规则和站点仓库（sasaOrange-blog-hugo-personalsite）一致：
+#   - push 到 main        -> 生产环境
+#   - 打开 / 更新 PR       -> 预览环境 <分支>.sasaorange-blog-hugo-demo.pages.dev，
+#                           并回复到 PR 里
+#   - 手动触发            -> 生产环境
+#
+# 预览和生产在 Cloudflare 上是两条独立的分支部署，互不覆盖：预览期间线上
+# 演示站照常可看，不用像 GitHub Pages 那样「一个仓库只有一个线上站点」。
+#
+# 预览域名用 Cloudflare Access 保护，否则 *.pages.dev 是公开可访问的。Access
+# 的应用和策略在 Zero Trust 面板里配，不在这里——工作流只负责部署。
+#
+# 需要两个密钥：CLOUDFLARE_API_TOKEN、CLOUDFLARE_ACCOUNT_ID。
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+# 同一分支同时只跑一个部署；新的推送取消该分支正在进行的旧部署。
+concurrency:
+  group: demo-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  HUGO_VERSION: 0.162.1
+  CF_PROJECT: sasaorange-blog-hugo-demo
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # feed/sitemap 里的时间来自 git log，浅克隆拿不到真实提交时间。
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: ${{ env.HUGO_VERSION }}
+          # 主题用 SCSS 编译热力图，必须是 extended 版本。
+          extended: true
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 主题就在本仓库根目录，挂成 themes/ruri，和用户「装进 themes/」的用法一致。
+      - name: Link theme
+        run: |
+          mkdir -p exampleSite/themes
+          ln -s "$PWD" exampleSite/themes/ruri
+
+      # 生产（main / 手动）用 config 里的正式网址；PR 用 Cloudflare 给该分支的
+      # 预览地址。分支名按 Cloudflare 的 alias 规则转成 slug：小写、非字母数字
+      # 压成单横线、去掉首尾横线——和回复评论里算出来的地址必须一致。
+      - name: Build example site
+        env:
+          BRANCH: ${{ github.head_ref || github.ref_name }}
+          IS_PR: ${{ github.event_name == 'pull_request' }}
+        run: |
+          cd exampleSite
+          args=(--gc --minify --themesDir themes)
+          if [ "$IS_PR" = "true" ]; then
+            slug=$(printf '%s' "$BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-|-$//g')
+            args+=(--baseURL "https://${slug}.${CF_PROJECT}.pages.dev/")
+            echo "预览地址：https://${slug}.${CF_PROJECT}.pages.dev/"
+          fi
+          hugo "${args[@]}"
+
+      # Pagefind 读的是构建后的 HTML，必须在 hugo 之后。
+      - name: Build search index
+        run: npx -y pagefind@1.4.0 --site exampleSite/public --glob '**/*.html'
+
+      - name: Run theme tests
+        run: |
+          rm -rf exampleSite/themes
+          python3 tests/smoke.py
+          python3 tests/features-build.py
+          python3 tests/media-build.py
+          python3 tests/culture-build.py
+          python3 tests/module-build.py
+
+      # PR 用源分支名做部署分支，Cloudflare 会生成 <slug>.<project>.pages.dev；
+      # 非 PR 统一 main，落到生产环境。
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy exampleSite/public --project-name=${{ env.CF_PROJECT }} --branch=${{ github.head_ref || github.ref_name }}
+
+  # PR 场景把预览地址回帖，方便直接点开。沿用同一条评论，不刷屏。
+  comment:
+    name: Comment preview URL
+    needs: deploy
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Post preview comment
+        uses: actions/github-script@v7
+        env:
+          BRANCH: ${{ github.head_ref }}
+          PROJECT: ${{ env.CF_PROJECT }}
+        with:
+          script: |
+            const branch = process.env.BRANCH || '';
+            // 与 Cloudflare Pages 的 branch alias 规则保持一致：
+            // 转小写、非字母数字压成单横线、去掉首尾横线
+            const slug = branch
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-|-$/g, '');
+            const url = `https://${slug}.${process.env.PROJECT}.pages.dev`;
+            const body = [
+              '### 预览部署完成',
+              '',
+              `- **分支**：\`${branch}\``,
+              `- **预览地址**：${url}`,
+              '',
+              '构建 + 五项回归（smoke / features / media / culture / module）全过才会部署。',
+              '预览由 Cloudflare Access 保护，首次打开需要邮箱验证码；每次推送自动更新。',
+            ].join('\n');
+            const marker = '<!-- sasaorange-demo-preview -->';
+            const { owner, repo } = context.repo;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner, repo, issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: marker + '\n' + body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: context.issue.number, body: marker + '\n' + body });
+            }

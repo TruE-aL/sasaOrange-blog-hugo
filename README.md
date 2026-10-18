@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 ![Status](https://img.shields.io/badge/Status-Release_Candidate-orange)
 
-[线上演示](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
+[线上演示](https://sasaorange-blog-hugo-demo.pages.dev/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
 
 简体中文 | [English](README.en.md)
 
@@ -454,10 +454,14 @@ python3 -m http.server 8080 --directory public
 
 | 仓库 | 部署到 | 内容 | 工作流 |
 | --- | --- | --- | --- |
-| `sasaOrange-blog-hugo`（本仓库） | [GitHub Pages](https://TruE-aL.github.io/sasaOrange-blog-hugo/) | `exampleSite/` 的通用示例 | `deploy-pages.yml` |
-| `sasaOrange-blog-hugo-personalsite` | Cloudflare Pages | 真实文章与个人配置 | 站点仓库的 `deploy.yml` |
+| `sasaOrange-blog-hugo`（本仓库） | [Cloudflare Pages](https://sasaorange-blog-hugo-demo.pages.dev/)（项目 `sasaorange-blog-hugo-demo`） | `exampleSite/` 的通用示例 | `deploy-demo.yml` |
+| `sasaOrange-blog-hugo-personalsite` | Cloudflare Pages（项目 `sasaorange-blog-hugo-personalsite`） | 真实文章与个人配置 | 站点仓库的 `deploy.yml` |
 
-演示站用 `--themesDir themes` 把仓库根目录挂成 `themes/ruri` 再构建 `exampleSite`，所以 `exampleSite` 始终是一份可以整目录复制走的独立站点。它的 `baseURL` 带仓库名（`/sasaOrange-blog-hugo/` 子路径），部署到自己的域名时要改掉。
+演示站用 `--themesDir themes` 把仓库根目录挂成 `themes/ruri` 再构建 `exampleSite`，所以 `exampleSite` 始终是一份可以整目录复制走的独立站点。它的 `baseURL` 是 Cloudflare 项目的根域名（`https://sasaorange-blog-hugo-demo.pages.dev/`，不带子路径），换域名或部署到子路径时要改掉。
+
+演示站的分支规则与站点仓库一致：`main` 发生产环境，PR 发 `<分支名>.sasaorange-blog-hugo-demo.pages.dev` 预览环境并把地址回帖到 PR。预览和生产是 Cloudflare 上两条独立的分支部署，互不覆盖。`*.pages.dev` 是公开域名，预览靠 Cloudflare Access 保护——那部分在 Zero Trust 面板里配，工作流只负责部署，需要 `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID` 两个密钥。
+
+本仓库不再使用 GitHub Pages：一个仓库只有一条 Pages 发布通道，预览和正式站无法并存，而 PR 分支也受 `github-pages` 环境的部署分支策略限制。
 
 个人站点通过 git submodule 引用本仓库。本仓库有提交后，`bump-site.yml` 会把站点的 submodule 指针推到该提交，站点随即重新构建；这需要一个能写站点仓库的 `SITE_PUSH_TOKEN` 密钥。
 
