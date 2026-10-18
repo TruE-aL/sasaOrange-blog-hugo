@@ -7,12 +7,18 @@ name: Bump site submodule
 #
 # 触发后站点仓库会多一个提交（由 sasaOrange 身份推），
 # 站点的 deploy 工作流随即重新构建并部署。
+#
+# 触发方式：等 demo 的部署工作流（Deploy demo to Cloudflare Pages）在 main 上
+# 跑完就接上。这样多一道门——demo 构建和五项回归过了才推进站点指针；同时保留
+# 了读 SITE_PUSH_TOKEN 的能力（见下面 bump 任务的说明）。手动触发用于补推。
 on:
-  push:
+  workflow_run:
+    workflows: [Deploy demo to Cloudflare Pages]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
-# 主题仓库自己的提交不算，只有站点需要跟进时才跑。
+# 站点只需要跟上最新一次主题提交，旧的排队即可取消。
 concurrency:
   group: bump-site
   cancel-in-progress: true
@@ -21,9 +27,17 @@ jobs:
   bump:
     name: Point site at latest theme
     runs-on: ubuntu-latest
+    # 用 workflow_run 而不是直接 push：GITHUB_TOKEN 触发的运行（包括由它引起
+    # 的连锁推送）读不到仓库密钥，直接响应本仓库 push 会以「secret 为空」失败。
+    # workflow_run 的起点是另一条工作流，密钥照常可读。
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout theme
         uses: actions/checkout@v4
+        with:
+          # workflow_run 里默认拿不到触发它的提交，显式取那一次构建的 SHA；
+          # 手动触发时退回 main。
+          ref: ${{ github.event.workflow_run.head_sha || 'main' }}
 
       - name: Checkout site
         uses: actions/checkout@v4
@@ -37,7 +51,7 @@ jobs:
       - name: Move submodule to this commit
         working-directory: site
         env:
-          THEME_SHA: ${{ github.sha }}
+          THEME_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
           THEME_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
