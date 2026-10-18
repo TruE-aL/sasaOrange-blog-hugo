@@ -1631,9 +1631,9 @@ html.theme-ruri .article-cover{border-radius:0}
 
    `#page-shell` is the positioning context, and ruri.js measures the header into
    `--header-h` (its height plus the hairline) so the bar covers that hairline
-   exactly, whether the header is one row
-   (desktop) or two (phone) and whatever the toolbar does in between. Because it
-   is out of the flow it takes no space and leaves the page exactly as it was.
+   exactly, whether the header is one row (desktop) or two (phone) and whatever
+   the toolbar does in between. Because it is out of the flow it takes no space
+   and leaves the page exactly as it was.
 
    Width follows the header, not the reading column. The header's own box is the
    shell, so the bar spans the shell; the hero banner below it is narrower, and a
@@ -1644,7 +1644,6 @@ html.theme-ruri .article-cover{border-radius:0}
 .nav-progress::before{content:"";position:absolute;inset:0;background:var(--line);opacity:.55}
 .nav-progress i{position:relative;display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear}
 .nav-progress.is-running i{transition:transform .16s linear}
-@media(prefers-reduced-motion:reduce){.nav-progress i{transition:none}}
 
 a.is-loading-link{position:relative;color:var(--accent)}
 /* The dots are drawn as a ring with one dot lit at a time rather than as an
@@ -1652,12 +1651,14 @@ a.is-loading-link{position:relative;color:var(--accent)}
    easier to read at 11px than a scrolling strip. */
 a.is-loading-link::after{content:"";position:absolute;top:50%;right:-.9em;width:.66em;height:.22em;margin-top:-.11em;background:radial-gradient(circle,currentColor 1.1px,transparent 1.5px) 0 50%/.22em .22em repeat-x;opacity:.45;animation:ruri-dots .9s steps(1,end) infinite}
 @keyframes ruri-dots{0%{opacity:.3}25%{opacity:.55}50%{opacity:.8}75%{opacity:.55}}
+/* One block for both marks: a reader who asked for less motion gets the states
+   without the travel. */
 @media(prefers-reduced-motion:reduce){
+.nav-progress i{transition:none}
 a.is-loading-link::after{animation:none;opacity:.45}
 }
 
-@media(prefers-reduced-motion:reduce){.nav-progress i{transition:none}}
-
-/* The loading bar is pinned to the top of the page shell. The shell has to be the
-   positioning context for that, and it has no other reason to be one. */
+/* The loading bar is pinned to the bottom of the header it hangs from. The shell
+   has to be the positioning context for that, and it has no other reason to be
+   one. */
 #page-shell{position:relative}

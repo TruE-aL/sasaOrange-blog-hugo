@@ -1,13 +1,14 @@
 name: Preview pull request
 
-# 给 PR 出一份可点开看的预览站，顺便把构建和示例站回归跑一遍。
+# 给 PR 构建一份预览站，并把构建和示例站回归跑一遍。
 #
 # 预览地址：https://true-al.github.io/sasaOrange-blog-hugo/preview/pr-<编号>/
 #
-# 和正式演示站共用同一条 Pages 链路（deploy-pages.yml 那套）。官方链路一个仓库
-# 同时只有一个线上站点，所以两者不能并存：本工作流发布预览时，正式站会暂时变成
-# 这份预览；预览清理后，由 deploy-pages.yml 在下次 main 推送（或手动触发）时把
-# 正式站放回去。
+# 这个工作流**只构建、不发布**。发布交给 deploy-pages.yml 的 `publish-preview`
+# 任务：github-pages 环境的部署分支策略只放行 main，从这里直接 deploy-pages 会
+# 因为分支策略被拒（实测 failure，日志 BlobNotFound）。所以这里把产物上传成
+# `github-pages` artifact，由那条跑在 main 上的工作流用 workflow_run 接过去发布。
+# 好处是分支策略不用放宽，预览和正式站共用同一条 Pages 链路。
 #
 # 为什么不把预览作为普通文件提交到 gh-pages 分支：本仓库 Pages 的 build_type 是
 # workflow，那条分支不会被服务，预览目录访问一律 404。这一点已实测确认。
@@ -19,8 +20,6 @@ on:
 permissions:
   contents: read
   pages: write
-  id-token: write
-  pull-requests: write
 
 # 与正式发布共用 pages 组：预览和正式站排队，而不是互相取消。
 concurrency:
@@ -83,48 +82,9 @@ jobs:
           python3 tests/culture-build.py
           python3 tests/module-build.py
 
+      # 产物名必须是 github-pages、内容是纯 public 目录：deploy-pages 那边要按
+      # 这个约定接着发。
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: exampleSite/public
-
-  deploy:
-    name: Publish preview
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Comment on pull request
-        if: github.event.pull_request.number
-        uses: actions/github-script@v7
-        env:
-          PR: ${{ github.event.pull_request.number }}
-          SHA: ${{ github.event.pull_request.head.sha }}
-        with:
-          script: |
-            const { owner, repo } = context.repo;
-            const pr = Number(process.env.PR);
-            const url = `https://${owner.toLowerCase()}.github.io/${repo}/preview/pr-${pr}/`;
-            const body = [
-              '### 预览已就绪',
-              '',
-              `- 预览站：${url}`,
-              `- 提交：\`${process.env.SHA.slice(0, 7)}\``,
-              '',
-              '构建 + 五项回归（smoke / features / media / culture / module）全过才会发布。',
-              '预览与正式演示站共用同一条 Pages 链路：预览期间根路径看到的也是这份预览，恢复方式见工作流说明。',
-            ].join('\n');
-            const marker = '<!-- sasaorange-preview -->';
-            const { data: comments } = await github.rest.issues.listComments({ owner, repo, issue_number: pr });
-            const existing = comments.find(c => c.body.includes(marker));
-            if (existing) {
-              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: marker + '\n' + body });
-            } else {
-              await github.rest.issues.createComment({ owner, repo, issue_number: pr, body: marker + '\n' + body });
-            }
