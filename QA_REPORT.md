@@ -33,6 +33,27 @@ Validated 2026-10-19 using Hugo Extended 0.162.1 and Playwright Chromium 151.
   consecutive in-page navigations leave `<head>` with one canonical, one
   description, five alternates and five `og:` tags — nothing accumulates.
 
+### Hero entrance, checked 2026-10-20
+
+Headless Chromium against a build of `exampleSite` served over HTTP.
+
+- Order and timing, sampled every frame from `commit`: at 60ms the banner is at
+  opacity 0 / `translate: 0 18px` and all three copy lines at 0; at 300ms the
+  banner is at 0.47 and 5.1px; at 800ms the banner is at 0.98 and the lines at
+  1.00 / 0.98 / 0.92; at 1500ms everything is settled at 1 with `translate: none`.
+  The stagger is visible in that last sample — the later a line is, the further
+  behind it is.
+- `is-in` arrives with the image, not with the page: the class is added from the
+  image's `load` handler, or on the next frame when `img.complete` is already
+  true.
+- Scrolling past the hero adds `is-asleep` and reports `hero-drift paused`;
+  scrolling back removes it and the animation returns to `running`.
+- `prefers-reduced-motion: reduce`: banner and copy are at opacity 1 with no
+  transition, and both loops report `animation-name: none`.
+- `ruri.heroMotion: false`: the section is plain `hero shell`, and no
+  `.hero-rise` element is rendered anywhere on the page (count 0).
+- No console errors or page errors in any run.
+
 ### Card covers, checked 2026-10-20
 
 Headless Chromium against a build of `exampleSite` served over HTTP, on six

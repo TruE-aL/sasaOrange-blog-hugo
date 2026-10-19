@@ -188,6 +188,17 @@ coverRatio: 1.78   # 16:9 from this endpoint; use 2.35 for 21:9
 
 The first four cards are fetched with `loading="eager"` and `fetchpriority="high"`: that is the first screenful, and waiting for a scroll would show it blank. The rest stay lazy. The cover link carries `tabindex="-1"` and `aria-hidden="true"` — the title is already a link to the same page, and one destination should not take two tab stops.
 
+The hero has an entrance, on by default (`ruri.heroMotion: true`):
+
+| Motion | Timing |
+| --- | --- |
+| Banner fades in and rises 18px | 900ms |
+| Eyebrow, heading, source and the "recent posts" link follow, each rising 16px | 600ms each, 90ms apart, from 180ms |
+| Banner keeps drifting (scale 1 → 1.04 and back) | 18s, paused whenever the hero is off-screen |
+| The arrow after "recent posts" taps down | 2.6s loop, also paused off-screen |
+
+The fade waits for the image's own `load` event rather than the page's, so the reader never sees a blank block fading into a photograph; a cached image (second visit) starts at once. A reader with reduced motion enabled gets none of it — the content is simply in place. With `heroMotion: false` the wrapper elements are not rendered either, so the markup matches the older output.
+
 On narrow screens (≤760px) the header keeps three things: the menu button on the left, the site name, and the tools on the right (palette, RSS, search, light/dark, language). Every `menu` entry moves into a bottom drawer: it slides up from the bottom edge behind a translucent scrim, the current page is bold in the accent with a small bar, and it closes on the scrim, the × button, Esc, or any menu item — with focus returning to the button. The drawer reads the same `menu` list as the desktop header, so the two can never disagree; above 760px neither the button nor the drawer is rendered and the links stay inline.
 
 Fetched originals and their generated image variants are published together under `ruri-media/remote/`, keeping the site root clear.

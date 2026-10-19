@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+### The hero has an entrance
+
+- The banner fades in and rises 18px over 900ms, then the eyebrow, heading,
+  source line and "recent posts" link follow one after another, 90ms apart, each
+  rising 16px. The banner then keeps drifting (scale 1 → 1.04 and back over 18s),
+  and the arrow taps down on a 2.6s loop. On by default; `ruri.heroMotion: false`
+  turns it off and renders the old markup, wrapper elements and all.
+- The fade waits for the image's own `load` event, not the page's. Eager loading
+  still means "as soon as the picture is here", and fading in a frame that has
+  not arrived shows a blank block fading into a photograph on a slow connection.
+  A cached image — the second visit — starts on the next frame.
+- Both loops pause when the hero leaves the viewport: a transform on a 1200px
+  image costs a composite every frame, and paying it under a scrolled-away hero
+  is paying for something nobody can see.
+- Not copied from reimu: the 8px blur on the banner. Blurring a half-megabyte
+  photograph animates a filter across the whole layer on every frame for the
+  length of the entrance, and at 1200px wide the blur is not what the eye
+  notices. The rise carries the motion on its own.
+- Not copied either: AOS. reimu's entrances are driven by a scroll library;
+  this page needs two one-shot entrances, and the scroll-in motion already
+  exists here as `[data-reveal]`. What is kept is the two habits worth having —
+  nothing replays, and `prefers-reduced-motion` turns all of it off.
+
 ### Card covers: beside the text on desktop, above it on a phone
 
 - Home and archive entries show their cover again instead of hiding it, in two

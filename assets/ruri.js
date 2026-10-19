@@ -140,8 +140,32 @@ function initMenu(){
   drawer.addEventListener('click',event=>{if(event.target.closest('a'))closeMenu(false)},{signal});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('is-open'))closeMenu(true)},{signal});
 }
+/* The hero's entrance, which is the one motion on the page that waits for
+   something: the banner is `loading="eager"`, but eager still means "as soon as
+   the picture is here", and fading in a frame that has not arrived yet shows a
+   blank block fading into a photograph. So the section gets `is-in` when the
+   image reports `complete` — immediately when it was already cached, which is
+   the second visit — and the copy follows it on CSS delays.
+
+   The drift and the arrow nudge are the two loops that never end. They are
+   paused while the hero is off-screen: a transform on a 1200px image costs a
+   composite on every frame, and paying it under a scrolled-away hero is paying
+   for something nobody can see. */
+let heroObserver=null;
+function initHero(){
+  heroObserver?.disconnect();
+  const hero=document.querySelector('.hero-motion');
+  if(!hero)return;
+  const picture=hero.querySelector('.hero-image'),img=picture?.querySelector('img');
+  const start=()=>{hero.classList.add('is-in');picture?.classList.add('is-in')};
+  if(img&&!img.complete){img.addEventListener('load',start,{once:true});img.addEventListener('error',start,{once:true})}
+  else requestAnimationFrame(start);
+  if(!('IntersectionObserver' in window))return;
+  heroObserver=new IntersectionObserver(entries=>{for(const entry of entries)hero.classList.toggle('is-asleep',!entry.isIntersecting)},{rootMargin:'0px',threshold:0});
+  heroObserver.observe(hero);
+}
 function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();initMenu();localizePlayer();paintScheme();shuffleFriends();
-initArchive();initReveal();window.RuriFeatures.init();
+initArchive();initReveal();initHero();window.RuriFeatures.init();
 $('#theme-toggle')?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const mode=dark?'light':'dark';document.documentElement.dataset.theme=mode;try{localStorage.setItem('ruri-theme',mode)}catch{}syncDark()});
 
 initTabs();initComments();document.querySelectorAll('.toc ul ul').forEach(ul=>{const li=ul.parentElement;if(!li||li.querySelector(':scope > details'))return;const link=li.querySelector(':scope > a'),d=document.createElement('details'),summary=document.createElement('summary');d.open=false;if(link){summary.innerHTML=link.outerHTML;link.remove()}d.append(summary,ul);li.append(d)});loadMusic();const toc=document.querySelector('.toc');if(toc){const links=[...toc.querySelectorAll('a[href^=\"#\"]')],heads=[...document.querySelectorAll('.prose h2,.prose h3,.prose h4,.prose h5,.prose h6')];const reveal=id=>{toc.querySelectorAll('details').forEach(d=>d.open=false);const a=links.find(x=>x.getAttribute('href')==='#'+id);if(a){let d=a.closest('details');while(d){d.open=true;d=d.parentElement.closest('details')}}};const observer=new IntersectionObserver(es=>{const hit=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(hit)reveal(hit.target.id)},{rootMargin:'-18% 0px -68% 0px',threshold:0});tocObserver=observer;heads.forEach(h=>observer.observe(h))}document.querySelectorAll('.copy-link').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.url);b.textContent=tr('copied')}catch{b.textContent=b.dataset.url}}));

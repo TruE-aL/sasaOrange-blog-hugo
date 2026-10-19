@@ -1885,3 +1885,56 @@ html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition
 .post-card.has-cover .post-image{height:auto;aspect-ratio:16/9;margin:0 0 14px}
 .post-card.has-cover h2{font-size:1.16rem}
 }
+
+/* ---- Hero: the picture arrives, and the words follow it -------------------
+   reimu's entrance, in this theme's terms. Three motions, each doing one job:
+
+   1. The banner fades up out of the paper — opacity plus an 18px rise. It is
+      the first thing on the page and the largest, so it earns the only long
+      animation here (900ms); everything else is 400–600ms, which is the rule
+      this theme already followed for `[data-reveal]`.
+   2. The three lines of the hero copy follow, staggered 90ms apart, each rising
+      16px. They are wrapped in `.hero-rise`, which exists only for the motion —
+      the same rule, with no wrapper, would have to animate the whole copy block
+      as one, and a block that arrives in one piece reads as a page that
+      appeared rather than as words being written.
+   3. The banner keeps drifting: scale 1 → 1.04 and back over 18s, in
+      alternating directions so a reader who comes back to the top does not find
+      it frozen. It is paused when the hero leaves the fold, so the transform is
+      not repainting a 1200px image under a scrolled page.
+
+   All of it is CSS, started by one class on the section and by the image's own
+   `load` event for the fade. No new dependency: reimu uses AOS, which is a
+   scroll library — this page needs two one-shot entrances, and the scroll-in
+   motion already exists here as `[data-reveal]`. What AOS does that is worth
+   keeping is not the library but the two habits: `once`, so nothing replays,
+   and `prefers-reduced-motion`, so nothing moves at all for a reader who asked
+   for that. */
+.hero-motion .hero-image{opacity:0;translate:0 18px}
+.hero-motion .hero-image.is-in{opacity:1;translate:none;transition:opacity .9s ease,translate .9s cubic-bezier(.2,.7,.3,1)}
+/* reimu resolves its banner out of an 8px blur. Deliberate departure: blurring
+   a half-megabyte photograph animates a filter across the whole layer on every
+   frame for 900ms, and at 1200px wide the blur is not what the eye notices — the
+   rise is. So the rise carries the motion alone, and the frame stays free of a
+   filter it would have to keep alive. */
+.hero-motion .hero-rise{opacity:0;translate:0 16px}
+.hero-motion.is-in .hero-rise{opacity:1;translate:none;transition:opacity .6s ease,translate .6s cubic-bezier(.2,.7,.3,1);transition-delay:calc(var(--rise) * 90ms + 180ms)}
+/* The drift. `animation` rather than a transition because it has to keep going
+   after it arrives — 4% over 18s is slow enough that nobody catches it moving,
+   which is the point: a still picture that reads as alive. */
+.hero-motion .hero-image img{animation:hero-drift 18s ease-in-out infinite alternate}
+@keyframes hero-drift{from{transform:scale(1)}to{transform:scale(1.04)}}
+/* Off-screen or scrolled away, the drift is paused: it is the one thing here
+   that never ends, so it is the one thing that must not run forever. */
+.hero-motion.is-asleep .hero-image img{animation-play-state:paused}
+.hero-motion .hero-link span{display:inline-block;animation:hero-nudge 2.6s ease-in-out infinite}
+@keyframes hero-nudge{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(3px)}}
+.hero-motion.is-asleep .hero-link span{animation-play-state:paused}
+/* The caption sits inside the frame, so it comes in last and from the bottom,
+   as a caption should. */
+.hero-motion .hero-image>span{opacity:0;translate:0 8px}
+.hero-motion .hero-image.is-in>span{opacity:1;translate:none;transition:opacity .6s ease .7s,translate .6s ease .7s}
+@media(prefers-reduced-motion:reduce){
+.hero-motion .hero-image,.hero-motion .hero-rise,.hero-motion .hero-image>span{opacity:1;translate:none;transition:none}
+.hero-motion .hero-image img,.hero-motion .hero-link span{animation:none}
+}

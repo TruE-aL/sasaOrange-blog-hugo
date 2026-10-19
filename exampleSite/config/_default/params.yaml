@@ -68,6 +68,11 @@ ruri:
   # Homepage eyebrow and heading lines (plain text, not HTML).
   homeEyebrow: NOTE, TECH & POEM
   homeHeading: [A quiet place, for your words.]
+  # 首屏大图入场动画（淡入上浮 + 文字逐行跟上 + 缓慢漂移）；false 关闭，
+  # 读者系统里设了「减少动态效果」时一律不动。
+  # Hero entrance: fade-up banner, staggered copy, slow drift. false disables it;
+  # a reader's reduced-motion setting always wins.
+  heroMotion: true
   # 主标题下方细线处的出处文字。
   # Attribution on the rule below the main heading.
   homeSource: ""
