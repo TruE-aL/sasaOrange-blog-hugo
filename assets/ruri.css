@@ -1823,3 +1823,57 @@ html.reveal-on [data-reveal].is-revealed{opacity:1;translate:none;pointer-events
 @media(prefers-reduced-motion:reduce){
 html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition:none;translate:none}
 }
+
+/* ---- Home card with a wide cover ----------------------------------------
+   The last word on `.post-card`, deliberately: the card picked up five
+   generations of layout rules on the way here (a thumbnail on the right, then a
+   two-column stretch, then no image at all), and the ones still in effect sit
+   further up the file. Rather than excavating them, this block states the final
+   shape once, at the end, where it wins on order alone.
+
+   The shape is reimu's in one respect only — the picture is a wide frame across
+   the top of the entry, because that is the shape a random image URL hands back
+   (16:9 or wider) and cropping it to a 112px square threw most of the subject
+   away. Everything else stays sasaOrange's: no card boxes, no shadows, no
+   rounded frames, no icon row. The entries are still separated by the same
+   hairline, the numbers are still in the same type, and the cover sits in the
+   text column rather than bleeding across the page.
+
+   `aspect-ratio` plus `object-fit:cover` is what makes a random image safe here:
+   whatever it returns, the frame is the same height and the list does not jump
+   as the pictures arrive. The frame carries `--tint` underneath, so an interface
+   that is slow — or one that has gone away — shows a quiet block of the page's
+   own colour rather than a broken-image icon and a collapsed row. */
+.post-card.has-cover{display:block;padding:26px 0;border-bottom:1px solid var(--line)}
+.post-card.has-cover>div{display:block}
+.post-card.has-cover .post-image{display:block;width:100%;height:auto;aspect-ratio:16/9;margin:0 0 18px;overflow:hidden;background:var(--tint)}
+.post-card.has-cover .post-image img{display:block;width:100%;height:100%;object-fit:cover}
+/* The hover lift belongs to a row of text, not to a picture: moving a 400px
+   image two pixels on hover reads as a wobble. The card stays put, the title
+   still takes the accent and the underline the cards already had. */
+.post-card.has-cover:hover{transform:none}
+/* A cover is decoration for a link that the title already provides, and the
+   reveal animation is not worth a repaint of a half-megabyte image: it fades in
+   with the card, but it does not travel. */
+.post-card.has-cover .post-image{translate:none}
+
+/* The reading time used to be pushed to the right edge of the row with
+   `margin-left:auto`, which was fine while a card was one line of text and one
+   title. Under a full-width cover the push turns the meta line into two things
+   at opposite ends of an 850px gap — the eye reads the date, then has to travel
+   to find the length. In a cover card the meta line keeps its own order: date,
+   category, tags, then the reading time where it naturally falls. It also wraps
+   rather than being held on one line, because the tags no longer have to stay
+   out of the reading time's way. */
+.post-card.has-cover .post-meta .card-reading{margin-left:0}
+.post-card.has-cover .post-meta{row-gap:6px}
+
+/* Phones: the frame keeps its 16:9 (a 4:3 crop of a wide random image loses the
+   sides, which is where these pictures keep their subject) and simply gets
+   shorter, so a screen still shows the top of the next entry and the list reads
+   as a list rather than as a wall of pictures. */
+@media(max-width:760px){
+.post-card.has-cover{padding:22px 0}
+.post-card.has-cover .post-image{margin-bottom:14px}
+.post-card.has-cover h2{font-size:1.16rem}
+}

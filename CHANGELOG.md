@@ -2,6 +2,42 @@
 
 ## Unreleased
 
+### Card covers are wide frames now
+
+- Home and archive entries put the cover on top of the entry, spanning the full
+  reading column at 16:9, instead of hiding it or shrinking it into a corner.
+  The reason is the shape of the pictures these entries actually get: a random
+  image endpoint hands back 16:9 or wider, and the 112px square the card used to
+  reserve cut away most of the subject — group shots lost every face but one in
+  the middle. Only the placement is borrowed from reimu; the entries keep their
+  own hairline separators, type and spacing, and gain no card boxes, shadows,
+  rounded frames or icon rows.
+- The markup puts the picture before the text rather than moving it there with
+  `order`, so a no-CSS render and the accessibility tree read in the order the
+  eye does. The cover link is `tabindex="-1"` and `aria-hidden="true"`: the title
+  is already a link to the same page, and a second tab stop for one destination
+  is a nuisance. The image itself gets an empty `alt`, since announcing it twice
+  tells the reader nothing.
+- A cover served by a random endpoint cannot be downloaded or measured at build
+  time — the URL answers with a 302 to a file named differently on every request
+  — so the frame is reserved from `coverRatio` (front matter, defaults to 16:9
+  for any remote cover) and the `img` gets that width and height. Measured card
+  height drift while the pictures arrive: 0px at 1280, 900 and 390 wide. Without
+  it the list grows a screenful as each picture lands.
+- The first four cards are `loading="eager" fetchpriority="high"`; the rest stay
+  lazy. The reveal animation shows those cards a moment after paint, and lazy
+  images there would leave the top of the page blank on a slow connection. Which
+  cards those are is passed down from the loop index: neither `.Ordinal` nor
+  `.Position` answers for a weighted page inside a section list, so the partial
+  cannot work it out for itself.
+- `image.html` gained `kind="cover"` (a 420/640/860 ladder that reaches the
+  widest the column is ever drawn) and a `ratio` argument for sources it cannot
+  resize. The reading time in a cover card no longer sits `margin-left:auto` at
+  the far edge of an 850px row, a holdover from when a card was a thumbnail and
+  a title; it now follows the tags.
+- When the cover is a local or fixed remote file, nothing changes: it still goes
+  through the build pipeline and still ships `srcset`.
+
 ### Housekeeping from the 2026-10-19 code review
 
 - Removed `i18n/pt-BR.yml`. It held 25 of the 153 keys — the rest, including every

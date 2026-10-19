@@ -33,6 +33,31 @@ Validated 2026-10-19 using Hugo Extended 0.162.1 and Playwright Chromium 151.
   consecutive in-page navigations leave `<head>` with one canonical, one
   description, five alternates and five `og:` tags — nothing accumulates.
 
+### Wide card covers, checked 2026-10-19
+
+Headless Chromium against a build of `exampleSite` served over HTTP, on six
+demonstration posts whose covers are live random-image endpoints.
+
+- Frame geometry: 849×478 at 1280 wide, 582×327 at 900, 358×201 at 390 — 1.778
+  in every case, i.e. the declared 16:9 holds and `object-fit:cover` does the
+  cropping.
+- Card height drift measured 120 ms after DOM ready versus fully loaded: `0` on
+  every card at all three widths. The reserved frame, not the arriving image,
+  decides the height, so the list does not grow a screenful as pictures land.
+- Priority: the first four cards are `loading="eager" fetchpriority="high"`, the
+  rest `lazy` / `auto`. The count comes from the loop index — `try .Position`
+  built but never returned a value, leaving every image lazy.
+- Degradation: `cover: false` renders a plain text card with no `has-cover`
+  class. A remote cover with `coverRatio: 2.35` emits `width="430"
+  height="183"`. A remote cover without the key falls back to 16:9.
+- Local covers still take the pipeline: `banner.webp` ships
+  `srcset` at 420w/640w/860w with the matching `sizes`.
+- Meta line: categories and tags link to their own term pages with their own
+  titles (a broken `range` scope briefly pointed every link at the post itself),
+  and the reading time follows the tags instead of being pushed to the far edge.
+- No horizontal overflow at any of the three widths (`scrollWidth` equals
+  `clientWidth`); no console errors or page errors in any run.
+
 ### Carried over from 2026-09-18 (not re-run since)
 - Independent minimal / four-language / subpath builds and local link checks.
 - Current working blog: 875 HTML pages and four search indexes; original source hashes unchanged.

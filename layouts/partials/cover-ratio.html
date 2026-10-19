@@ -1,0 +1,21 @@
+{{- /* Width ÷ height for a cover that is not a local resource and therefore has
+       no measurable size at build time — chiefly a random-image API, which
+       answers with a 302 to a file named differently on every request.
+
+       The frame is 16:9 in CSS, so a random image will be cropped whichever
+       ratio is declared. What is declared here is the shape the endpoint
+       actually serves, so that a picture slotted into the frame has the least
+       possible taken off it — and a page can override the guess with
+       `coverRatio` in its front matter when it knows better. An empty value
+       means "size unknown": the image partial then emits no width or height
+       rather than inventing a box that would be wrong. */ -}}
+{{- $ratio := .Params.coverRatio -}}
+{{- if not $ratio -}}
+  {{- $src := .Params.cover -}}
+  {{- if and $src (ne $src true) -}}
+    {{- if in (slice "http" "https") (urls.Parse $src).Scheme -}}
+      {{- $ratio = 16.0 | div 9.0 -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $ratio -}}

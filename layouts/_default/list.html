@@ -23,7 +23,7 @@
   {{ end }}
 </div>
 {{ else }}
-  {{ $p := .Paginate $pages.ByDate.Reverse (.Site.Params.paginate.archive | default 20) }}{{ range $p.Pages }}{{ partial "card.html" . }}{{ end }}
+  {{ $p := .Paginate $pages.ByDate.Reverse (.Site.Params.paginate.archive | default 20) }}{{ range $i, $page := $p.Pages }}{{ partial "card.html" (dict "page" $page "priority" (lt $i 4)) }}{{ end }}
 {{ partial "pagination.html" . }}
 {{ end }}
 {{ end }}

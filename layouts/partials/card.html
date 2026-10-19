@@ -1,1 +1,32 @@
-<article class="post-card" data-reveal><div><div class="post-meta"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>{{ range .GetTerms "categories" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}{{ range first 3 (.GetTerms "tags") }}<a href="{{ .RelPermalink }}"># {{ .Title }}</a>{{ end }}<span class="card-reading">{{ .WordCount }} {{ i18n "ruri_words" }} · {{ .ReadingTime }} {{ i18n "ruri_minutes" }}</span>{{ if .Weight }}<span>{{ i18n "sticky" }}</span>{{ end }}</div><h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2><p>{{ partial "description.html" . }}</p></div>{{ if ne .Params.cover false }}{{ with partial "cover.html" . }}<a class="post-image" href="{{ $.RelPermalink }}" tabindex="-1" aria-hidden="true">{{ partial "image.html" (dict "src" . "page" $ "widths" (slice 280 560 840) "sizes" "(max-width: 760px) calc(34vw - 12px), (max-width: 1100px) calc(34vw - 120px), 280px" "width" 280 "height" 175) }}</a>{{ end }}{{ end }}</article>
+{{- /* A card is one entry in a home list: a cover, then the meta line, the title
+       and the summary. The cover is a wide frame on top of the text — the shape
+       these image APIs hand back anyway (16:9 or wider), so a random image is
+       shown as it was composed instead of being cropped to a thumbnail.
+
+       It is written before the text in the markup rather than moved there with
+       `order`, so the reading order in the accessibility tree and in a no-CSS
+       render matches what the eye sees. For the same reason the cover link keeps
+       `tabindex="-1"` and `aria-hidden="true"`: the title below is already the
+       link to the same page, and two tab stops for one destination is a
+       nuisance, not a courtesy.
+
+       `kind="cover"` asks the image partial for a wide frame: its sources come
+       from a ladder that tops out at the reading column, with `sizes` matching
+       the card's own width at each breakpoint, so a phone does not download an
+       860px file for a 390px screen.
+
+       The first screenful is fetched eagerly at a high priority. The reveal
+       animation shows those cards a moment after paint, and lazy-loading them
+       would leave the top of the list blank on a slow connection; everything
+       below the fold stays lazy. Which cards are in that first screenful is not
+       something a page can work out about itself here — neither `.Ordinal` nor
+       `.Position` answers reliably for a weighted page inside a section list —
+       so the caller passes `priority` down from the loop index it already has. */ -}}
+{{- $page := .page -}}
+{{- $cover := "" -}}
+{{- if ne $page.Params.cover false -}}{{- $cover = partial "cover.html" $page -}}{{- end -}}
+{{- $priority := .priority | default false -}}
+<article class="post-card{{ with $cover }} has-cover{{ end }}" data-reveal>
+  {{ with $cover }}<a class="post-image" href="{{ $page.RelPermalink }}" tabindex="-1" aria-hidden="true">{{ partial "image.html" (dict "src" . "page" $page "kind" "cover" "ratio" (partial "cover-ratio.html" $page) "loading" (cond $priority "eager" "lazy") "fetchpriority" (cond $priority "high" "auto")) }}</a>{{ end }}
+  <div><div class="post-meta"><time datetime="{{ $page.Date.Format "2006-01-02" }}">{{ $page.Date.Format "2006.01.02" }}</time>{{ range $page.GetTerms "categories" }}<a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}{{ range first 3 ($page.GetTerms "tags") }}<a href="{{ .RelPermalink }}"># {{ .Title }}</a>{{ end }}<span class="card-reading">{{ $page.WordCount }} {{ i18n "ruri_words" }} · {{ $page.ReadingTime }} {{ i18n "ruri_minutes" }}</span>{{ if $page.Weight }}<span>{{ i18n "sticky" }}</span>{{ end }}</div><h2><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a></h2><p>{{ partial "description.html" $page }}</p></div>
+</article>

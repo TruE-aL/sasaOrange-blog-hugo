@@ -1,6 +1,14 @@
 {{- $src := .src -}}
 {{- $page := .page -}}
 {{- $widths := .widths | default (slice 480 960 1440) -}}
+{{- /* A card cover is a wide frame across the reading column, not a thumbnail in
+       a corner: the ladder has to reach the widest column it is ever drawn at
+       (860px) and start low enough that a phone does not fetch a desktop file.
+       The narrower thumbnail ladder this replaces topped out at 840 but started
+       at 280, which a full-width frame would have blown up. */ -}}
+{{- if eq .kind "cover" -}}
+  {{- $widths = .widths | default (slice 420 640 860) -}}
+{{- end -}}
 {{- $maxWidth := index $widths (sub (len $widths) 1) -}}
 {{- $original := $src | relURL -}}
 {{- $url := urls.Parse $src -}}
@@ -28,5 +36,19 @@
     {{- end -}}
   {{- end -}}
   {{- $srcset = $srcset | append (printf "%s %dw" $resized.RelPermalink $resized.Width) -}}
+{{- else -}}
+  {{- /* Not a local resource. That is the normal case for a random-image API: a
+         bare URL that answers with a 302 to a file whose name is different on
+         every request, so there is nothing to download at build time and
+         nothing to hand to the resizer. The frame still needs its size up front
+         or the list reflows as each image lands, so the caller may declare the
+         ratio the endpoint is known to serve, and the source gets a real pixel
+         width: a cover is only ever drawn as wide as the reading column, so
+         saying so lets the browser reserve the box and pick the right entry of
+         anything the server does offer via `srcset`. */ -}}
+  {{- with .ratio -}}
+    {{- $width = math.Round (div (float $maxWidth) 2) | int -}}
+    {{- $height = math.Round (div $width (float .)) | int -}}
+  {{- end -}}
 {{- end -}}
-<img src="{{ $source }}"{{ with $srcset }} srcset="{{ delimit . ", " }}" sizes="{{ $.sizes | default "(max-width: 760px) calc(100vw - 36px), (max-width: 1100px) calc(100vw - 350px), 820px" }}"{{ end }}{{ if and $width $height }} width="{{ $width }}" height="{{ $height }}"{{ end }} alt="{{ .alt | default "" }}"{{ with .title }} title="{{ . }}"{{ end }}{{ with .class }} class="{{ . }}"{{ end }} loading="{{ .loading | default "lazy" }}" decoding="async"{{ with .fetchpriority }} fetchpriority="{{ . }}"{{ end }}{{ if .lightbox }} data-original-src="{{ $original }}"{{ with $image }} data-original-width="{{ .Width }}" data-original-height="{{ .Height }}"{{ end }}{{ end }}>
+<img src="{{ $source }}"{{ with $srcset }} srcset="{{ delimit . ", " }}" sizes="{{ $.sizes | default (cond (eq $.kind "cover") "(max-width: 760px) calc(100vw - 36px), (max-width: 1240px) calc(100vw - 350px), 860px" "(max-width: 760px) calc(100vw - 36px), (max-width: 1100px) calc(100vw - 350px), 820px") }}"{{ end }}{{ if and $width $height }} width="{{ $width }}" height="{{ $height }}"{{ end }} alt="{{ .alt | default "" }}"{{ with .title }} title="{{ . }}"{{ end }}{{ with .class }} class="{{ . }}"{{ end }} loading="{{ .loading | default "lazy" }}" decoding="async"{{ with .fetchpriority }} fetchpriority="{{ . }}"{{ end }}{{ if .lightbox }} data-original-src="{{ $original }}"{{ with $image }} data-original-width="{{ .Width }}" data-original-height="{{ .Height }}"{{ end }}{{ end }}>

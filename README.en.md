@@ -161,6 +161,24 @@ menu:
 
 Place the banner at `static/images/banner.webp` and avatar at `static/avatar/avatar.webp`. Missing settings hide the images. Article `cover` accepts a path/URL or `false` to hide it. Create a page for each internal menu link.
 
+Every entry on the home and archive lists is a picture on top and its text below: the cover spans the full reading column at 16:9, while the text keeps the type, hairlines and spacing it always had — no card border, no shadow. What the cover resolves to depends on where it comes from:
+
+| `cover` value | Build-time handling | What the card gets |
+| --- | --- | --- |
+| A local path, e.g. `images/a.webp` | Three WebP widths (420/640/860) plus `srcset` | Resolution picks itself; size known, list never shifts |
+| A **fixed** remote file (no query string) | Same, downloaded and converted; falls back to the original if it cannot be fetched | Same; a failed fetch logs a `warnf` and the build continues |
+| A random-image endpoint (302s to a different file each time) | Skipped — nothing to download at build time | Original URL, framed at 16:9 from `coverRatio` |
+| `cover: false`, or no `cover` | No cover rendered | Plain text card |
+
+A random endpoint cannot be measured at build time, so the frame is reserved at 16:9 and the page does not jump as pictures land (measured card-height drift: 0px at three viewports). When an endpoint serves a very different shape, state it in front matter with `coverRatio` — width divided by height:
+
+~~~yaml
+cover: "https://t.alcy.cc/pc"
+coverRatio: 1.78   # 16:9 from this endpoint; use 2.35 for 21:9
+~~~
+
+The first four cards are fetched with `loading="eager"` and `fetchpriority="high"`: that is the first screenful, and waiting for a scroll would show it blank. The rest stay lazy. The cover link carries `tabindex="-1"` and `aria-hidden="true"` — the title is already a link to the same page, and one destination should not take two tab stops.
+
 On narrow screens (≤760px) the header keeps three things: the menu button on the left, the site name, and the tools on the right (palette, RSS, search, light/dark, language). Every `menu` entry moves into a bottom drawer: it slides up from the bottom edge behind a translucent scrim, the current page is bold in the accent with a small bar, and it closes on the scrim, the × button, Esc, or any menu item — with focus returning to the button. The drawer reads the same `menu` list as the desktop header, so the two can never disagree; above 760px neither the button nor the drawer is rendered and the links stay inline.
 
 Fetched originals and their generated image variants are published together under `ruri-media/remote/`, keeping the site root clear.

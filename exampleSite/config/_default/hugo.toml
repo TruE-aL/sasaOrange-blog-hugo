@@ -101,6 +101,8 @@ inline = [['\(', '\)'], ['$', '$']]
 # draft: true 隐藏草稿 / hide drafts. weight: 排序权重 / sorting weight.
 # categories/tags: 分类/标签数组 / taxonomy arrays.
 # cover: 图片路径/URL，false 关闭，true 使用 banner / path/URL, false hides, true uses banner.
+# coverRatio: 随机图接口的宽高比（宽÷高），构建期取不到尺寸时用来预留卡片高度；
+# 远程 cover 默认 16:9 / ratio of a random endpoint's output, reserved before load; 16:9 by default.
 # comments/toc/copyright/sponsor: false 关闭对应模块 / false disables the respective module.
 # sidebar: false 使用无侧栏宽版 / false uses a wide layout without sidebar.
 # contentWidth: narrow 缩窄内容 / narrow constrains content width.
