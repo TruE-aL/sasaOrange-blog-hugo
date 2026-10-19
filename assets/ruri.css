@@ -1917,8 +1917,8 @@ html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition
    frame for 900ms, and at 1200px wide the blur is not what the eye notices — the
    rise is. So the rise carries the motion alone, and the frame stays free of a
    filter it would have to keep alive. */
-.hero-motion .hero-rise{opacity:0;translate:0 16px}
-.hero-motion.is-in .hero-rise{opacity:1;translate:none;transition:opacity .6s ease,translate .6s cubic-bezier(.2,.7,.3,1);transition-delay:calc(var(--rise) * 90ms + 180ms)}
+.hero-motion .hero-rise{opacity:0;translate:0 16px;filter:blur(4px)}
+.hero-motion.is-in .hero-rise{opacity:1;translate:none;filter:none;transition:opacity .6s ease,translate .6s cubic-bezier(.2,.7,.3,1),filter .6s ease;transition-delay:calc(var(--rise) * 90ms + 180ms)}
 /* The drift. `animation` rather than a transition because it has to keep going
    after it arrives — 4% over 18s is slow enough that nobody catches it moving,
    which is the point: a still picture that reads as alive. */
@@ -1935,6 +1935,68 @@ html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition
 .hero-motion .hero-image>span{opacity:0;translate:0 8px}
 .hero-motion .hero-image.is-in>span{opacity:1;translate:none;transition:opacity .6s ease .7s,translate .6s ease .7s}
 @media(prefers-reduced-motion:reduce){
-.hero-motion .hero-image,.hero-motion .hero-rise,.hero-motion .hero-image>span{opacity:1;translate:none;transition:none}
+.hero-motion .hero-image,.hero-motion .hero-rise,.hero-motion .hero-image>span{opacity:1;translate:none;filter:none;transition:none}
 .hero-motion .hero-image img,.hero-motion .hero-link span{animation:none}
+}
+
+
+/* Reimu's AOS mixes fade-up with zoom-in. The reveal observer here has one
+   waiting state, so these variants refine that state instead of adding a second
+   library: category tiles and friend links scale from 0.96 as they arrive, and
+   article tags pop from 0.88 once they are reached. */
+html.reveal-on .featured-categories [data-reveal],
+html.reveal-on .friend-grid [data-reveal]{scale:.96}
+html.reveal-on .featured-categories [data-reveal].is-revealed,
+html.reveal-on .friend-grid [data-reveal].is-revealed{scale:1;transition:opacity .4s ease,translate .4s ease,scale .4s cubic-bezier(.22,.61,.36,1),transform .3s cubic-bezier(.2,.7,.3,1)}
+html.reveal-on .article-tags [data-reveal]{scale:.88}
+html.reveal-on .article-tags [data-reveal].is-revealed{scale:1;transition:opacity .35s ease,translate .35s ease,scale .35s cubic-bezier(.22,.61,.36,1)}
+
+@media(prefers-reduced-motion:reduce){
+html.reveal-on .featured-categories [data-reveal],
+html.reveal-on .friend-grid [data-reveal],
+html.reveal-on .article-tags [data-reveal]{scale:1}
+}
+
+/* ---- Borrowed from reimu: small arrivals around the still page -----------
+   These are the motions reimu applies to its covers and archive rows. They sit
+   at the end of the file so the final layout rules above keep precedence, and
+   they leave `transform` to the components that already use it for hover. */
+
+/* Home category covers answer the pointer like reimu's post covers: the frame
+   stays put, the photograph comes forward, and the wash deepens so the label
+   keeps its contrast. */
+.featured-categories a img{transition:transform .6s ease,opacity .6s ease}
+@media(hover:hover){
+.featured-categories a:hover img{transform:scale(1.05);opacity:.7}
+}
+
+/* Reimu resolves a loaded cover out of an 8px blur. The same arrival is applied
+   to card and category covers, but the transform is left alone: those images
+   already have a hover scale, and an animation there would overwrite it. */
+.post-image img,.featured-categories img{animation:ruri-cover-in .8s ease both}
+@keyframes ruri-cover-in{
+from{opacity:0;filter:blur(10px)}
+to{opacity:1;filter:blur(0)}
+}
+
+/* Reimu's archive marker grows from a small bar into a round dot as the row is
+   reached. Here it is the month bullet that comes forward, while the title
+   takes the accent colour the archive already uses on hover. */
+.archive-month li::before{transition:width .2s ease,height .2s ease,top .2s ease,border-radius .2s ease,background-color .2s ease}
+.archive-month li:hover::before{width:6px;height:6px;top:16px;border-radius:50%;background:var(--accent)}
+
+@media(prefers-reduced-motion:reduce){
+.featured-categories a img{transition:none}
+.featured-categories a:hover img{transform:none;opacity:1}
+.post-image img,.featured-categories img{animation:none;filter:none}
+.archive-month li::before{transition:none}
+}
+
+/* Opt-in reimu motion: the header leaves while the reader scrolls down and
+   returns as soon as they scroll back. Enabled by ruri.pageMotion.headerHide. */
+.site-header{transition:translate .28s cubic-bezier(.2,.7,.3,1)}
+html.header-away .site-header{translate:0 -105%}
+@media(prefers-reduced-motion:reduce){
+.site-header{transition:none}
+html.header-away .site-header{translate:none}
 }

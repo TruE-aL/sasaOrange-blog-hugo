@@ -73,6 +73,11 @@ ruri:
   # Hero entrance: fade-up banner, staggered copy, slow drift. false disables it;
   # a reader's reduced-motion setting always wins.
   heroMotion: true
+  # Reimu-style optional motions. All default off; reduced-motion always wins.
+  # headerHide: slide the header away while scrolling down.
+  pageMotion:
+    enable: false
+    headerHide: false
   # 主标题下方细线处的出处文字。
   # Attribution on the rule below the main heading.
   homeSource: ""

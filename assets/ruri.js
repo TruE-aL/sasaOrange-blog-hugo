@@ -165,11 +165,37 @@ function initHero(){
   heroObserver.observe(hero);
 }
 function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();initMenu();localizePlayer();paintScheme();shuffleFriends();
-initArchive();initReveal();initHero();window.RuriFeatures.init();
+initArchive();initReveal();initHero();initPageMotion();window.RuriFeatures.init();
 $('#theme-toggle')?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const mode=dark?'light':'dark';document.documentElement.dataset.theme=mode;try{localStorage.setItem('ruri-theme',mode)}catch{}syncDark()});
 
 initTabs();initComments();document.querySelectorAll('.toc ul ul').forEach(ul=>{const li=ul.parentElement;if(!li||li.querySelector(':scope > details'))return;const link=li.querySelector(':scope > a'),d=document.createElement('details'),summary=document.createElement('summary');d.open=false;if(link){summary.innerHTML=link.outerHTML;link.remove()}d.append(summary,ul);li.append(d)});loadMusic();const toc=document.querySelector('.toc');if(toc){const links=[...toc.querySelectorAll('a[href^=\"#\"]')],heads=[...document.querySelectorAll('.prose h2,.prose h3,.prose h4,.prose h5,.prose h6')];const reveal=id=>{toc.querySelectorAll('details').forEach(d=>d.open=false);const a=links.find(x=>x.getAttribute('href')==='#'+id);if(a){let d=a.closest('details');while(d){d.open=true;d=d.parentElement.closest('details')}}};const observer=new IntersectionObserver(es=>{const hit=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(hit)reveal(hit.target.id)},{rootMargin:'-18% 0px -68% 0px',threshold:0});tocObserver=observer;heads.forEach(h=>observer.observe(h))}document.querySelectorAll('.copy-link').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.url);b.textContent=tr('copied')}catch{b.textContent=b.dataset.url}}));
 }
+/* Two small motions borrowed from reimu, opt-in through ruri.pageMotion. The
+   settings are rendered by baseof.html as a JSON island so this bundle stays
+   independent of Hugo's template syntax. Reduced motion disables both. */
+let motionCleanup=null;
+function pageMotionConfig(){
+  try{return JSON.parse(document.querySelector('#ruri-motion-config')?.textContent||'{}')}catch{return {}}
+}
+function initPageMotion(){
+  motionCleanup?.();motionCleanup=null;
+  const config=pageMotionConfig();
+  if(!config.enable||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const cleanups=[];
+  if(config.headerHide){
+    let lastY=scrollY;
+    const onScroll=()=>{
+      const y=Math.max(0,scrollY),delta=y-lastY;
+      if(Math.abs(delta)<6)return;
+      document.documentElement.classList.toggle('header-away',y>120&&delta>0);
+      lastY=y;
+    };
+    addEventListener('scroll',onScroll,{passive:true});
+    cleanups.push(()=>removeEventListener('scroll',onScroll));
+  }
+  motionCleanup=()=>cleanups.forEach(fn=>fn());
+}
+
 const audio=$('#music-audio'),tracks=$('#music-tracks'),player=$('#floating-player');
 const titleText=$('#music-title'),seek=$('#music-seek'),lyricOverlay=$('#music-lyrics');
 let songs=[],current=0,loading=false,lyrics=[],lyricController=null,lyricVersion=0;
