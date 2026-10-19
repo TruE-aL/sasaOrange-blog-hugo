@@ -1,0 +1,55 @@
+{{/* The loading sheet for in-page navigation: two opaque halves of paper that
+     close over the screen and draw back again.
+
+     It lives outside #page-shell, and that is the whole trick. In-page
+     navigation replaces the shell, so a sheet inside it would be torn away the
+     moment the new page arrived — mid-motion, with the opening half-seen. Out
+     here the sheet outlives every shell it covers: the new page is laid in
+     behind it, and only when it is in place does the paper draw back. What the
+     opening reveals is therefore always the page the reader asked for, never the
+     one they were leaving. That is reimu's own order of operations, and it is
+     why the sheet is rendered after the shell instead of inside it.
+
+     The motion is reimu's, not a generic spinner's: two opaque halves of paper
+     slide in from the sides and close over the whole screen, and slide apart
+     again when the next page is ready — the header rides on top of them the
+     whole time, still clickable. The mark in the middle is reimu's taiji's
+     place, taken by a cog. The close is given its full duration before the page
+     is laid in (ruri.js), the way reimu gives its loader a minimum showing, so
+     a fast navigation — a cache hit — reads as a gesture rather than a flicker.
+
+     None of it may take a click, a focus ring or a layout slot of its own — the
+     reader must stay able to cancel by clicking the page, and the live region is
+     kept out of the accessibility tree while the veil is hidden, so the message
+     is announced once — when the veil opens — instead of on every page load. */}}
+<div class="nav-veil" aria-hidden="true">
+  {{/* The two wings close from the left and right edges, the way reimu's loader
+       does: each covers half the screen, full height, in the page's own paper
+       colour and nothing else — no blur, no dimming, no tint of the words
+       underneath. A wash left the old page half-visible and read as a broken
+       render; opaque paper reads as a clean page being laid over the last one.
+       The header has no background of its own, so the paper the wings bring is
+       the paper it already sits on; it stays above them, with its menu still
+       there to say where you are going. */}}
+  <div class="nav-veil-wing nav-veil-wing-left"></div>
+  <div class="nav-veil-wing nav-veil-wing-right"></div>
+  <div class="nav-veil-core">
+    {{/* The loading mark is the second cog the reader picked: a ring gear, rim
+         toothed and hub open, filled solid in the page's own ink — the deep
+         brown of the warm reading room, turning to each palette's own ink
+         elsewhere, dark modes included. It is filled rather than drawn: the
+         first cog was a line drawing in ink over a wash of paper, and on a
+         flat sheet the wash and the sheet were one colour, so the mark read as
+         floating lines instead of an object. The open hub lets the paper show
+         through, which keeps the solid shape light and gives the turn
+         something to read against. Inline, so it inherits the ink and needs no
+         extra request. */}}
+    <svg class="nav-gear" viewBox="0 0 1024 1024" width="132" height="132" aria-hidden="true" focusable="false">
+      <path class="nav-gear-fill" d="M939.60192 589.98784h-44.032c-33.3824 0-63.16032 19.92704-75.91936 50.66752-12.77952 30.78144-5.81632 65.88416 17.8176 89.47712l29.10208 29.06112-110.22336 110.08-29.14304-29.10208c-15.50336-15.4624-36.16768-24.02304-58.12224-24.02304-10.8544 0-21.42208 2.10944-31.45728 6.2464-30.8224 12.77952-50.70848 42.496-50.70848 75.83744v43.95008h-155.89376v-43.95008c0-33.32096-19.92704-63.05792-50.70848-75.83744a82.141184 82.141184 0 0 0-31.49824-6.2464c-21.95456 0-42.55744 8.54016-58.0608 24.02304l-29.14304 29.10208L151.3472 759.1936l29.10208-29.06112c23.57248-23.57248 30.59712-58.69568 17.8176-89.47712-12.77952-30.74048-42.55744-50.66752-75.93984-50.66752H78.35648v-155.648h43.99104c33.3824 0 63.16032-19.88608 75.93984-50.66752 12.77952-30.78144 5.75488-65.88416-17.8176-89.41568L151.3472 265.15456l110.22336-110.08 29.14304 29.10208c15.50336 15.50336 36.10624 24.00256 58.0608 24.00256 10.8544 0 21.46304-2.06848 31.49824-6.2464 30.78144-12.71808 50.70848-42.496 50.70848-75.83744V80.77312h155.89376v45.34272c0 33.32096 19.88608 63.09888 50.70848 75.83744 10.0352 4.17792 20.60288 6.2464 31.45728 6.2464 21.95456 0 42.5984-8.4992 58.12224-24.00256l29.14304-29.10208 110.22336 110.08-29.10208 29.10208c-23.63392 23.53152-30.59712 58.63424-17.8176 89.41568 12.77952 30.78144 42.55744 50.66752 75.91936 50.66752h44.032v155.62752z m-2.8672-223.60064h-41.1648c-5.71392 0-10.89536-3.39968-13.06624-8.74496a13.975552 13.975552 0 0 1 3.072-15.36l29.10208-29.06112c26.46016-26.46016 26.46016-69.69344 0-96.09216L804.4544 107.04896c-13.25056-13.2096-30.67904-19.84512-48.128-19.84512-17.42848 0-34.87744 6.63552-48.128 19.84512l-29.14304 29.06112a14.09024 14.09024 0 0 1-9.9328 4.13696c-1.86368 0-3.70688-0.32768-5.4272-1.06496-5.28384-2.1504-8.74496-7.35232-8.74496-13.06624V84.992c0-37.35552-30.63808-72.192-68.05504-72.192h-155.89376c-37.45792 0-68.05504 34.816-68.05504 72.192v41.10336c0 5.71392-3.39968 10.89536-8.74496 13.06624-1.72032 0.7168-3.56352 1.06496-5.38624 1.06496-3.70688 0-7.29088-1.4336-10.0352-4.13696l-29.10208-29.06112c-13.25056-13.2096-30.67904-19.84512-48.128-19.84512-17.42848 0-34.85696 6.63552-48.128 19.84512l-110.22336 110.08c-26.50112 26.4192-26.50112 69.632 0 96.09216l29.10208 29.06112c4.07552 4.03456 5.28384 10.1376 3.072 15.36-2.1504 5.3248-7.35232 8.74496-13.06624 8.74496h-41.1648c-37.45792 0-70.88128 30.59712-70.88128 67.95264v155.648c0 37.41696 33.42336 68.01408 70.88128 68.01408h41.1648c5.71392 0 10.89536 3.39968 13.06624 8.68352 2.21184 5.28384 1.00352 11.32544-3.072 15.36l-29.10208 29.10208c-26.46016 26.4192-26.46016 69.69344 0 96.09216l110.22336 110.08c13.25056 13.2096 30.69952 19.84512 48.128 19.84512s34.85696-6.63552 48.128-19.84512l29.10208-29.10208c2.74432-2.68288 6.3488-4.13696 9.99424-4.13696 1.86368 0 3.70688 0.38912 5.4272 1.10592a13.985792 13.985792 0 0 1 8.74496 13.02528v41.10336c0 37.41696 30.59712 70.79936 68.05504 70.79936h155.89376c37.41696 0 68.05504-33.3824 68.05504-70.79936v-41.10336c0-5.71392 3.46112-10.8544 8.74496-13.02528 1.72032-0.7168 3.56352-1.10592 5.38624-1.10592 3.70688 0 7.29088 1.4336 9.99424 4.13696l29.14304 29.10208c13.2096 13.2096 30.67904 19.84512 48.128 19.84512 17.42848 0 34.85696-6.63552 48.128-19.84512l110.22336-110.08c26.46016-26.4192 26.46016-69.69344 0-96.09216l-29.10208-29.10208a13.961216 13.961216 0 0 1-3.072-15.36c2.1504-5.28384 7.35232-8.68352 13.06624-8.68352h41.1648c37.45792 0 70.88128-30.59712 70.88128-68.01408v-155.648c-0.02048-37.33504-33.44384-67.93216-70.90176-67.93216zM508.94848 650.36288c-76.30848 0-138.36288-61.99296-138.36288-138.17856 0-76.22656 62.0544-138.17856 138.36288-138.17856 76.30848 0 138.36288 61.952 138.36288 138.17856 0 76.1856-62.03392 138.17856-138.36288 138.17856z m0-344.30976c-113.82784 0-206.41792 92.44672-206.41792 206.1312 0 113.62304 92.59008 206.1312 206.41792 206.1312 113.82784 0 206.41792-92.50816 206.41792-206.1312 0-113.664-92.59008-206.1312-206.41792-206.1312z"/>
+    </svg>
+    {{/* A pill rather than bare text: on a phone the gear and the words sit in
+         the middle of an article, and a label with its own surface stays legible
+         over whatever wording happens to be underneath. */}}
+    <p class="nav-veil-text" role="status" aria-live="polite">{{ .text }}</p>
+  </div>
+</div>

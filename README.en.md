@@ -7,7 +7,7 @@
 [![Hugo Extended](https://img.shields.io/badge/Hugo_Extended-%E2%89%A5_0.162.1-ff4088?logo=hugo)](https://gohugo.io/)
 [![MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[Live demo](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [Example site](exampleSite) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
+[Live demo](https://sasaorange-blog-hugo-demo.pages.dev/) · [Example site](exampleSite) · [Changelog](CHANGELOG.md) · [Issues](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
 
 [简体中文](README.md) | English
 
@@ -21,13 +21,13 @@ sasaOrange builds on [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-r
 
 | Area | Features |
 | --- | --- |
-| Pages | Responsive layout, light/dark mode, covers, taxonomies, archive timeline, writing heatmap |
+| Pages | Responsive layout with a bottom drawer for menus on narrow screens, light/dark mode, covers, taxonomies, archive timeline, writing heatmap |
 | Reading | Collapsible TOC, code language/copy/collapse tools, PhotoSwipe, KaTeX, Mermaid |
 | Search | Multilingual Pagefind search, RSS |
 | Comments and stats | Waline comments/views/counts, popular posts using real data, footer word/reading totals |
 | Social | Categorized friend links, WeChat share QR, personal QR dialogs, donations |
 | Music | Native player, direct playlist/Meting, lyrics/translations, progress/volume/order controls |
-| Navigation | Local navigation preserving the player; English, Simplified/Traditional Chinese and Japanese UI |
+| Navigation | Local navigation preserving the player; reimu-style loading feedback — two paper halves slide together while a big cog turns between them; English, Simplified/Traditional Chinese and Japanese UI |
 
 Hugo templates, vanilla JavaScript, CSS and a little SCSS. Basic reading works without JavaScript; interactive features require it. Refreshing or opening a new tab does not share the playing audio instance.
 
@@ -160,6 +160,8 @@ menu:
 ~~~
 
 Place the banner at `static/images/banner.webp` and avatar at `static/avatar/avatar.webp`. Missing settings hide the images. Article `cover` accepts a path/URL or `false` to hide it. Create a page for each internal menu link.
+
+On narrow screens (≤760px) the header keeps three things: the menu button on the left, the site name, and the tools on the right (palette, RSS, search, light/dark, language). Every `menu` entry moves into a bottom drawer: it slides up from the bottom edge behind a translucent scrim, the current page is bold in the accent with a small bar, and it closes on the scrim, the × button, Esc, or any menu item — with focus returning to the button. The drawer reads the same `menu` list as the desktop header, so the two can never disagree; above 760px neither the button nor the drawer is rendered and the links stay inline.
 
 Fetched originals and their generated image variants are published together under `ruri-media/remote/`, keeping the site root clear.
 

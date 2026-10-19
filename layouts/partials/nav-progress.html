@@ -1,8 +1,12 @@
-{{/* The loading bar for in-page navigation. It belongs to the page shell, so a
-     fresh copy arrives with every page and the old one leaves with the header it
-     hangs from. Rendered right after </header> on purpose: the shell is a block
-     container, so the bar can be lifted left and right to the header's own
-     gutters and up onto its hairline without the header itself becoming a
-     positioning context for it. Decoration only — aria-hidden, no pointer
-     events — and inert until ruri.js gives it a value. */}}
+{{/* The loading bar for in-page navigation: a hairline that rides the header's
+     own rule and fills as the wait goes on.
+
+     It belongs to the page shell, so a fresh copy arrives with every page and the
+     old ones leave together with the page they were covering. Rendered right
+     after </header> on purpose: the shell is a block container, so the bar can be
+     lifted left and right to the header's own gutters and up onto its hairline
+     without the header itself becoming a positioning context for it.
+
+     None of it may take a click, a focus ring or a layout slot of its own — the
+     bar is a reading of the wait, not a control over it. */}}
 <div class="nav-progress" aria-hidden="true"><i></i></div>

@@ -8,7 +8,7 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 ![Status](https://img.shields.io/badge/Status-Release_Candidate-orange)
 
-[线上演示](https://TruE-aL.github.io/sasaOrange-blog-hugo/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
+[线上演示](https://sasaorange-blog-hugo-demo.pages.dev/) · [通用示例](exampleSite) · [变更记录](CHANGELOG.md) · [反馈问题](https://github.com/TruE-aL/sasaOrange-blog-hugo/issues)
 
 简体中文 | [English](README.en.md)
 
@@ -22,42 +22,36 @@ sasaOrange 源自 [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reim
 
 | 分类 | 功能 |
 | --- | --- |
-| 页面 | 响应式布局、纸感阅读配色（暖黄／淡橙红／淡蓝）、深浅色模式、封面、分类与标签、归档时间树、写作热力图 |
+| 页面 | 响应式布局（窄屏菜单收进底部抽屉）、纸感阅读配色（暖沙杏金／冷青）、深浅色模式、封面、分类与标签、归档时间树、写作热力图 |
 | 阅读 | 可折叠目录、代码语言栏／复制／折叠、PhotoSwipe 图片灯箱、KaTeX、Mermaid |
 | 搜索与订阅 | 多语言 Pagefind 搜索、RSS |
 | 评论与统计 | Waline 评论、阅读数／评论数、真实阅读数据热门文章、页脚总字数／阅读时长 |
 | 社交 | 分类友链、微信分享二维码、个人二维码弹窗、打赏 |
 | 音乐 | 原生浮动播放器、直接歌单／Meting、歌词与译文、进度／音量／播放顺序 |
-| 导航与语言 | 站内局部导航保留播放器；简繁中文、英文、日文界面与四语言示例 |
+| 导航与语言 | 站内局部导航保留播放器，切页时两翼纸页滑合、中央大齿轮转动的加载反馈；简繁中文、英文、日文界面与四语言示例 |
 
 ## 外观与配色
 
-默认外观是"纸感书页"：米黄底色、暖褐文字、宋体正文，首页居中排成一张扉页，正文首行缩进两格、两端对齐。
+默认外观是"纸感书页"：近白纸底、暖褐文字、宋体正文，首页居中排成一张扉页，正文首行缩进两格、两端对齐。默认这套配色的色值取自首页插画——杏金的分隔线、赭石褐的强调色，整页和那张画是同一副调子。
 
-顶栏右侧的四枚小圆点是**阅读配色**，可随时切换；再点一次当前选中的那枚即恢复默认。选择存在浏览器本地，刷新与站内跳转都会保持。
+顶栏右侧的两枚小圆点是**阅读配色**，可随时切换；再点一次当前选中的那枚即恢复默认。选择存在浏览器本地，刷新与站内跳转都会保持。
 
 | 配色 | 底色 | 强调色 | 适合 |
 | --- | --- | --- | --- |
-| 暖黄（默认） | 米黄纸感 | 琥珀 | 长时间阅读 |
-| 淡橙红 | 暖白 | 橙红 | 与"orange"类站点呼应 |
-| 淡蓝 | 淡蓝白 | 蓝 | 冷静、夜间 |
+| 暖沙杏金（默认） | 近白纸感 | 赭石褐 | 长时间阅读，与插画同调 |
 | 冷青（原版） | 冷白 | 青蓝 | 喜欢主题改造前那套平面风格 |
 
-前三套是"纸感书页"的语言：圆角卡片、暖调投影、宋体扉页。第四套**冷青**是主题原本的配色，切过去时会一并还原它当初的视觉语言——直角边框、无投影、系统无衬线、标题去掉渐变，只保留本书页式结构（扉页居中、分组竖条、首行缩进）。也就是说原配色不是被染成暖色的旧值，而是完整的一套。
+第一套是"纸感书页"的语言：圆角卡片、暖调投影、宋体扉页。第二套**冷青**是主题原本的配色，切过去时会一并还原它当初的视觉语言——直角边框、无投影、系统无衬线、标题去掉渐变，只保留本书页式结构（扉页居中、分组竖条、首行缩进）。也就是说原配色不是被染成暖色的旧值，而是完整的一套。
 
-四套配色都各有深色版本，与右上角的明暗切换互相独立。所有色值集中在 `assets/ruri.css` 开头的 CSS 变量里，改 `--bg`／`--ink`／`--accent` 等即可整体换色；每套配色只需追加一段 `html.theme-<名字>` 变量，把名字加进 `ruri.js` 的 `SCHEMES`，再到 `baseof.html` 顶栏补一枚按钮。
+两套配色都各有深色版本，与右上角的明暗切换互相独立。所有色值集中在 `assets/ruri.css` 开头的 CSS 变量里，改 `--bg`／`--ink`／`--accent` 等即可整体换色；每套配色只需追加一段 `html.theme-<名字>` 变量，把名字加进 `ruri.js` 的 `SCHEMES`，再到 `baseof.html` 顶栏补一枚按钮。
 
 ### 阅读字体
 
-中文（简繁）与日文页面默认使用主题自带的思源宋体子集 `static/fonts/ruri-serif-sc.woff2`（约 1.8 MB，覆盖 GB 2312 全部汉字与主题界面用字，OFL 1.1 许可）。它只在 CJK 页面加载，英文站不会请求这个文件；正文里出现的生僻字会回退到读者系统的衬线字体。
+正文用读者系统的字体，和 ruri 原本的做法一致：CJK 走系统衬线栈（macOS / iOS 的宋体、Windows 的 SimSun、Linux 的 Noto Serif CJK），西文走 Georgia。**主题不再自带任何字体文件**，页面也就不必为字重付下载成本。
 
-界面文字改动后需要重建子集（需要 Python 的 fontTools 与 brotli，以及系统里的 Noto Serif CJK）：
+早先版本曾打包一份 1.8 MB 的思源宋体子集（GB 2312，OFL 1.1）。实测下来，子集化后笔画密集的字容易发虚，行距里看着比系统字更"糊"，密度高的文章页显得杂乱，因此连同 `scripts/build-font.py` 一起移除了。需要自托管字体时，在 `assets/ruri.css` 开头的 `--serif` 变量里把自己的字体名放到最前，并自行补 `@font-face`。
 
-~~~sh
-python3 scripts/build-font.py
-~~~
-
-不想用自带字体，把 `baseof.html` 里的 `data-font="serif"` 去掉即可，届时回落到系统宋体／明体栈。
+冷青（原版）配色另有自己的字体规则：它沿用主题改造前的系统无衬线字体，切到这套配色时正文会变成无衬线。
 
 主题使用 Hugo 模板、原生 JavaScript、CSS 与少量 SCSS。基础阅读不依赖 JavaScript；搜索、灯箱和播放器等交互需要 JavaScript。刷新或新开标签页不共享正在播放的音频实例。
 
@@ -179,6 +173,7 @@ avatar: avatar.webp
 ruri:
   brandMark: "r."
   tagline: Per aspera ad astra.
+  bannerFit: true
   homeEyebrow: NOTE, TECH & POEM
   homeHeading: [A quiet place, for your words.]
   footerText: Made with care.
@@ -195,6 +190,10 @@ menu:
 ~~~
 
 `banner` 对应 `static/images/banner.webp`；`avatar` 对应 `static/avatar/avatar.webp`。不配置时不显示对应图片。文章 `cover` 可指定图片路径／URL，`false` 关闭。添加导航后需要创建对应页面。
+
+`ruri.bannerFit` 为 `true` 时大图按原图比例整张铺满（不裁切），适合宽幅插画；为 `false` 时退回旧的 16:7 横带裁切，适合照片。示例站用的是 `true`。
+
+窄屏（≤760px）下顶栏只留三样东西：左侧的菜单按钮、站点名、右侧工具（配色、RSS、搜索、明暗、语言）。菜单项——即上面 `menu` 里的每一项——收进底部抽屉：点左上角的菜单按钮从底部滑出，半透明遮罩压住页面，当前页以强调色加粗并带一条小竖条。抽屉可以点遮罩、点右上角「×」、按 Esc 或点任一菜单项关闭；关闭后焦点回到菜单按钮。抽屉里的菜单与顶栏桌面菜单来自同一份 `menu` 配置，两边永远不会不一致；桌面端（>760px）按钮与抽屉均不渲染，菜单照旧平铺在顶栏。
 
 远程图片会在构建时下载并生成 WebP 多档尺寸。若文章使用的是 CDN 地址而构建时无法抓取，可用 `ruri.images.remoteSources` 把前缀改写到原始地址，文章中的链接不必修改：
 
@@ -454,10 +453,14 @@ python3 -m http.server 8080 --directory public
 
 | 仓库 | 部署到 | 内容 | 工作流 |
 | --- | --- | --- | --- |
-| `sasaOrange-blog-hugo`（本仓库） | [GitHub Pages](https://TruE-aL.github.io/sasaOrange-blog-hugo/) | `exampleSite/` 的通用示例 | `deploy-pages.yml` |
-| `sasaOrange-blog-hugo-personalsite` | Cloudflare Pages | 真实文章与个人配置 | 站点仓库的 `deploy.yml` |
+| `sasaOrange-blog-hugo`（本仓库） | [Cloudflare Pages](https://sasaorange-blog-hugo-demo.pages.dev/)（项目 `sasaorange-blog-hugo-demo`） | `exampleSite/` 的通用示例 | `deploy-demo.yml` |
+| `sasaOrange-blog-hugo-personalsite` | Cloudflare Pages（项目 `sasaorange-blog-hugo-personalsite`） | 真实文章与个人配置 | 站点仓库的 `deploy.yml` |
 
-演示站用 `--themesDir themes` 把仓库根目录挂成 `themes/ruri` 再构建 `exampleSite`，所以 `exampleSite` 始终是一份可以整目录复制走的独立站点。它的 `baseURL` 带仓库名（`/sasaOrange-blog-hugo/` 子路径），部署到自己的域名时要改掉。
+演示站用 `--themesDir themes` 把仓库根目录挂成 `themes/ruri` 再构建 `exampleSite`，所以 `exampleSite` 始终是一份可以整目录复制走的独立站点。它的 `baseURL` 是 Cloudflare 项目的根域名（`https://sasaorange-blog-hugo-demo.pages.dev/`，不带子路径），换域名或部署到子路径时要改掉。
+
+演示站的分支规则与站点仓库一致：`main` 发生产环境，PR 发 `<分支名>.sasaorange-blog-hugo-demo.pages.dev` 预览环境并把地址回帖到 PR。预览和生产是 Cloudflare 上两条独立的分支部署，互不覆盖。`*.pages.dev` 是公开域名，预览靠 Cloudflare Access 保护——那部分在 Zero Trust 面板里配，工作流只负责部署，需要 `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID` 两个密钥。
+
+本仓库不再使用 GitHub Pages：一个仓库只有一条 Pages 发布通道，预览和正式站无法并存，而 PR 分支也受 `github-pages` 环境的部署分支策略限制。
 
 个人站点通过 git submodule 引用本仓库。本仓库有提交后，`bump-site.yml` 会把站点的 submodule 指针推到该提交，站点随即重新构建；这需要一个能写站点仓库的 `SITE_PUSH_TOKEN` 密钥。
 

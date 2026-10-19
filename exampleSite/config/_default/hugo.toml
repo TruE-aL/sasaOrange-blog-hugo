@@ -3,10 +3,10 @@
 # 主题源码不保存个人设置。 / Keep personal settings outside the theme.
 
 # 正式网址，包含子路径及末尾 /。 / Public URL including deployment subpath and trailing slash.
-# 本仓库的示例站部署在 GitHub Pages 的项目子路径下，所以 baseURL 带仓库名；
+# 本仓库的示例站部署在 Cloudflare Pages 的根域名上，所以 baseURL 不带子路径；
 # 复制到自己的博客时改成自己的域名。
-# This repo's demo deploys to a GitHub Pages project subpath, hence the repo name.
-baseURL = "https://TruE-aL.github.io/sasaOrange-blog-hugo/"
+# This repo's demo lives at the root of a Cloudflare Pages project, hence no subpath.
+baseURL = "https://sasaorange-blog-hugo-demo.pages.dev/"
 # 站点标题。 / Site title.
 title = "sasaOrange"
 # Submodule 安装到 themes/ruri；Module 用户删除此项并添加 module.imports。

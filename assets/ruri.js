@@ -1,16 +1,20 @@
 (()=>{'use strict';
-const $=s=>document.querySelector(s);const tr=key=>{try{return JSON.parse(document.querySelector('#ruri-i18n').textContent)[key]||key}catch{return key}};let waline=null,pageVersion=0;
+const $=s=>document.querySelector(s);const tr=key=>{try{return JSON.parse(document.querySelector('#ruri-i18n').textContent)[key]||key}catch{return key}};let waline=null,pageVersion=0,menuAbort=null,menuToggle=null;
 function syncDark(){const mode=document.documentElement.dataset.theme;document.documentElement.classList.toggle('waline-dark',mode==='dark'||(mode!=='light'&&matchMedia('(prefers-color-scheme:dark)').matches))}
 syncDark();matchMedia('(prefers-color-scheme:dark)').addEventListener('change',syncDark);
-/* Reading schemes (warm / orange / blue). The header dots live in the page shell,
+/* Reading schemes (warm / ruri). The header dots live in the page shell,
    so in-page navigation brings a fresh set; the state is read from storage each
    time instead of being cached, and applied to <html> where the CSS expects it. */
-const SCHEMES=['warm','orange','blue','ruri'];
+const SCHEMES=['warm','ruri'];
 function activeScheme(){try{const s=localStorage.getItem('ruri-scheme');return SCHEMES.includes(s)?s:'warm'}catch{return 'warm'}}
 function paintScheme(){
   const current=activeScheme();
   SCHEMES.forEach(name=>document.documentElement.classList.toggle('theme-'+name,name!=='warm'&&name===current));
   document.querySelectorAll('.scheme-switch button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.scheme===current)));
+  /* The bar is measured, not guessed, and a scheme can change its metrics —
+     the rail and the veil hang off --header-h, so it is taken again the moment
+     a palette lands rather than waiting for a resize that may never come. */
+  measureHeader();
 }
 /* Clicking the scheme already in use clears the choice and hands the page back
    to its default, which is how the novel site behaves too. */
@@ -57,6 +61,35 @@ function initArchive(){
     archiveObserver.observe(footer);
   }
 }
+/* reimu's scroll-in motion, kept for this theme's components: a card that has
+   not been reached yet waits a little below its place and rises into it. The
+   waiting state is a class on <html> set before first paint (baseof.html), so
+   the page is complete without JavaScript — this only decides when each marked
+   component gets to arrive, and the moving itself is done in CSS. */
+let revealObserver=null,revealWatch=null;
+function initReveal(){
+  revealObserver?.disconnect();revealWatch?.disconnect();
+  if(!('IntersectionObserver' in window)){
+    /* Nothing to wait for: every component is simply where it belongs. */
+    document.documentElement.classList.remove('reveal-on');
+    window.__ruriRevealReady=true;return;
+  }
+  window.__ruriRevealReady=true;
+  revealObserver=new IntersectionObserver(entries=>{
+    for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      entry.target.classList.add('is-revealed');
+      revealObserver.unobserve(entry.target);
+    }
+  },{rootMargin:'0px 0px -8% 0px',threshold:0});
+  const scan=()=>document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(node=>revealObserver.observe(node));
+  scan();
+  /* Archive years folded away below the first one come back on demand, and a
+     year that was hidden was never observed, so the tree is watched for the
+     ones that appear. */
+  const tree=$('.archive-tree');
+  if(tree){revealWatch=new MutationObserver(scan);revealWatch.observe(tree,{attributes:true,subtree:true,attributeFilter:['hidden']})}
+}
 function localizePlayer(){
  document.querySelectorAll('[data-ruri-label]').forEach(el=>{const label=tr(el.dataset.ruriLabel);el.setAttribute('aria-label',label);if(el.hasAttribute('title'))el.title=label});
  updateOrder();syncVolume();syncPlayback();if(songs.length)$('#music-count').textContent=songs.length+tr('tracks');
@@ -71,8 +104,46 @@ function shuffleFriends(){
     grid.append(...links);
   });
 }
-function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();localizePlayer();paintScheme();shuffleFriends();
-initArchive();window.RuriFeatures.init();
+/* Narrow-screen menu drawer. Same trick as the contents drawer: the listeners
+   hang off a controller that is dropped on every navigation, because the shell
+   (and with it the button and the panel) is replaced; anything left open is
+   closed before the swap so the next page never starts behind a scrim. */
+function closeMenu(restoreFocus){
+  const drawer=$('#ruri-menu');if(!drawer)return;
+  if(!drawer.classList.contains('is-open'))return;
+  drawer.classList.remove('is-open');drawer.setAttribute('aria-hidden','true');
+  $('#menu-scrim')?.classList.remove('is-open');
+  document.body.classList.remove('menu-open');
+  menuToggle?.setAttribute('aria-expanded','false');
+  if(restoreFocus)menuToggle?.focus();
+}
+function openMenu(){
+  const drawer=$('#ruri-menu');if(!drawer)return;
+  drawer.classList.add('is-open');drawer.setAttribute('aria-hidden','false');
+  $('#menu-scrim')?.classList.add('is-open');
+  document.body.classList.add('menu-open');
+  menuToggle?.setAttribute('aria-expanded','true');
+  drawer.querySelector('a[aria-current],a')?.focus({preventScroll:true});
+}
+function initMenu(){
+  const drawer=$('#ruri-menu'),button=$('#menu-toggle'),scrim=$('#menu-scrim');
+  if(!drawer||!button)return;
+  /* The old controller belongs to nodes that no longer exist. */
+  menuAbort?.abort();
+  if(button===menuToggle&&drawer.classList.contains('is-open'))return;
+  menuToggle=button;
+  closeMenu(false);
+  const controller=new AbortController();menuAbort=controller;const signal=controller.signal;
+  button.addEventListener('click',()=>drawer.classList.contains('is-open')?closeMenu(true):openMenu(),{signal});
+  scrim?.addEventListener('click',()=>closeMenu(true),{signal});
+  drawer.querySelector('.menu-close')?.addEventListener('click',()=>closeMenu(true),{signal});
+  /* Picking a destination closes the panel first, so the sheet that starts
+     covering the page does not have to be seen sliding out from under it. */
+  drawer.addEventListener('click',event=>{if(event.target.closest('a'))closeMenu(false)},{signal});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&drawer.classList.contains('is-open'))closeMenu(true)},{signal});
+}
+function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();initMenu();localizePlayer();paintScheme();shuffleFriends();
+initArchive();initReveal();window.RuriFeatures.init();
 $('#theme-toggle')?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const mode=dark?'light':'dark';document.documentElement.dataset.theme=mode;try{localStorage.setItem('ruri-theme',mode)}catch{}syncDark()});
 
 initTabs();initComments();document.querySelectorAll('.toc ul ul').forEach(ul=>{const li=ul.parentElement;if(!li||li.querySelector(':scope > details'))return;const link=li.querySelector(':scope > a'),d=document.createElement('details'),summary=document.createElement('summary');d.open=false;if(link){summary.innerHTML=link.outerHTML;link.remove()}d.append(summary,ul);li.append(d)});loadMusic();const toc=document.querySelector('.toc');if(toc){const links=[...toc.querySelectorAll('a[href^=\"#\"]')],heads=[...document.querySelectorAll('.prose h2,.prose h3,.prose h4,.prose h5,.prose h6')];const reveal=id=>{toc.querySelectorAll('details').forEach(d=>d.open=false);const a=links.find(x=>x.getAttribute('href')==='#'+id);if(a){let d=a.closest('details');while(d){d.open=true;d=d.parentElement.closest('details')}}};const observer=new IntersectionObserver(es=>{const hit=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(hit)reveal(hit.target.id)},{rootMargin:'-18% 0px -68% 0px',threshold:0});tocObserver=observer;heads.forEach(h=>observer.observe(h))}document.querySelectorAll('.copy-link').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.url);b.textContent=tr('copied')}catch{b.textContent=b.dataset.url}}));
@@ -270,23 +341,37 @@ let navigationController;
 /* ---- in-page navigation feedback -------------------------------------------
    Clicking a link used to do nothing visible until the next page had been
    fetched, parsed and swapped in. On the archive that is a second or more of a
-   frozen screen, which reads as a broken link. Two things now mark the wait:
-   a hairline bar at the very top of the window, and a staggered row of dots on
-   the link that was clicked.
+   frozen screen, which reads as a broken link.
 
-   The waiting state is deliberately narrow. The header, the menu and the
-   sidebar belong to the page being left, so they keep their content and their
-   place: nothing is hidden, faded or replaced, and the reader can still click
-   another link while the first one loads. The page being left also stays put
-   with its scroll position, sidebar and player, and is covered by the new one
-   only once that one is parsed and its scripts are ready. The bar narrows
-   itself to the banner when the link had a shell to belong to, and is removed
-   again the moment the new page is in place.
+   Four things now mark the wait, and they answer two different questions.
 
-   Both marks are skipped when the reader asked for reduced motion, and both are
-   decoration only: `aria-hidden`, no focus, no hit area. Screen readers get the
-   busy state on <main> instead of a progress indicator called "Loading" with no
-   percentage to report. */
+   "Where am I going?" is answered by the header itself: the menu item that was
+   clicked takes the current-page mark straight away, so the reader sees where
+   they are headed before a single byte arrives. The mark is borrowed, not
+   moved — every other item keeps its own, and the swapped-in page brings the
+   real one. Link clicks have always been cancelable (`defaultPrevented` guards
+   this listener), so a plain link is marked and the navigation proceeds.
+
+   "Is it working?" is answered below the menu: two opaque halves of paper slide
+   in from the sides and close over the page — the loader motion of
+   hugo-theme-reimu — with a big cog turning in the middle where reimu puts its
+   taiji, and one line of text under it. The header, the menu and the sidebar
+   stay above the paper, untouched and clickable, which is what makes a slow
+   page feel handled rather than stuck. The veil covers the page being left —
+   not a blank rectangle — so it reads as fog over a room, and it lives outside
+   the page shell so the new page can be laid in behind it: the paper draws back
+   to reveal the page the reader asked for, never the one they were leaving, and
+   the close is given its full duration first so even a cache hit is a gesture
+   rather than a flicker. This is reimu's own order of operations.
+
+   A hairline bar riding the header's own rule fills from left to right as the
+   wait goes on. It is the quietest of the four and the one that survives a
+   cancelled navigation.
+
+   All of it is skipped or stilled when the reader asked for reduced motion, and
+   none of it takes a click: clicking the page mid-wait cancels the navigation.
+   Screen readers get `aria-busy` on <main> and the veil's own live region
+   instead of a progress indicator with no percentage to report. */
 let progressTimer=0,progressValue=0,progressToken=0;
 /* The bar is pinned to the bottom of the header, and the header's height depends
    on the viewport (one row on a desktop, two on a phone), on how much the
@@ -300,8 +385,13 @@ function measureHeader(){
 measureHeader();
 addEventListener('resize',measureHeader,{passive:true});
 addEventListener('orientationchange',measureHeader);
-/* The bar lives inside the page shell, so a fresh one arrives with every page
-   and the reference has to be re-read rather than cached across navigations. */
+/* A face that arrives after the first measurement can change the bar's height
+   (the brand sets in the reader's own serif); take it again once the faces
+   that are going to load have loaded. */
+document.fonts?.ready.then(measureHeader);
+/* The bar and the veil live inside the page shell, so fresh copies arrive with
+   every page and the references have to be re-read rather than cached across
+   navigations. */
 function progressFill(){return $('.nav-progress i')}
 function progressBar(){return $('.nav-progress')}
 function paintProgress(value){
@@ -309,13 +399,74 @@ function paintProgress(value){
   bar.classList.add('is-running');
   progressFill().style.transform='scaleX('+value.toFixed(3)+')';
 }
+/* The visited page sits under the veil but is not gone: it keeps its scroll
+   position, its sidebar and its player, so nothing is frozen or reflowed while
+   the reader waits. */
+let veilLink=null,borrowedCurrent=null,veilClosedAt=0;
+function openVeil(link){
+  /* The sheet lives outside the page shell now, so it survives the swap rather
+     than being torn away with the old page — the opening is played out over the
+     new one. */
+  const veil=$('.nav-veil');if(!veil)return;
+  veilLink=link;
+  veil.classList.add('is-open');
+  /* The close's own starting gun: waitForVeilClosed() gives the gesture its full
+     duration before the next page is laid in behind the paper. */
+  veilClosedAt=performance.now();
+  /* One `aria-current` on the page: the borrowed mark replaces whatever the
+     previous page marked, or the menu would claim two places at once. */
+  if(link){
+    borrowedCurrent=[...document.querySelectorAll('.main-nav a[aria-current]')];
+    borrowedCurrent.forEach(item=>item.removeAttribute('aria-current'));
+    link.setAttribute('aria-current','page');
+  }
+}
+function closeVeil(){
+  const veil=$('.nav-veil');if(veil)veil.classList.remove('is-open');
+  /* Hand the marks back to the page: either the swap already brought the real
+     one (the old links are detached and this is a no-op) or the navigation was
+     cancelled and the reader is still where they were. */
+  borrowedCurrent?.forEach(item=>{if(item.isConnected&&!item.hasAttribute('aria-current'))item.setAttribute('aria-current','page')});
+  borrowedCurrent=null;veilLink=null;
+}
+/* The close is given its full duration before the next page is laid in behind
+   the paper. Without it a fast navigation — a cache hit, a page already in
+   memory — would open almost immediately and read as a flicker rather than a
+   gesture; reimu gives its loader the same minimum showing. The duration is the
+   wing's own computed transition rather than a hard-coded number, so the two
+   can never drift apart, and a reduced-motion reader, whose transitions are
+   silenced, gives way at once. */
+function waitForVeilClosed(){
+  const veil=$('.nav-veil');
+  if(!veil)return Promise.resolve();
+  const wing=veil.querySelector('.nav-veil-wing');
+  const duration=wing&&parseFloat(getComputedStyle(wing).transitionDuration);
+  if(!duration)return Promise.resolve();
+  const remaining=duration*1000-(performance.now()-veilClosedAt);
+  if(remaining<=0)return Promise.resolve();
+  return new Promise(resolve=>setTimeout(resolve,remaining));
+}
+/* The mark belongs to the menu, not to a particular click path: a browser
+   back/forward lands on a page whose own markup already carries it, and a
+   navigation that was cancelled puts it back where it was. */
+/* Both menus carry the mark: the header's inline links on wide screens and the
+   drawer's rows on narrow ones. Re-marking only one of them left the other
+   pointing at the page just left. */
+function syncCurrent(url){
+  const path=new URL(url,location.href).pathname;
+  document.querySelectorAll('.main-nav a,#ruri-menu a').forEach(item=>{
+    const target=new URL(item.href,location.href).pathname;
+    item.toggleAttribute('aria-current',target===path);
+  });
+}
 /* The busy flag goes on the article column: the rest of the shell is not going
    anywhere, so announcing it as busy would be wrong. */
 function busyTarget(){return $('main')}
-function startProgress(){
+function startProgress(link){
   measureHeader();
   document.documentElement.classList.add('is-loading');
   busyTarget()?.setAttribute('aria-busy','true');
+  openVeil(link);
   /* A second click while the first page is still loading: the older bar owns
      nothing any more, and its late timeout must not clear the new one. */
   const token=++progressToken;
@@ -336,7 +487,7 @@ function finishProgress(){
   clearInterval(progressTimer);progressTimer=0;
   document.documentElement.classList.remove('is-loading');
   document.querySelectorAll('[aria-busy="true"]').forEach(node=>node.removeAttribute('aria-busy'));
-  document.querySelectorAll('.is-loading-link').forEach(link=>link.classList.remove('is-loading-link'));
+  closeVeil();
   paintProgress(1);
   /* The fill is taken away by the page swap, which is the point: the new page
      arrives with an empty bar rather than with a finished one fading out. A
@@ -344,15 +495,25 @@ function finishProgress(){
   window.setTimeout(()=>{if(token===progressToken)paintProgress(0)},180);
 }
 async function navigate(url,push=true,link){
+  closeMenu(false);
   navigationController?.abort();
   const controller=new AbortController();navigationController=controller;
-  if(link)link.classList.add('is-loading-link');
-  startProgress();
+  startProgress(link);
   try{
     const response=await fetch(url,{signal:controller.signal,headers:{'X-Ruri-Navigation':'1'}});
     if(!response.ok||!response.headers.get('content-type')?.includes('text/html'))throw Error();
     const doc=new DOMParser().parseFromString(await response.text(),'text/html'),next=doc.querySelector('#page-shell');
     if(!next)throw Error();
+    if(controller.signal.aborted)return;
+    /* The new page is laid in behind the sheet, not in front of it: the close
+       plays out over the page being left, the swap happens under the paper —
+       invisible, because the sheet lives outside the shell and outlives it —
+       and only then does the paper draw back. What the opening reveals is the
+       page the reader asked for, never the one they were leaving, which is
+       reimu's own order of operations. The close is waited out first so a fast
+       navigation still gets the full gesture instead of a flicker. The bar fills
+       the moment the page is ready, which is what it has always meant. */
+    await waitForVeilClosed();
     if(controller.signal.aborted)return;
     window.RuriFeatures.destroy();waline?.destroy();waline=null;pageVersion++;
     document.querySelectorAll('#ruri-page-extras').forEach(x=>x.remove());
@@ -361,6 +522,12 @@ async function navigate(url,push=true,link){
     document.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>x.remove());
     doc.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>document.head.append(x.cloneNode(true)));
     if(push)history.pushState({},'',response.url+new URL(url).hash);
+    /* The sheet is not part of the shell and survives the swap untouched — it is
+       still open, and still the one that will draw back. The borrowed marks,
+       though, belong to links that are no longer in the document, so they are
+       dropped before initPage() re-reads the new shell. */
+    veilLink=null;borrowedCurrent=null;
+    syncCurrent(response.url);
     initPage();
     for(const old of next.querySelectorAll('script[data-page-script]')){
       const script=document.createElement('script');
@@ -372,12 +539,14 @@ async function navigate(url,push=true,link){
     const hash=new URL(url).hash;
     const target=hash?document.getElementById(decodeURIComponent(hash.slice(1))):null;
     if(target)target.scrollIntoView();else window.scrollTo(0,0);
+    /* The page is in place behind the paper: the bar fills and the sheet draws
+       back, revealing it. */
     finishProgress();
   }catch(e){
     if(e.name==='AbortError'){
       /* Two ways to get here. A newer click took over and owns the marks now,
          so this call must keep its hands off them. Or the reader clicked the
-         sheet to stay where they are: that call already cleaned up. */
+         veil to stay where they are: that call already cleaned up. */
       if(navigationController!==controller)return;
       return;
     }
@@ -385,20 +554,24 @@ async function navigate(url,push=true,link){
     location.assign(url);
   }
 }
-/* Nothing is covered while a page loads, so the reader is free to change their
-   mind: clicking anything that is not a link means "stay here", and the fetch is
-   dropped so the page is handed back as it was. A link click is left alone — the
-   listener below starts a fresh navigation, which is how a second choice beats
-   the first rather than cancelling both. The header and the menu are outside
-   #main, so the same rule keeps the tools, the language menu and the search
-   button usable mid-wait. */
+/* The veil covers the page but swallows nothing, so the reader is free to
+   change their mind: clicking anything that is not a link means "stay here",
+   and the fetch is dropped so the page is handed back as it was. A link click is
+   left alone — the listener below starts a fresh navigation, which is how a
+   second choice beats the first rather than cancelling both. The header and the
+   menu sit above the veil for the same reason: the tools, the language menu
+   and the search button stay usable mid-wait, and a tool is not a change of
+   mind — pressing the theme button while the next page loads switches the theme
+   and leaves the navigation alone. */
+const TOOLS='.site-header button,.site-header summary,.site-header a';
 document.addEventListener('click',event=>{
-  if(!document.documentElement.classList.contains('is-loading')||event.target.closest('a'))return;
+  if(!document.documentElement.classList.contains('is-loading'))return;
+  if(event.target.closest('a')||event.target.closest(TOOLS))return;
   navigationController?.abort();
   finishProgress();
 },true);
 /* Coming back from the back/forward cache gives back the page exactly as it was
-   left, including the bar and the dots of a navigation that the browser then
+   left, including the veil and the bar of a navigation that the browser then
    took over. Clear them; the page itself needs nothing. */
 window.addEventListener('pageshow',event=>{if(event.persisted)finishProgress()});
 document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin||!/^https?:$/.test(u.protocol)||/\.[a-z0-9]+$/i.test(u.pathname))return;if(u.pathname===location.pathname&&u.search===location.search&&u.hash)return;e.preventDefault();navigate(u.href,true,a)});

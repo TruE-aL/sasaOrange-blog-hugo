@@ -1,9 +1,7 @@
 /* ------------------------------------------------------------------
-   Palette: four reading schemes, switchable from the header.
+   Palette: two reading schemes, switchable from the header.
 
-     warm   (default)  cream paper + amber      — :root / .dark
-     orange            warm white + orange-red  — html.theme-orange
-     blue              pale blue                — html.theme-blue
+     warm   (default)  paper + apricot sand     — :root / .dark
      ruri              the original cool teal   — html.theme-ruri
 
    "ruri" is the theme's own palette as it shipped before the reading-room
@@ -12,23 +10,19 @@
 
    The choice is stored in localStorage('ruri-scheme'); the inline script in
    baseof.html applies it before first paint so a reload never flashes the
-   wrong colour. Values are borrowed from the novel site this blog sits next
-   to, so both sites read as one family.
+   wrong colour.
+
+   "warm" is now sampled from the hero illustration rather than borrowed from
+   the novel site: near-white paper, apricot sand for rules and tint, and the
+   character's dusty clay brown as the accent. The darker the accent, the less
+   it fights the artwork sitting right above it — a saturated orange-red read
+   as a second, louder image. Accent tones are picked to clear 4.5:1 against
+   the paper, since they are used for links and small labels.
    ------------------------------------------------------------------ */
-:root{color-scheme:light;--bg:#fdfaf3;--paper:#fffdf8;--ink:#3d3529;--muted:#6b5f4d;--faint:#75684f;--line:#e8dfcb;--accent:#b83c1f;--accent-deep:#8a5a18;--tint:#f7f0e2;--hero-wash:rgba(240,138,99,.16);--selection:rgba(240,138,99,.32);--shadow-rgb:150,62,30;--shadow-sm:0 2px 8px rgba(var(--shadow-rgb),.07);--shadow-md:0 12px 26px rgba(var(--shadow-rgb),.13);--shadow-lg:0 24px 52px rgba(var(--shadow-rgb),.18);--serif:"Novel Serif SC","Noto Serif CJK SC","Source Han Serif SC","Songti SC","SimSun",Georgia,"Times New Roman",serif;font-family:var(--serif);font-size:15px}
-:root[data-theme=dark]{color-scheme:dark;--bg:#241512;--paper:#2c1c17;--ink:#f0ddd6;--muted:#c0a49b;--faint:#a98d84;--line:#4a2f27;--accent:#ff9e7a;--accent-deep:#e0b877;--tint:#2c1c17;--hero-wash:rgba(255,158,122,.1);--selection:rgba(255,158,122,.28);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#241512;--paper:#2c1c17;--ink:#f0ddd6;--muted:#c0a49b;--faint:#a98d84;--line:#4a2f27;--accent:#ff9e7a;--accent-deep:#e0b877;--tint:#2c1c17;--hero-wash:rgba(255,158,122,.1);--selection:rgba(255,158,122,.28);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
+:root{color-scheme:light;--bg:#fdfaf3;--paper:#fffdf8;--ink:#3d2d23;--muted:#8c6455;--faint:#7d6355;--line:#f1dbbd;--accent:#9c601e;--accent-deep:#8f5c22;--tint:#f7ebd9;--hero-wash:rgba(233,196,150,.30);--selection:rgba(233,196,150,.55);--shadow-rgb:120,84,44;--shadow-sm:0 2px 8px rgba(var(--shadow-rgb),.07);--shadow-md:0 12px 26px rgba(var(--shadow-rgb),.13);--shadow-lg:0 24px 52px rgba(var(--shadow-rgb),.18);--serif:"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",Georgia,"Times New Roman",serif;font-family:var(--serif);font-size:15px}
+:root[data-theme=dark]{color-scheme:dark;--bg:#221813;--paper:#2b2019;--ink:#e8dcd2;--muted:#c4a596;--faint:#b39a8c;--line:#483329;--accent:#f2b878;--accent-deep:#e3a06a;--tint:#2b2019;--hero-wash:rgba(242,184,120,.10);--selection:rgba(242,184,120,.26);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#221813;--paper:#2b2019;--ink:#e8dcd2;--muted:#c4a596;--faint:#b39a8c;--line:#483329;--accent:#f2b878;--accent-deep:#e3a06a;--tint:#2b2019;--hero-wash:rgba(242,184,120,.10);--selection:rgba(242,184,120,.26);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
 }
-
-/* orange: nearly neutral warm white, orange-red accent */
-html.theme-orange{--bg:#fff8f5;--paper:#fff;--ink:#3a2a26;--muted:#6d5049;--faint:#7d5f57;--line:#f4d8cd;--accent:#b83c1f;--accent-deep:#8a5a18;--tint:#fdeee7;--hero-wash:rgba(240,138,99,.16);--selection:rgba(240,138,99,.32);--shadow-rgb:150,62,30}
-html.theme-orange[data-theme=dark]{--bg:#241512;--paper:#2c1c17;--ink:#f0ddd6;--muted:#c0a49b;--faint:#a98d84;--line:#4a2f27;--accent:#ff9e7a;--accent-deep:#e0b877;--tint:#2c1c17;--hero-wash:rgba(255,158,122,.1);--selection:rgba(255,158,122,.28);--shadow-rgb:0,0,0}
-@media(prefers-color-scheme:dark){html.theme-orange:not([data-theme=light]){--bg:#241512;--paper:#2c1c17;--ink:#f0ddd6;--muted:#c0a49b;--faint:#a98d84;--line:#4a2f27;--accent:#ff9e7a;--accent-deep:#e0b877;--tint:#2c1c17;--hero-wash:rgba(255,158,122,.1);--selection:rgba(255,158,122,.28);--shadow-rgb:0,0,0}}
-
-/* blue: the pale-blue scheme, same structure as the licence cards over there */
-html.theme-blue{--bg:#f6fbff;--paper:#fff;--ink:#2d3e50;--muted:#4f6b85;--faint:#5c728a;--line:#d8e6f0;--accent:#2c5f8a;--accent-deep:#356f9d;--tint:#eaf4fc;--hero-wash:rgba(74,144,194,.1);--selection:rgba(74,144,194,.26);--shadow-rgb:40,86,122}
-html.theme-blue[data-theme=dark]{--bg:#16232e;--paper:#1e3040;--ink:#d6e4ef;--muted:#93aabd;--faint:#8ba3b8;--line:#2a4155;--accent:#8ec5e8;--accent-deep:#3f7ca9;--tint:#1b2a36;--hero-wash:rgba(142,197,232,.08);--selection:rgba(142,197,232,.28);--shadow-rgb:0,0,0}
-@media(prefers-color-scheme:dark){html.theme-blue:not([data-theme=light]){--bg:#16232e;--paper:#1e3040;--ink:#d6e4ef;--muted:#93aabd;--faint:#8ba3b8;--line:#2a4155;--accent:#8ec5e8;--accent-deep:#3f7ca9;--tint:#1b2a36;--hero-wash:rgba(142,197,232,.08);--selection:rgba(142,197,232,.28);--shadow-rgb:0,0,0}}
 
 /* ruri: the original palette, values copied verbatim from the first release.
    Cool ink on a faintly green paper, teal accent, flat shadows (it had none). */
@@ -37,24 +31,21 @@ html.theme-ruri[data-theme=dark]{--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--mu
 @media(prefers-color-scheme:dark){html.theme-ruri:not([data-theme=light]){--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--muted:#92a4ac;--faint:#7d8f97;--line:#324249;--accent:#8fb9c8;--accent-deep:#6f9cae;--tint:#223138;--hero-wash:rgba(143,185,200,.08);--selection:rgba(143,185,200,.24);--shadow-rgb:0,0,0}}
 
 /* Dark schemes keep the paper tone but need black shadows to stay readable. */
-:root[data-theme=dark],html.theme-orange[data-theme=dark],html.theme-blue[data-theme=dark]{--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
+:root[data-theme=dark]{--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
 html.theme-ruri[data-theme=dark]{--shadow-sm:0 1px 4px rgba(0,0,0,.35);--shadow-md:0 10px 26px rgba(0,0,0,.4);--shadow-lg:0 20px 44px rgba(0,0,0,.45)}
 ::selection{background:var(--selection)}
 
-/* The reading serif travels with the theme (subset by scripts/build-font.py,
-   OFL 1.1, licence in static/fonts/). It is fetched only for pages that carry
-   CJK text — baseof.html adds data-font on the <html> element for CN/TW/JP —
-   so a Latin-only site never pays for it. Rare characters outside the subset
-   fall back through the system list below. */
-/* 两个来源，按顺序试：
-   1. Cloudflare Pages 上的同名个人站——同一个 1.8MB 文件在那边 3 秒就传完，
-      GitHub Pages 要 100 秒以上（实测 130 秒仍未下完），演示站就是受害者。
-   2. 同源副本。CF 挂了或没给 CORS 头时退回这里：慢，但字形是对的，
-      不会悄悄换成系统宋体。
-   注意不要写成 "/fonts/..."：那是域名根，子路径部署（GitHub Pages 项目站
-   是 /<repo>/）会 404。相对路径以 CSS 所在的 /assets/css/ 为基准，上两级。 */
-@font-face{font-family:"Ruri Serif SC";src:url("https://sasaorange-blog-hugo-personalsite.pages.dev/fonts/ruri-serif-sc.woff2") format("woff2"),url("../../fonts/ruri-serif-sc.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+2190-21FF,U+2460-24FF,U+25A0-25FF,U+2600-26FF,U+2E80-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF00-FFEF}
-html[data-font=serif]{--serif:"Ruri Serif SC","Noto Serif CJK SC","Source Han Serif SC","Songti SC","SimSun",Georgia,"Times New Roman",serif}
+/* Type comes from the reader's machine, as ruri ships it: the platform serif for
+   CJK (Songti SC on macOS and iOS, SimSun on Windows, Noto Serif CJK SC on Linux)
+   and Georgia for Latin. Nothing is downloaded — the stack is the whole mechanism.
+
+   Earlier revisions of this theme bundled a 1.8 MB Source Han Serif (思源宋体)
+   subset, first as "Ruri Serif SC" and then built by scripts/build-font.py. Both
+   are gone. A GB 2312 subset cannot cut every glyph cleanly, so dense pages looked
+   washed out beside the crisp system faces, and the file made every CJK page wait
+   on 1.8 MB before it could paint. There is no @font-face left in this sheet and
+   no font file in the repository; if a page here still renders in Source Han
+   Serif, the font is coming from the operating system, not from the theme. */
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:24px}
 body{margin:0;background:var(--bg);color:var(--ink);line-height:1.75;-webkit-font-smoothing:antialiased}
@@ -1322,13 +1313,16 @@ body.toc-open #toc-toggle{display:none}
 /* ---- Header: the brand becomes a small orange seal + serif wordmark ---- */
 .site-header{border-bottom:1px solid var(--line);min-height:76px;gap:28px}
 .brand{font-size:17px;font-weight:600;letter-spacing:.04em;gap:11px}
-.brand-mark{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff8f5;font:600 13px/1 var(--serif);letter-spacing:0;transition:transform .3s ease}
+.brand-mark{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fffdf8;font:600 13px/1 var(--serif);letter-spacing:0;transition:transform .3s ease}
 .brand:hover .brand-mark{transform:rotate(-8deg)}
-:root[data-theme=dark] .brand-mark{color:#241512}
+:root[data-theme=dark] .brand-mark{color:#2b1a12}
 .brand small{font-family:var(--serif);font-style:italic;font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--muted);margin-top:1px;text-transform:none}
 .main-nav{font-size:14px;letter-spacing:.06em}
-.main-nav a{transition:color .2s ease}
-.main-nav a[aria-current]{border-bottom:1px solid var(--accent);padding-bottom:2px}
+.main-nav a{transition:color .2s ease,border-bottom-color .2s ease}
+/* The mark under the item is drawn even before it is current, in transparent
+   ink, so borrowing it for the page being fetched costs no layout shift. */
+.main-nav a{border-bottom:1px solid transparent;padding-bottom:2px}
+.main-nav a[aria-current]{border-bottom-color:var(--accent)}
 .tools{gap:4px}
 .tools>a,.tools>button,.tools summary{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;color:var(--muted);transition:color .2s ease,background-color .2s ease}
 .tools>a:hover,.tools>button:hover,.tools summary:hover{color:var(--accent);background:var(--tint)}
@@ -1373,6 +1367,12 @@ body.toc-open #toc-toggle{display:none}
    shadow's own tint shows), which looked like the image stopped short. */
 .hero-image{width:100%;margin-top:40px;border-radius:16px;overflow:hidden;box-shadow:none;aspect-ratio:16/7;position:relative;background:var(--bg)}
 .hero-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+/* Opt-in "whole artwork" mode (.is-natural, set by ruri.bannerFit): the box drops
+   its fixed 16:7 crop and the picture keeps its own ratio, so nothing at the top
+   or bottom is shaved off. The img leaves the absolute track and becomes the
+   thing that gives the panel its height; the caption still sits on the picture. */
+.hero-image.is-natural{aspect-ratio:auto;padding:0;background:transparent}
+.hero-image.is-natural img{position:static;display:block;width:100%;height:auto;object-fit:contain}
 /* The caption sits on top of the banner image, not on the page, so it keeps a
    paper-white chip in both modes — tying it to --bg turned it into light text
    on a light photo once dark mode was on. */
@@ -1406,8 +1406,8 @@ body.toc-open #toc-toggle{display:none}
 .pagination{gap:8px;margin:40px 0 10px}
 .pagination a{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;color:var(--muted);transition:border-color .2s ease,color .2s ease,background-color .2s ease}
 .pagination a:hover{border-color:var(--accent);color:var(--accent);background:var(--tint)}
-.pagination [aria-current]{background:var(--accent);border-color:var(--accent);color:#fff8f5}
-:root[data-theme=dark] .pagination [aria-current]{color:#241512}
+.pagination [aria-current]{background:var(--accent);border-color:var(--accent);color:#fffdf8}
+:root[data-theme=dark] .pagination [aria-current]{color:#2b1a12}
 
 /* ---- Sidebar: quiet blocks, no heavy rules ---- */
 .sidebar{border-left:1px solid var(--line);padding-left:34px}
@@ -1466,7 +1466,7 @@ body.toc-open #toc-toggle{display:none}
 .prose th{background:var(--tint);font-weight:600;letter-spacing:.02em}
 .prose td,.prose th{text-indent:0}
 .prose :not(pre)>code{background:color-mix(in srgb,var(--accent) 8%,var(--bg));color:var(--accent-deep);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.86em;text-indent:0;white-space:pre-wrap;overflow-wrap:anywhere}
-:root[data-theme=dark] .prose :not(pre)>code,html.theme-orange[data-theme=dark] .prose :not(pre)>code,html.theme-blue[data-theme=dark] .prose :not(pre)>code{color:var(--accent-deep)}
+:root[data-theme=dark] .prose :not(pre)>code{color:var(--accent-deep)}
 
 /* ---- Article tail ---- */
 .article-tags{margin:34px 0 10px}
@@ -1489,13 +1489,11 @@ dialog input{border-radius:10px}
 .site-footer small{font-size:11px}
 .site-footer a:hover{color:var(--accent)}
 
-/* ---- Scheme switcher: three paint dots, the active one ringed ---- */
+/* ---- Scheme switcher: two paint dots, the active one ringed ---- */
 .scheme-switch{display:inline-flex;align-items:center;gap:6px;margin-right:4px}
 .scheme-switch button{width:15px;height:15px;padding:0;border:1px solid var(--line);border-radius:50%;transition:transform .2s ease,box-shadow .2s ease}
 .scheme-switch button:hover{transform:scale(1.15);background:transparent}
-.scheme-switch button[data-scheme=warm]{background:linear-gradient(135deg,#f7ecd7,#c9954a)}
-.scheme-switch button[data-scheme=orange]{background:linear-gradient(135deg,#ffe2d5,#e2603a)}
-.scheme-switch button[data-scheme=blue]{background:linear-gradient(135deg,#dcebf7,#4a90c2)}
+.scheme-switch button[data-scheme=warm]{background:linear-gradient(135deg,#fdf4e6,#9c601e)}
 .scheme-switch button[data-scheme=ruri]{background:linear-gradient(135deg,#eef3f3,#467889)}
 .scheme-switch button[aria-pressed=true]{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--accent)}
 .scheme-switch button[aria-pressed=true]:hover{transform:none}
@@ -1563,10 +1561,17 @@ html.theme-ruri .archive-year>h2::before,html.theme-ruri .archive-heatmap>h2::be
 html.theme-ruri .archive-taxonomies,html.theme-ruri .term-grid>a,html.theme-ruri .friend-grid>a,html.theme-ruri .link-card,html.theme-ruri .culture-categories a{border-radius:0}
 html.theme-ruri .term-grid>a:hover{transform:none;box-shadow:none;border-color:var(--accent)}
 html.theme-ruri .skills,.html.theme-ruri .skip{border-radius:0}
-html.theme-ruri .site-header{min-height:88px}
-/* The bundled serif is part of the reading-room look; the original palette keeps
-   the system sans-serif it was designed with. */
-html.theme-ruri[data-font=serif]{--serif:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+/* The header's height belongs to the layout, not to the palette: ruri keeps
+   the reading-room band it shares with warm. The 88px compact band was the
+   pre-redesign height, and restoring it here moved the hairline, the progress
+   rail and the veil's top edge every time the palette changed — the rail hangs
+   off a measured `--header-h`, so a bar that grows under it leaves the rail
+   stranded inside the header as a second line. Flat frames, sans-serif type
+   and square corners carry the original look; the bar's metrics do not. */
+/* The original palette keeps the system sans-serif it was designed with: the
+   face ruri actually published, taken from its last release (its `:root` sets
+   the font-family directly). The serif stack above is this blog's own addition. */
+html.theme-ruri{--serif:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
 
 /* ---- Narrow screens ---- */
 @media(max-width:1100px){
@@ -1575,25 +1580,74 @@ html.theme-ruri[data-font=serif]{--serif:-apple-system,BlinkMacSystemFont,"Segoe
 .hero{padding:56px 0 26px}
 .hero h1{font-size:2.35rem}
 }
+/* ---- Narrow screens: the menu moves into a drawer ----
+   The header keeps one row: menu button, brand, tools. The links leave the
+   header entirely rather than wrapping onto a second line, which is what used to
+   make the bar two rows tall on a phone. Both the button and the panel are
+   inert above 760px; the desktop header still lists the pages inline. */
+.menu-toggle,.menu-scrim,.menu-drawer{display:none}
 @media(max-width:760px){
 .shell{width:calc(100% - 32px)}
-.site-header{padding:12px 0 4px;gap:8px 10px;min-height:0;flex-wrap:wrap}
+.site-header{padding:12px 0;gap:8px 10px;min-height:0;flex-wrap:nowrap}
+.main-nav{display:none}
+/* The button leads the row, then the brand, then the tools pushed to the right.
+   A hair of negative margin pulls it into the gutter so the icon optically
+   lines up with the text edge below it; the box stays 44px tall so the target
+   is thumb-sized even though the icon inside is not. */
+.menu-toggle{display:grid;place-items:center;order:0;flex:0 0 auto;width:36px;height:44px;margin:-6px 0 -6px -9px;padding:0;border:0;border-radius:9px;background:transparent;color:var(--ink);font-size:0;transition:color .2s ease,background-color .2s ease}
+.menu-toggle:hover,.menu-toggle:focus-visible{color:var(--accent);background:var(--tint)}
+.menu-toggle svg{display:block;width:20px;height:20px}
+/* The name may give way (ellipsis) before the tagline does: a truncated name is
+   still recognisable, a tagline cut mid-word is not. */
+.brand{order:1;min-width:0}
+.brand>span:last-child{min-width:0}
+.tools{order:2;gap:2px;margin-left:auto;min-width:0}
+/* The drawer rises from the bottom edge: a thumb reaches the bottom of a phone,
+   and a sheet that slides up from there needs no reaching into the top corner
+   twice. Round top corners and a grab handle say it can be dismissed. */
+.menu-drawer{display:block;position:fixed;left:0;right:0;bottom:0;z-index:76;padding:10px 16px calc(22px + env(safe-area-inset-bottom));text-align:left;border-top:1px solid var(--line);border-radius:18px 18px 0 0;background:var(--paper);box-shadow:0 -14px 38px rgba(var(--shadow-rgb),.18);transform:translateY(102%);transition:transform .28s cubic-bezier(.2,.7,.3,1);visibility:hidden;overscroll-behavior:contain;max-height:82vh;overflow-y:auto}
+.menu-drawer.is-open{transform:none;visibility:visible}
+.menu-drawer::before{content:"";display:block;width:38px;height:4px;margin:0 auto 10px;border-radius:2px;background:var(--line)}
+.menu-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:0 0 8px 4px;font-size:12px;letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
+.menu-close{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:50%;font-size:22px;line-height:1;color:var(--muted)}
+.menu-close:hover,.menu-close:focus-visible{background:var(--tint);color:var(--accent)}
+/* The links read as a stack of ruled rows, the same language as the home list,
+   with the current page marked by the accent and a bar on the left. */
+.menu-drawer a{display:flex;align-items:center;min-height:50px;padding:0 4px 0 0;border-bottom:1px solid var(--line);font-size:15px;letter-spacing:.06em;color:var(--ink);transition:color .2s ease}
+.menu-drawer a:last-child{border-bottom:0}
+.menu-drawer a:hover,.menu-drawer a:focus-visible{color:var(--accent)}
+.menu-drawer a[aria-current]{color:var(--accent);font-weight:600}
+/* The mark is always drawn, transparent when the row is not current, so marking
+   a page never shifts its label sideways against the other rows. */
+.menu-drawer a::before{content:"";flex:0 0 3px;width:3px;height:16px;margin-right:11px;border-radius:2px;background:transparent;transition:background-color .2s ease}
+.menu-drawer a[aria-current]::before{background:var(--accent)}
+.menu-scrim{position:fixed;inset:0;z-index:75;background:#0e1b2252;opacity:0;transition:opacity .28s ease;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.menu-scrim.is-open{display:block;opacity:1}
+body.menu-open{overflow:hidden}
 .brand{font-size:15px}
 .brand-mark{width:22px;height:22px;font-size:11px}
-.brand small{font-size:9.5px;letter-spacing:.04em}
-/* Phones: the logo and the tools share the first row, the menu becomes the
-   second one. The palette dots stay up top but shrink, so four quiet colours
-   never push the navigation onto a third line. */
-.main-nav{order:3;width:100%;justify-content:center;gap:22px;font-size:13px;padding-bottom:8px}
+/* The tagline wraps to two lines beside the tools on a phone; keep it on one. */
+.brand small{font-size:9.5px;letter-spacing:.04em;white-space:nowrap}
+/* The palette dots shrink on a phone so four colours fit beside the brand. */
 .tools{gap:2px;margin-left:auto}
 .tools>a,.tools>button,.tools summary{width:30px;height:30px;padding:5px}
 .scheme-switch{gap:5px;margin-right:2px}
 .scheme-switch button{width:12px;height:12px}
+/* A 320px phone cannot hold the seal, the name, four dots and four icons in one
+   row, and something has to give: the name does. Below 380px it gives way whole
+   rather than truncating to "sasaOra…", which reads as a bug, and the dots lose
+   most of their padding so the icons stay full size. */
+@media(max-width:379px){
+.brand>span:last-child{display:none}
+.scheme-switch{gap:4px;margin-right:0}
+.tools>a,.tools>button,.tools summary{width:28px;height:28px;padding:4px}
+}
 .hero{padding:46px 0 22px}
 .hero::after{width:calc(100% - 32px)}
 .hero h1{font-size:1.85rem;letter-spacing:.1em}
 .hero-copy>p:not(.eyebrow){font-size:.92rem;margin-top:12px;line-height:1.9}
 .hero-image{margin-top:28px;border-radius:12px;aspect-ratio:4/3}
+.hero-image.is-natural{aspect-ratio:auto}
 .hero .hero-link::after{margin-top:22px;width:56px}
 .section-heading h1,.section-heading h2{font-size:1.18rem}
 .section-heading h1::before,.section-heading h2::before{width:5px;margin-right:11px}
@@ -1622,43 +1676,135 @@ html.theme-ruri .article-cover{border-radius:0}
 }
 
 /* ---- in-page navigation feedback -----------------------------------------
-   The loading bar and the dots beside the link that was clicked. The bar is
-   rendered by layouts/partials/nav-progress.html, right after the header inside
-   the page shell, so it travels with the header it belongs to.
+   Two pieces, in two different places. The bar is rendered by
+   layouts/partials/nav-progress.html right after the header, inside the page
+   shell; the sheet is rendered by layouts/partials/nav-veil.html outside it.
+   The split is the point: in-page navigation replaces the shell, so a sheet
+   inside it would be torn away the moment the new page arrived. Out here the
+   sheet outlives every shell it covers — the new page is laid in behind the
+   paper, and the paper draws back to reveal it.
 
-   Both marks are decoration: neither may take a click, a focus ring or a layout
-   slot of its own.
+   Neither may take a click, a focus ring or a layout slot of its own — the
+   veil has to be see-through in every sense, including input.
 
-   `#page-shell` is the positioning context, and ruri.js measures the header into
-   `--header-h` (its height plus the hairline) so the bar covers that hairline
-   exactly, whether the header is one row (desktop) or two (phone) and whatever
-   the toolbar does in between. Because it is out of the flow it takes no space
-   and leaves the page exactly as it was.
-
-   Width follows the header, not the reading column. The header's own box is the
-   shell, so the bar spans the shell; the hero banner below it is narrower, and a
-   line that shrank to match would read as belonging to the banner. */
-.nav-progress{position:absolute;top:calc(var(--header-h,76px) - 2px);left:0;right:0;z-index:1;height:2px;overflow:hidden;pointer-events:none;background:transparent}
+   `#page-shell` is the positioning context for the bar, and ruri.js measures the
+   header into `--header-h` (its height plus the hairline) so the bar lands on
+   that hairline and the cog keeps its old place below it, whether the header is
+   one row (desktop) or two (phones) and whatever the toolbar does in between. */
+/* The header rides one layer above the veil: the sheet closes over the whole
+   screen, and the bar with its menu, its tools and its current-page mark stays
+   on top of the paper, still clickable, so the reader can change their mind
+   mid-wait. It sits one layer below the rail, which is the hairline's own
+   progress bar and outranks everything in the bar. The header carries no
+   background of its own, so the paper that closes over the screen is the same
+   paper it already sits on — no seam, no band, nothing left uncovered. */
+.site-header{position:relative;z-index:22}
+.nav-progress{position:absolute;top:calc(var(--header-h,76px) - 2px);left:0;right:0;z-index:35;height:2px;overflow:hidden;pointer-events:none;background:transparent}
 /* The track is the header's own hairline, lightened; the fill is the accent, so
-   the bar reads as that rule coming to life rather than as a new line. */
+   the bar reads as that rule coming to life rather than as a new line. Width
+   follows the header, not the reading column: a bar that shrank to the article
+   would read as belonging to the article. */
 .nav-progress::before{content:"";position:absolute;inset:0;background:var(--line);opacity:.55}
 .nav-progress i{position:relative;display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear}
 .nav-progress.is-running i{transition:transform .16s linear}
 
-a.is-loading-link{position:relative;color:var(--accent)}
-/* The dots are drawn as a ring with one dot lit at a time rather than as an
-   animation of the background position: the whole row stays in place, which is
-   easier to read at 11px than a scrolling strip. */
-a.is-loading-link::after{content:"";position:absolute;top:50%;right:-.9em;width:.66em;height:.22em;margin-top:-.11em;background:radial-gradient(circle,currentColor 1.1px,transparent 1.5px) 0 50%/.22em .22em repeat-x;opacity:.45;animation:ruri-dots .9s steps(1,end) infinite}
-@keyframes ruri-dots{0%{opacity:.3}25%{opacity:.55}50%{opacity:.8}75%{opacity:.55}}
-/* One block for both marks: a reader who asked for less motion gets the states
-   without the travel. */
+/* The veil covers the whole screen, in the page's own paper colour and nothing
+   else: no blur, no dimming, no tint of the words underneath. A wash left the
+   old page half-visible and read as a broken render; opaque paper reads as a
+   clean page being laid over the last one. It closes from the very top rather
+   than from below the header's rule: a sheet that started halfway down left the
+   bar hanging outside the motion, with the old page still showing above it. */
+.nav-veil{position:fixed;top:0;right:0;bottom:0;left:0;z-index:20;pointer-events:none;visibility:hidden;transition:visibility 0s linear .5s}
+/* The sheet has to stay visible for exactly as long as the wings are still on
+   screen: dropping `visibility` the moment the class goes would cut the opening
+   in half, so it waits out the slide and only then leaves the tree to its own
+   devices. Opening, the delay is zero — the sheet is wanted at once. */
+.nav-veil.is-open{visibility:visible;transition-delay:0s}
+/* The sheet has both of the motions reimu's loader has: the wings slide together
+   when the wait starts, and slide apart again when it ends. The opening used to
+   be silenced here — `transition:none` snapped the sheet away so the new page
+   appeared at once — but that left half a gesture: a door that closes and is
+   then simply not there. The sheet lives outside the page shell, so the new page
+   is laid in behind the paper while it is still closed, and the paper then draws
+   back to reveal it: what the opening shows is the page the reader asked for,
+   never the one they were leaving. ruri.js gives the close its full duration
+   before laying the page in, so a fast navigation is a gesture, not a flicker. A
+   cancelled wait opens the same way, over the page they stayed on. */
+/* The two wings, reimu's loader motion: each owns half the width and waits just
+   off its own edge. Closing, they slide together and meet in the middle; opening,
+   they slide back out the way they came. They run the full height of the screen
+   so the sheet closes over everything at once — the header simply stays above
+   the paper while it does. */
+.nav-veil-wing{position:absolute;top:0;bottom:0;width:50%;background:var(--bg);transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+.nav-veil-wing-left{left:0;transform:translateX(-100%)}
+.nav-veil-wing-right{right:0;transform:translateX(100%)}
+.nav-veil.is-open .nav-veil-wing{transform:none}
+/* The mark and the words ride on the veil, not on either wing, so they stay
+   centred while the paper closes. They keep their old place — the middle of the
+   space below the header — so the cog does not jump now that the veil reaches
+   the top of the screen. Opening, they wait for the wings to be most of
+   the way in — a label that appeared before its background read as floating over
+   the old page. Closing, they leave first; the paper follows. */
+.nav-veil-core{position:absolute;top:var(--header-h,76px);right:0;bottom:0;left:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;opacity:0;transition:opacity .2s ease}
+.nav-veil.is-open .nav-veil-core{opacity:1;transition:opacity .3s ease .22s}
+/* The loading mark is the second cog the reader picked: a ring gear, rim
+   toothed and hub open, in the place reimu gives its loader's taiji. It is
+   filled solid in the page's own ink — the deep brown of the warm reading
+   room, and each palette's own ink elsewhere, dark modes included — rather
+   than drawn as lines over a wash of paper: on a flat sheet the wash and the
+   sheet are one colour, and a line drawing there reads as floating strokes
+   instead of an object. The open hub is the paper showing through, which
+   keeps the solid shape light and gives the turn something to read against.
+   It turns at a reading pace rather than a spinner's blur. `transform-box` is
+   spelled out because the default differs between engines: without it some
+   read the origin in the element's own pixels (the viewBox is 1024 of a 132px
+   box) instead of the viewBox's, and the cog wobbles off-centre — a
+   revolution, not a spin. */
+.nav-gear{opacity:.9;transform-box:view-box;transform-origin:center;animation:ruri-gear 1.6s linear infinite}
+.nav-gear-fill{fill:var(--ink)}
+@keyframes ruri-gear{to{transform:rotate(1turn)}}
+/* A pill rather than bare text: on a phone the gear and the words sit in the
+   middle of an article, and a label with its own surface stays legible over
+   whatever wording happens to be underneath. */
+.nav-veil-text{margin:0;padding:7px 16px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-size:.86rem;letter-spacing:.08em;color:var(--muted)}
+
+/* Reduced motion: the cog stands still and the paper simply appears. The text
+   still says what is happening, so nothing is lost with the motion gone. The
+   selectors have to match the specificity of the rules they silence — the veil
+   opens through `.nav-veil.is-open .nav-veil-core`, and a plain `.nav-veil-core`
+   here would lose to it and leave the fade running. */
 @media(prefers-reduced-motion:reduce){
-.nav-progress i{transition:none}
-a.is-loading-link::after{animation:none;opacity:.45}
+.menu-drawer,.menu-scrim{transition:none}
+.nav-progress i,.nav-progress.is-running i{transition:none}
+.nav-veil-wing,.nav-veil.is-open .nav-veil-wing{transition:none}
+.nav-veil-core,.nav-veil.is-open .nav-veil-core{transition:none}
+.nav-veil{transition:none}
+.nav-gear{animation:none;opacity:.6}
 }
 
-/* The loading bar is pinned to the bottom of the header it hangs from. The shell
-   has to be the positioning context for that, and it has no other reason to be
-   one. */
+/* The bar and the veil are pinned to the header they hang from. The shell has
+   to be the positioning context for that, and it has no other reason to be one. */
 #page-shell{position:relative}
+
+
+/* ---- Reveal on scroll: each component rises into place as it is reached ----
+   This is reimu's fade-up, kept because a page of cards that arrive one by one
+   reads as a room being furnished rather than a wall being pasted up. The
+   waiting state is a class on <html> that the inline script in baseof.html sets
+   before first paint: with no JavaScript at all nothing ever hides, and if the
+   script bundle itself fails to arrive the same script takes the class away
+   again — the page is never held hostage by its own animation.
+
+   The motion travels on the independent `translate` property rather than on
+   `transform`, which stays free for the hover lift the cards already have; the
+   `transform` entry in the transition list is that lift's own timing, carried
+   over so marking a card does not change how it answers the pointer. */
+html.reveal-on [data-reveal]{opacity:0;translate:0 30px;pointer-events:none;transition:opacity .4s ease,translate .4s ease,transform .3s cubic-bezier(.2,.7,.3,1)}
+html.reveal-on [data-reveal].is-revealed{opacity:1;translate:none;pointer-events:auto}
+/* Reduced motion: nothing drifts and nothing fades — a component that has been
+   reached is simply there. `translate:none` matters as much as the missing
+   transition: a 30px offset held forever would itself be a displacement the
+   reader never asked for. */
+@media(prefers-reduced-motion:reduce){
+html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition:none;translate:none}
+}

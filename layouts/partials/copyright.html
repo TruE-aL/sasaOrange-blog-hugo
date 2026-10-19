@@ -6,7 +6,7 @@
 {{- $author := .Params.author | default $cfg.author | default .Site.Params.author -}}
 {{- $license := .Params.license | default .Params.license_type | default $fields.license_type | default "by-nc-sa" -}}
 {{- $format := .Site.Params.dateFormat | default "2006-01-02" -}}
-<div class="notice article-copyright" data-pagefind-ignore>
+<div class="notice article-copyright" data-reveal data-pagefind-ignore>
 {{ if $fields.author }}<p><strong>{{ i18n "article_copyright.author" }}</strong> {{ if reflect.IsSlice $author }}{{ delimit $author " / " }}{{ else }}{{ $author }}{{ end }}</p>{{ end }}
 {{ if $fields.title }}<p><strong>{{ i18n "article_copyright.title" }}</strong> {{ .Title }}</p>{{ end }}
 {{ if $fields.link }}<p><strong>{{ i18n "article_copyright.permalink" }}</strong> <a href="{{ .Permalink }}">{{ .Permalink }}</a></p>{{ end }}
