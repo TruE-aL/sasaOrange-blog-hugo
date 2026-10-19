@@ -2,6 +2,32 @@
 
 ## Unreleased
 
+### Housekeeping from the 2026-10-19 code review
+
+- Removed `i18n/pt-BR.yml`. It held 25 of the 153 keys — the rest, including every
+  loading, player and archive string, fell through to the raw key on the page —
+  and no site in the repository ever enabled the language. A half-translated pack
+  that nobody loads is a debt, not a feature; the four languages the theme
+  actually ships are complete and now share the same 153 keys.
+- The archive's "load earlier years" control now reads its two labels from the
+  shared interface table (`i18n`, injected as `#ruri-i18n`) instead of the
+  hand-kept four-language list inside `initArchive()`. That list was a second
+  source of truth: a new interface language needed an entry in the JavaScript as
+  well, and one that was never added showed a raw key. Two keys,
+  `ruri_archive_more` and `ruri_archive_done`, were added to all four packs.
+- Corrected `theme.toml`: the description claimed four reading palettes where
+  there are two, each with its own dark variant, and the tag list described the
+  theme as `minimal` when it ships a player, a heat map, collections and an
+  in-page navigation sheet. Both now say what the theme does.
+- `QA_REPORT.md` rewritten: it still carried the 2026-09-18 date and a "four
+  language builds pass" claim that the incomplete pack above contradicted. It now
+  separates what was re-checked on 2026-10-19 from what dates back to the earlier
+  run, and records the deliberate open item below.
+- Known, deliberately not changed: `paintScheme()` measures the header on every
+  call and `initPage()` always calls it, so an in-page navigation reads layout a
+  second time right after the swap. Left for review rather than folded into this
+  pass.
+
 ### Reading-room redesign
 
 - Changed: the loading cog is the reader's own — the ring gear they picked, rim toothed and hub open, filled solid in the page's own ink: the deep brown of the warm reading room (`--ink`, `#3d2d23`), and each palette's own ink elsewhere, dark modes included. The first cog they picked was a line drawing in ink over a wash of paper; on the flat sheet the wash and the sheet were one colour, so the mark read as floating strokes instead of an object, and it made way for this filled one. The open hub is the paper showing through, which keeps the solid shape light at 132px and gives the turn something to read against. The mark before both of these was eight plain blocks around a rim — a generic spinner tinted with the accent, louder than the rest of the page. The SVG is inline, so it inherits the ink and needs no extra request; the spin still pivots on the viewBox (`transform-box:view-box`), the fix that keeps it turning in place instead of revolving.
