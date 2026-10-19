@@ -18,17 +18,23 @@
    it fights the artwork sitting right above it — a saturated orange-red read
    as a second, louder image. Accent tones are picked to clear 4.5:1 against
    the paper, since they are used for links and small labels.
+
+   `--veil-ink` is the one variable written by hand rather than derived: it is
+   the page's own paper colour at ten percent, and the loading veil mixes it
+   with `--bg` to get reimu's nine-tenths sheet. It cannot be derived at use
+   time — see the note on the wings further down. Each mode carries its own,
+   so the sheet thins towards its own page and never towards the other one.
    ------------------------------------------------------------------ */
-:root{color-scheme:light;--bg:#fdfaf3;--paper:#fffdf8;--ink:#3d2d23;--muted:#8c6455;--faint:#7d6355;--line:#f1dbbd;--accent:#9c601e;--accent-deep:#8f5c22;--tint:#f7ebd9;--hero-wash:rgba(233,196,150,.30);--selection:rgba(233,196,150,.55);--shadow-rgb:120,84,44;--shadow-sm:0 2px 8px rgba(var(--shadow-rgb),.07);--shadow-md:0 12px 26px rgba(var(--shadow-rgb),.13);--shadow-lg:0 24px 52px rgba(var(--shadow-rgb),.18);--serif:"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",Georgia,"Times New Roman",serif;font-family:var(--serif);font-size:15px}
-:root[data-theme=dark]{color-scheme:dark;--bg:#221813;--paper:#2b2019;--ink:#e8dcd2;--muted:#c4a596;--faint:#b39a8c;--line:#483329;--accent:#f2b878;--accent-deep:#e3a06a;--tint:#2b2019;--hero-wash:rgba(242,184,120,.10);--selection:rgba(242,184,120,.26);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#221813;--paper:#2b2019;--ink:#e8dcd2;--muted:#c4a596;--faint:#b39a8c;--line:#483329;--accent:#f2b878;--accent-deep:#e3a06a;--tint:#2b2019;--hero-wash:rgba(242,184,120,.10);--selection:rgba(242,184,120,.26);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
+:root{color-scheme:light;--bg:#fdfaf3;--paper:#fffdf8;--ink:#3d2d23;--muted:#8c6455;--faint:#7d6355;--line:#f1dbbd;--accent:#9c601e;--accent-deep:#8f5c22;--tint:#f7ebd9;--hero-wash:rgba(233,196,150,.30);--selection:rgba(233,196,150,.55);--veil-ink:rgba(253,250,243,.1);--shadow-rgb:120,84,44;--shadow-sm:0 2px 8px rgba(var(--shadow-rgb),.07);--shadow-md:0 12px 26px rgba(var(--shadow-rgb),.13);--shadow-lg:0 24px 52px rgba(var(--shadow-rgb),.18);--serif:"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",Georgia,"Times New Roman",serif;font-family:var(--serif);font-size:15px}
+:root[data-theme=dark]{color-scheme:dark;--bg:#221813;--paper:#2b2019;--ink:#e8dcd2;--muted:#c4a596;--faint:#b39a8c;--line:#483329;--accent:#f2b878;--accent-deep:#e3a06a;--tint:#2b2019;--hero-wash:rgba(242,184,120,.10);--selection:rgba(242,184,120,.26);--veil-ink:rgba(34,24,19,.1);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){color-scheme:dark;--bg:#221813;--paper:#2b2019;--ink:#e8dcd2;--muted:#c4a596;--faint:#b39a8c;--line:#483329;--accent:#f2b878;--accent-deep:#e3a06a;--tint:#2b2019;--hero-wash:rgba(242,184,120,.10);--selection:rgba(242,184,120,.26);--veil-ink:rgba(34,24,19,.1);--shadow-rgb:0,0,0;--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
 }
 
 /* ruri: the original palette, values copied verbatim from the first release.
    Cool ink on a faintly green paper, teal accent, flat shadows (it had none). */
-html.theme-ruri{--bg:#fafbf9;--paper:#fff;--ink:#303d45;--muted:#78858b;--faint:#6b7880;--line:#e0e6e6;--accent:#467889;--accent-deep:#3a6577;--tint:#edf3f3;--hero-wash:rgba(70,120,137,.10);--selection:rgba(70,120,137,.22);--shadow-rgb:48,61,69;--shadow-sm:0 1px 3px rgba(48,61,69,.05);--shadow-md:0 8px 22px rgba(48,61,69,.09);--shadow-lg:0 18px 40px rgba(48,61,69,.12)}
-html.theme-ruri[data-theme=dark]{--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--muted:#92a4ac;--faint:#7d8f97;--line:#324249;--accent:#8fb9c8;--accent-deep:#6f9cae;--tint:#223138;--hero-wash:rgba(143,185,200,.08);--selection:rgba(143,185,200,.24);--shadow-rgb:0,0,0}
-@media(prefers-color-scheme:dark){html.theme-ruri:not([data-theme=light]){--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--muted:#92a4ac;--faint:#7d8f97;--line:#324249;--accent:#8fb9c8;--accent-deep:#6f9cae;--tint:#223138;--hero-wash:rgba(143,185,200,.08);--selection:rgba(143,185,200,.24);--shadow-rgb:0,0,0}}
+html.theme-ruri{--bg:#fafbf9;--paper:#fff;--ink:#303d45;--muted:#78858b;--faint:#6b7880;--line:#e0e6e6;--accent:#467889;--accent-deep:#3a6577;--tint:#edf3f3;--hero-wash:rgba(70,120,137,.10);--selection:rgba(70,120,137,.22);--veil-ink:rgba(250,251,249,.1);--shadow-rgb:48,61,69;--shadow-sm:0 1px 3px rgba(48,61,69,.05);--shadow-md:0 8px 22px rgba(48,61,69,.09);--shadow-lg:0 18px 40px rgba(48,61,69,.12)}
+html.theme-ruri[data-theme=dark]{--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--muted:#92a4ac;--faint:#7d8f97;--line:#324249;--accent:#8fb9c8;--accent-deep:#6f9cae;--tint:#223138;--hero-wash:rgba(143,185,200,.08);--selection:rgba(143,185,200,.24);--veil-ink:rgba(23,33,38,.1);--shadow-rgb:0,0,0}
+@media(prefers-color-scheme:dark){html.theme-ruri:not([data-theme=light]){--bg:#172126;--paper:#1c282e;--ink:#dce6e8;--muted:#92a4ac;--faint:#7d8f97;--line:#324249;--accent:#8fb9c8;--accent-deep:#6f9cae;--tint:#223138;--hero-wash:rgba(143,185,200,.08);--selection:rgba(143,185,200,.24);--veil-ink:rgba(23,33,38,.1);--shadow-rgb:0,0,0}}
 
 /* Dark schemes keep the paper tone but need black shadows to stay readable. */
 :root[data-theme=dark]{--shadow-sm:0 2px 8px rgba(0,0,0,.4);--shadow-md:0 14px 30px rgba(0,0,0,.45);--shadow-lg:0 26px 56px rgba(0,0,0,.5)}
@@ -1708,12 +1714,14 @@ html.theme-ruri .article-cover{border-radius:0}
 .nav-progress i{position:relative;display:block;height:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,var(--accent-deep),var(--accent));transition:transform .12s linear}
 .nav-progress.is-running i{transition:transform .16s linear}
 
-/* The veil covers the whole screen, in the page's own paper colour and nothing
-   else: no blur, no dimming, no tint of the words underneath. A wash left the
-   old page half-visible and read as a broken render; opaque paper reads as a
-   clean page being laid over the last one. It closes from the very top rather
-   than from below the header's rule: a sheet that started halfway down left the
-   bar hanging outside the motion, with the old page still showing above it. */
+/* The veil covers the whole screen in the page's own paper colour, at reimu's
+   loader's opacity: nine tenths. The old page stays faintly there underneath —
+   a veil, not a wall. It was opaque paper for a while, on the theory that a
+   wash read as a broken render; it did not, and the tenth that shows through
+   is what says a page is being laid over the old one rather than the old one
+   having been thrown away. It closes from the very top rather than from below the
+   header's rule: a sheet that started halfway down left the bar hanging outside
+   the motion, with the old page still showing above it. */
 .nav-veil{position:fixed;top:0;right:0;bottom:0;left:0;z-index:20;pointer-events:none;visibility:hidden;transition:visibility 0s linear .5s}
 /* The sheet has to stay visible for exactly as long as the wings are still on
    screen: dropping `visibility` the moment the class goes would cut the opening
@@ -1734,8 +1742,15 @@ html.theme-ruri .article-cover{border-radius:0}
    off its own edge. Closing, they slide together and meet in the middle; opening,
    they slide back out the way they came. They run the full height of the screen
    so the sheet closes over everything at once — the header simply stays above
-   the paper while it does. */
-.nav-veil-wing{position:absolute;top:0;bottom:0;width:50%;background:var(--bg);transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+   the paper while it does. The colour is built from the page's own two
+   variables rather than written out four times, once per palette and mode: it
+   follows `--bg` wherever it goes. Where `color-mix()` is too new, the opaque
+   paper declared first is the fallback — the sheet still covers, it simply does
+   without the show-through. The tenth of alpha rides on `--veil-ink` rather
+   than on `transparent`: `color-mix()` writes `srgb` with gamma-encoded
+   components, so mixing towards transparent *black* darkened the sheet as it
+   thinned instead of just letting the page through — measured, not guessed. */
+.nav-veil-wing{position:absolute;top:0;bottom:0;width:50%;background:var(--bg);background:color-mix(in srgb,var(--bg) 76%,var(--veil-ink) 14%);transition:transform .5s cubic-bezier(.2,.7,.3,1)}
 .nav-veil-wing-left{left:0;transform:translateX(-100%)}
 .nav-veil-wing-right{right:0;transform:translateX(100%)}
 .nav-veil.is-open .nav-veil-wing{transform:none}
@@ -1765,8 +1780,14 @@ html.theme-ruri .article-cover{border-radius:0}
 @keyframes ruri-gear{to{transform:rotate(1turn)}}
 /* A pill rather than bare text: on a phone the gear and the words sit in the
    middle of an article, and a label with its own surface stays legible over
-   whatever wording happens to be underneath. */
-.nav-veil-text{margin:0;padding:7px 16px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-size:.86rem;letter-spacing:.08em;color:var(--muted)}
+   whatever wording happens to be underneath. It is a tint of the sheet rather
+   than a card laid on it, so it reads as part of the veil and not as a third
+   surface between the paper and the cog. The words are in the page's ink, not
+   in `--muted`: `--muted` is tuned to clear 4.5:1 against the paper, and the
+   pill is a touch closer to the sheet than the paper is — on the cool palette
+   that put the label at 3.8:1, under the small-text floor. Ink clears 11:1 on
+   all four, and the label is a reassurance, not a hint. */
+.nav-veil-text{margin:0;padding:7px 16px;border-radius:999px;background:var(--bg);background:color-mix(in srgb,var(--paper) 70%,var(--bg));border:1px solid var(--line);font-size:.86rem;letter-spacing:.08em;color:var(--ink)}
 
 /* Reduced motion: the cog stands still and the paper simply appears. The text
    still says what is happening, so nothing is lost with the motion gone. The

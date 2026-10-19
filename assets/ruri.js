@@ -33,13 +33,11 @@ function initArchive(){
   const tree=$('.archive-tree');if(!tree)return;
   const years=[...tree.querySelectorAll(':scope > .archive-year')];
   if(years.length<2)return;
-  const labels={
-    'zh-cn':['加载更早年份','已显示全部年份'],
-    'zh-tw':['載入更早年份','已顯示全部年份'],
-    en:['Load earlier years','All years displayed'],
-    ja:['以前の年を読み込む','すべての年を表示しました']
-  };
-  const [more,done]=labels[document.documentElement.lang.toLowerCase()]||labels.en;
+  /* The labels come from the same interface table as everything else (i18n,
+     injected as #ruri-i18n) instead of a second hand-kept language list in
+     here: a new interface language used to need an entry in this function too,
+     and one that was never added showed raw keys on the page. */
+  const more=tr('archive_more'),done=tr('archive_done');
   years.slice(1).forEach(year=>year.hidden=true);
   let shown=1;
   const footer=document.createElement('div');footer.className='archive-load';

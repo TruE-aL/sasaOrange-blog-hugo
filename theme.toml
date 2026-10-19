@@ -1,11 +1,11 @@
 name = "sasaOrange"
 license = "MIT"
 licenselink = "https://github.com/TruE-aL/sasaOrange-blog-hugo/blob/main/LICENSE"
-description = "A quiet, paper-toned personal blog theme: serif type, four reading palettes, multilingual, with a persistent music player."
+description = "A quiet, paper-toned personal blog theme: serif type, two reading palettes each with a dark variant, four interface languages, with a persistent music player."
 homepage = "https://github.com/TruE-aL/sasaOrange-blog-hugo"
 demosite = "https://sasaorange-blog-hugo-demo.pages.dev/"
 min_version = "0.162.1"
-tags = ["blog", "minimal", "responsive", "multilingual", "dark", "serif"]
+tags = ["blog", "responsive", "multilingual", "dark", "serif", "reading"]
 features = ["search", "rss", "heatmap", "music", "toc", "reading-palettes"]
 [author]
 name = "sasaOrange"

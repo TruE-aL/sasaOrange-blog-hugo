@@ -1,22 +1,72 @@
 # Release-candidate QA
 
-Validated 2026-09-18 using Hugo Extended 0.162.1 and Playwright Chromium 151.
+Validated 2026-10-19 using Hugo Extended 0.162.1 and Playwright Chromium 151.
+
+> This report records the last full pass. The sections below say which behaviour
+> was re-checked on 2026-10-19 and which date back to the 2026-09-18 run; a claim
+> in "Passed" is not evidence that it still holds if the component it covers has
+> been reworked since.
 
 ## Passed
+
+### Re-checked 2026-10-19 (loading sheet, navigation order, palettes, interface strings)
+- Five build configurations (minimal / player+comments+search / culture / media
+  pipeline / Hugo Modules) build clean, and the built HTML carries the veil, the
+  cog and the interface strings: 29/29 assertions.
+- Loading sheet, 48 assertions across phone (390px) and desktop (1280px): the
+  sheet spans the full viewport from the top edge, the header rides above it at
+  `z-index:22` and stays clickable mid-wait, the sheet is the page's own paper at
+  nine tenths (reimu's loader opacity — the old page shows through faintly), the
+  page is laid in behind the closed sheet and the sheet draws back over the new
+  page, and reduced motion stills the whole gesture.
+- Loading sheet, all four states (warm/cool × light/dark), measured rather than
+  eyeballed: the wing resolves to `color(srgb … / 0.774)` — 90% of the palette's
+  own paper over the palette's own page, so the sheet thins towards its own page
+  in every mode — and the text on it clears the small-text floor in all four
+  (gear-to-sheet 10.8:1–12.9:1, label-to-pill 11.1:1–12.8:1).
+- Switching reading schemes no longer moves the header at either width, and the
+  progress rail and the sheet's top edge follow the re-measured `--header-h`.
+- Cog: centred in its viewBox (`transform-box:view-box`, pivot at 66px/66px of a
+  132px box), turning on `ruri-gear`, tinted from `--ink` in all three states —
+  warm `#3d2d23`, cool teal `#303d45`, dark `#dce6e8`.
+- No page exceptions on home / archives / categories / about / article.
+- Interface strings: four language packs hold the same 153 keys. The archive
+  "load earlier years" control renders from the shared interface table in all
+  four languages (`加载更早年份` / `Load earlier years` / `以前の年を読み込む`
+  / `載入更早年份`), instead of the hand-kept list it used to carry.
+- In-page navigation: language switch lands on `/en/` with `lang="en"`, and three
+  consecutive in-page navigations leave `<head>` with one canonical, one
+  description, five alternates and five `og:` tags — nothing accumulates.
+
+### Carried over from 2026-09-18 (not re-run since)
 - Independent minimal / four-language / subpath builds and local link checks.
 - Current working blog: 875 HTML pages and four search indexes; original source hashes unchanged.
 - JavaScript syntax, LRC offset and original/translation grouping unit tests.
-- Live browser: no page exceptions; playlist remains open while hovering its items; volume and order controls.
+- Live browser: playlist remains open while hovering its items; volume and order controls.
 - Actual HTMLAudioElement decoding/playback/seek with generated silent WAV; audio element and playback persist during PJAX; cross-language navigation updates accessible control labels.
 - Dark-theme toggle, search dialog/Escape, and no-JS archive rendering.
 - Archive document widths 320/390/768/1440: no horizontal overflow.
-- CSS formatting preserves cascade order; built minified CSS size unchanged (42102 bytes).
+- CSS formatting preserves cascade order.
 
 ## Limits / unfinished gates
 - Live configured playlist metadata loaded successfully. The WAV test verifies browser media controls, not every remote song's availability or audible output.
-- Screenshots captured in local /tmp/ruri-qa. Image inspection was unavailable in this session; these are not accepted visual baselines or release screenshots.
+- Screenshots captured in local /tmp; these are not accepted visual baselines or release screenshots.
 - Lyric parsing is unit-tested; real-provider translated lyric display still needs acceptance.
-- Full visual, keyboard/TOC and Safari/Firefox checks remain.
-- CSS override consolidation deliberately deferred until screenshot comparisons can be inspected; only formatting was changed.
+- Full visual regression, keyboard/TOC walkthrough and Safari/Firefox checks remain.
+- The translucent sheet relies on `color-mix()`. Chromium, Firefox 113+ and
+  Safari 16.2+ have it; anything older falls back to the opaque paper declared
+  first, which still covers the page correctly — it simply does not show the old
+  one through. Untested for real on either non-Chromium engine.
+- Only Chromium was exercised on 2026-10-19; the `--header-h` measurement and the
+  sheet's transition timing are the two places most likely to differ elsewhere.
+- `paintScheme()` measures the header unconditionally, and `initPage()` always
+  calls it, so an in-page navigation reads layout a second time right after the
+  swap. Reviewed again on 2026-10-19 and **deliberately left as is**: the second
+  read is a single `getBoundingClientRect` at ~0.002 ms, `initPage()` reflows the
+  page anyway, so it rides along on a reflow that has already happened, and the
+  obvious optimisation — skip the measurement when the palette did not change —
+  would leave `--header-h` at the previous page's height and bring back the
+  stranded progress rail this was added to fix. The cost is zero and the failure
+  mode is a visible bug; not changing it is the correct answer.
 
 Do not describe this candidate as a fully accepted formal release.
