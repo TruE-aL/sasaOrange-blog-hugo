@@ -161,7 +161,16 @@ menu:
 
 Place the banner at `static/images/banner.webp` and avatar at `static/avatar/avatar.webp`. Missing settings hide the images. Article `cover` accepts a path/URL or `false` to hide it. Create a page for each internal menu link.
 
-Every entry on the home and archive lists is a picture on top and its text below: the cover spans the full reading column at 16:9, while the text keeps the type, hairlines and spacing it always had — no card border, no shadow. What the cover resolves to depends on where it comes from:
+A cover is laid out in one of two ways, switching at 760px:
+
+| Width | Layout | Frame |
+| --- | --- | --- |
+| >760px | ruri's arrangement: picture on the right, text on the left, cropped by `object-fit:cover` | 190×132 (172×122 at ≤1180px) |
+| ≤760px | Picture above the text | Full width × 16:9 |
+
+The desktop side frame exists because the reading column is 860px wide: a full-width 16:9 cover there is 478px tall, which leaves two entries per screen and stops reading as a list, while a side frame keeps four or five in view. On a phone there is one column, and the picture has to go on top to carry the entry. Both layouts keep the original type, hairlines and spacing — no card border, shadow or radius.
+
+What the cover resolves to depends on where it comes from:
 
 | `cover` value | Build-time handling | What the card gets |
 | --- | --- | --- |

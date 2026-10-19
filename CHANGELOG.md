@@ -2,19 +2,23 @@
 
 ## Unreleased
 
-### Card covers are wide frames now
+### Card covers: beside the text on desktop, above it on a phone
 
-- Home and archive entries put the cover on top of the entry, spanning the full
-  reading column at 16:9, instead of hiding it or shrinking it into a corner.
-  The reason is the shape of the pictures these entries actually get: a random
-  image endpoint hands back 16:9 or wider, and the 112px square the card used to
-  reserve cut away most of the subject — group shots lost every face but one in
-  the middle. Only the placement is borrowed from reimu; the entries keep their
-  own hairline separators, type and spacing, and gain no card boxes, shadows,
-  rounded frames or icon rows.
-- The markup puts the picture before the text rather than moving it there with
-  `order`, so a no-CSS render and the accessibility tree read in the order the
-  eye does. The cover link is `tabindex="-1"` and `aria-hidden="true"`: the title
+- Home and archive entries show their cover again instead of hiding it, in two
+  arrangements that switch at 760px. From 760px up it is ruri's: a fixed-height
+  block beside the text, cropped by `object-fit:cover`. On a phone it goes on
+  top, full width at 16:9. The split exists because the reading column is 860px
+  wide — a full-width 16:9 frame there is 478px tall, so two entries fill a
+  screen and the list stops reading as a list, while a 190×132 block leaves four
+  or five in view. A phone has one column, and the picture has to carry the entry
+  there. Neither arrangement borrows reimu's card boxes, shadows, rounded frames,
+  `clip-path` slants or icon rows: the entries keep their own hairline
+  separators, type and spacing.
+- The markup puts the picture before the text and places it with
+  `grid-template-areas` rather than moving it with `order`, so a no-CSS render
+  and the accessibility tree read in the order the eye does — and the phone
+  layout, where the picture is genuinely first, needs no second copy of the
+  markup. The cover link is `tabindex="-1"` and `aria-hidden="true"`: the title
   is already a link to the same page, and a second tab stop for one destination
   is a nuisance. The image itself gets an empty `alt`, since announcing it twice
   tells the reader nothing.
@@ -30,9 +34,9 @@
   cards those are is passed down from the loop index: neither `.Ordinal` nor
   `.Position` answers for a weighted page inside a section list, so the partial
   cannot work it out for itself.
-- `image.html` gained `kind="cover"` (a 420/640/860 ladder that reaches the
-  widest the column is ever drawn) and a `ratio` argument for sources it cannot
-  resize. The reading time in a cover card no longer sits `margin-left:auto` at
+- `image.html` gained `kind="cover"` (a 280/420/560 ladder and a `sizes` that
+  states both shapes — 16:9 of the viewport, or the 190px block) and a `ratio`
+  argument for sources it cannot resize. The reading time in a cover card no longer sits `margin-left:auto` at
   the far edge of an 850px row, a holdover from when a card was a thumbnail and
   a title; it now follows the tags.
 - When the cover is a local or fixed remote file, nothing changes: it still goes
