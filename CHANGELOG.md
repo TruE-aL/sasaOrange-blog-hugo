@@ -23,10 +23,24 @@
   language builds pass" claim that the incomplete pack above contradicted. It now
   separates what was re-checked on 2026-10-19 from what dates back to the earlier
   run, and records the deliberate open item below.
-- Known, deliberately not changed: `paintScheme()` measures the header on every
-  call and `initPage()` always calls it, so an in-page navigation reads layout a
-  second time right after the swap. Left for review rather than folded into this
-  pass.
+- The sheet over in-page navigation is translucent now, at reimu's loader's nine
+  tenths: the page the reader is leaving stays faintly visible underneath, which
+  reads as a page being laid over the last one rather than the last one having
+  been thrown away. The colour is mixed in the CSS from `--bg` and a one-tenth
+  `--veil-ink` (each palette and mode carries its own), so it thins towards its
+  own page in all four states; `color-mix()` is behind an opaque fallback for
+  browsers without it. Mixing against `transparent` was tried and rejected — it
+  mixes towards transparent *black*, so the sheet darkened as it thinned.
+- The label on the sheet moved from `--muted` to `--ink`: `--muted` is tuned
+  against the paper, and the pill sits a shade closer to the sheet, which put the
+  cool palette's label at 3.8:1 — under the small-text floor. All four states now
+  clear 11:1.
+- Reviewed, then deliberately left alone: `paintScheme()` measures the header on
+  every call and `initPage()` always calls it, so an in-page navigation reads
+  layout a second time right after the swap — one `getBoundingClientRect` at
+  ~0.002 ms, riding a reflow `initPage()` triggers anyway. Skipping it when the
+  palette did not change would leave `--header-h` at the previous page's height
+  and bring back the stranded progress rail; no gain, a visible bug.
 
 ### Reading-room redesign
 

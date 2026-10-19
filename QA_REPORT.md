@@ -13,12 +13,17 @@ Validated 2026-10-19 using Hugo Extended 0.162.1 and Playwright Chromium 151.
 - Five build configurations (minimal / player+comments+search / culture / media
   pipeline / Hugo Modules) build clean, and the built HTML carries the veil, the
   cog and the interface strings: 29/29 assertions.
-- Loading sheet, 46 assertions across phone (390px) and desktop (1280px): the
+- Loading sheet, 48 assertions across phone (390px) and desktop (1280px): the
   sheet spans the full viewport from the top edge, the header rides above it at
-  `z-index:22` and stays clickable mid-wait, the sheet's own paper is the page's
-  `--bg` with no seam at the header, the page is laid in behind the closed sheet
-  and the sheet draws back over the new page, and reduced motion stills the whole
-  gesture.
+  `z-index:22` and stays clickable mid-wait, the sheet is the page's own paper at
+  nine tenths (reimu's loader opacity — the old page shows through faintly), the
+  page is laid in behind the closed sheet and the sheet draws back over the new
+  page, and reduced motion stills the whole gesture.
+- Loading sheet, all four states (warm/cool × light/dark), measured rather than
+  eyeballed: the wing resolves to `color(srgb … / 0.774)` — 90% of the palette's
+  own paper over the palette's own page, so the sheet thins towards its own page
+  in every mode — and the text on it clears the small-text floor in all four
+  (gear-to-sheet 10.8:1–12.9:1, label-to-pill 11.1:1–12.8:1).
 - Switching reading schemes no longer moves the header at either width, and the
   progress rail and the sheet's top edge follow the re-measured `--header-h`.
 - Cog: centred in its viewBox (`transform-box:view-box`, pivot at 66px/66px of a
@@ -48,10 +53,20 @@ Validated 2026-10-19 using Hugo Extended 0.162.1 and Playwright Chromium 151.
 - Screenshots captured in local /tmp; these are not accepted visual baselines or release screenshots.
 - Lyric parsing is unit-tested; real-provider translated lyric display still needs acceptance.
 - Full visual regression, keyboard/TOC walkthrough and Safari/Firefox checks remain.
+- The translucent sheet relies on `color-mix()`. Chromium, Firefox 113+ and
+  Safari 16.2+ have it; anything older falls back to the opaque paper declared
+  first, which still covers the page correctly — it simply does not show the old
+  one through. Untested for real on either non-Chromium engine.
 - Only Chromium was exercised on 2026-10-19; the `--header-h` measurement and the
   sheet's transition timing are the two places most likely to differ elsewhere.
-- `paintScheme()` measures the header unconditionally on every page it is called
-  for, and `initPage()` always calls it, so each in-page navigation reads layout
-  a second time right after the swap. Deliberately left as is pending review.
+- `paintScheme()` measures the header unconditionally, and `initPage()` always
+  calls it, so an in-page navigation reads layout a second time right after the
+  swap. Reviewed again on 2026-10-19 and **deliberately left as is**: the second
+  read is a single `getBoundingClientRect` at ~0.002 ms, `initPage()` reflows the
+  page anyway, so it rides along on a reflow that has already happened, and the
+  obvious optimisation — skip the measurement when the palette did not change —
+  would leave `--header-h` at the previous page's height and bring back the
+  stranded progress rail this was added to fix. The cost is zero and the failure
+  mode is a visible bug; not changing it is the correct answer.
 
 Do not describe this candidate as a fully accepted formal release.

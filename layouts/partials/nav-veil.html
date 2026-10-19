@@ -1,5 +1,5 @@
-{{/* The loading sheet for in-page navigation: two opaque halves of paper that
-     close over the screen and draw back again.
+{{/* The loading sheet for in-page navigation: two slightly translucent halves
+     of paper that close over the screen and draw back again.
 
      It lives outside #page-shell, and that is the whole trick. In-page
      navigation replaces the shell, so a sheet inside it would be torn away the
@@ -10,8 +10,8 @@
      one they were leaving. That is reimu's own order of operations, and it is
      why the sheet is rendered after the shell instead of inside it.
 
-     The motion is reimu's, not a generic spinner's: two opaque halves of paper
-     slide in from the sides and close over the whole screen, and slide apart
+     The motion is reimu's, not a generic spinner's: two halves of paper slide
+     in from the sides and close over the whole screen, and slide apart
      again when the next page is ready — the header rides on top of them the
      whole time, still clickable. The mark in the middle is reimu's taiji's
      place, taken by a cog. The close is given its full duration before the page
@@ -25,12 +25,14 @@
 <div class="nav-veil" aria-hidden="true">
   {{/* The two wings close from the left and right edges, the way reimu's loader
        does: each covers half the screen, full height, in the page's own paper
-       colour and nothing else — no blur, no dimming, no tint of the words
-       underneath. A wash left the old page half-visible and read as a broken
-       render; opaque paper reads as a clean page being laid over the last one.
-       The header has no background of its own, so the paper the wings bring is
-       the paper it already sits on; it stays above them, with its menu still
-       there to say where you are going. */}}
+       colour at nine tenths, the opacity reimu's loader uses. The old page
+       stays faintly visible underneath: the sheet has to read as a page being
+       laid over the last one, not as the last one having been thrown away.
+       Every colour on the sheet is mixed from `--bg` and `--paper` in the CSS,
+       so both reading palettes and both modes follow without a second list
+       here. The header has no background of its own, so the paper the wings
+       bring is the paper it already sits on — it stays above them, with its
+       menu still there to say where you are going. */}}
   <div class="nav-veil-wing nav-veil-wing-left"></div>
   <div class="nav-veil-wing nav-veil-wing-right"></div>
   <div class="nav-veil-core">
