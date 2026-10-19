@@ -1462,10 +1462,25 @@ body.toc-open #toc-toggle{display:none}
 .prose blockquote{position:relative;border-left:3px solid var(--accent);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--accent) 7%,var(--bg));padding:.85em 1.2em;margin:1.4em 0;color:var(--muted);text-indent:0}
 .prose blockquote p{text-indent:0;margin:.35em 0}
 .prose hr{border:0;height:1px;margin:2.4em auto;width:60%;background:linear-gradient(90deg,transparent,var(--line),transparent)}
-.prose table{border:1px solid var(--line);border-radius:10px;font-size:.92rem}
+/* A table that is too wide for the column scrolls sideways rather than
+   squeezing its cells: `display:block` up top makes the table scroll, but it
+   also threw away the equal-width columns, so a cell holding `WebP` wrapped to
+   `We`/`bP` while a neighbouring cell sat half empty. The cells take their
+   natural width and the table sets a floor, so a short word never breaks; on a
+   phone the table is then wider than the column and the block overflow above
+   scrolls it, which is the behaviour that rule was there for. */
+.prose table{border:1px solid var(--line);border-radius:10px;font-size:.92rem;width:max-content;max-width:100%;min-width:100%}
+.prose td,.prose th{white-space:nowrap}
 .prose th{background:var(--tint);font-weight:600;letter-spacing:.02em}
 .prose td,.prose th{text-indent:0}
 .prose :not(pre)>code{background:color-mix(in srgb,var(--accent) 8%,var(--bg));color:var(--accent-deep);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.86em;text-indent:0;white-space:pre-wrap;overflow-wrap:anywhere}
+/* Inside a table cell, the code span keeps its width. The `pre-wrap` and
+   `anywhere` above are right in a paragraph, where a long path has to break —
+   but a cell already refuses to wrap, and all `anywhere` did there was split a
+   short token: `/fj` came out as `/f` plus `j`. `break-word` is the one that
+   actually breaks inside a word; `anywhere` here only ever grants the same
+   permission, so both are reset. It has to sit after the rules it overrides. */
+.prose td code,.prose th code{white-space:nowrap;overflow-wrap:normal;word-break:keep-all}
 :root[data-theme=dark] .prose :not(pre)>code{color:var(--accent-deep)}
 
 /* ---- Article tail ---- */

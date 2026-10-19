@@ -23,6 +23,14 @@
   language builds pass" claim that the incomplete pack above contradicted. It now
   separates what was re-checked on 2026-10-19 from what dates back to the earlier
   run, and records the deliberate open item below.
+- Fixed: a table in an article squeezed its cells instead of scrolling. The
+  table has `display:block;overflow:auto` so a wide one can be scrolled, but that
+  also made every cell size to whatever fit, so a short word broke in half — a
+  `WebP` column came out as `We` / `bP` while the next cell sat half empty. Cells
+  now take their natural width (code spans included; the paragraph rule that
+  lets a long path break was splitting `/fj` into `/f` and `/j` inside a cell),
+  and the table is its own scroll container, so a narrow phone still scrolls it
+  sideways with no page-level overflow.
 - Reviewed, then deliberately left alone: `paintScheme()` measures the header on
   every call and `initPage()` always calls it, so an in-page navigation reads
   layout a second time right after the swap — one `getBoundingClientRect` at
