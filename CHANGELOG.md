@@ -23,10 +23,12 @@
   language builds pass" claim that the incomplete pack above contradicted. It now
   separates what was re-checked on 2026-10-19 from what dates back to the earlier
   run, and records the deliberate open item below.
-- Known, deliberately not changed: `paintScheme()` measures the header on every
-  call and `initPage()` always calls it, so an in-page navigation reads layout a
-  second time right after the swap. Left for review rather than folded into this
-  pass.
+- Reviewed, then deliberately left alone: `paintScheme()` measures the header on
+  every call and `initPage()` always calls it, so an in-page navigation reads
+  layout a second time right after the swap — one `getBoundingClientRect` at
+  ~0.002 ms, riding a reflow `initPage()` triggers anyway. Skipping it when the
+  palette did not change would leave `--header-h` at the previous page's height
+  and bring back the stranded progress rail; no gain, a visible bug.
 
 ### Reading-room redesign
 

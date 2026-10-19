@@ -50,8 +50,14 @@ Validated 2026-10-19 using Hugo Extended 0.162.1 and Playwright Chromium 151.
 - Full visual regression, keyboard/TOC walkthrough and Safari/Firefox checks remain.
 - Only Chromium was exercised on 2026-10-19; the `--header-h` measurement and the
   sheet's transition timing are the two places most likely to differ elsewhere.
-- `paintScheme()` measures the header unconditionally on every page it is called
-  for, and `initPage()` always calls it, so each in-page navigation reads layout
-  a second time right after the swap. Deliberately left as is pending review.
+- `paintScheme()` measures the header unconditionally, and `initPage()` always
+  calls it, so an in-page navigation reads layout a second time right after the
+  swap. Reviewed again on 2026-10-19 and **deliberately left as is**: the second
+  read is a single `getBoundingClientRect` at ~0.002 ms, `initPage()` reflows the
+  page anyway, so it rides along on a reflow that has already happened, and the
+  obvious optimisation — skip the measurement when the palette did not change —
+  would leave `--header-h` at the previous page's height and bring back the
+  stranded progress rail this was added to fix. The cost is zero and the failure
+  mode is a visible bug; not changing it is the correct answer.
 
 Do not describe this candidate as a fully accepted formal release.
