@@ -5,7 +5,7 @@ import subprocess
 import tempfile
 
 THEME = Path(__file__).resolve().parents[1]
-MODULE = 'github.com/GuZhengSVT/hugo-theme-ruri'
+MODULE = 'github.com/TruE-aL/sasaOrange-blog-hugo'
 with tempfile.TemporaryDirectory(prefix='ruri-module-') as tmp:
     site = Path(tmp) / 'site'
     shutil.copytree(THEME / 'exampleSite', site)

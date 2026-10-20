@@ -81,11 +81,11 @@ hugo mod init example.org/my-blog
 ~~~toml
 [module]
   [[module.imports]]
-    path = "github.com/GuZhengSVT/hugo-theme-ruri"
+    path = "github.com/TruE-aL/sasaOrange-blog-hugo"
 ~~~
 
 ~~~sh
-hugo mod get github.com/GuZhengSVT/hugo-theme-ruri@main
+hugo mod get github.com/TruE-aL/sasaOrange-blog-hugo@main
 hugo server --disableFastRender
 ~~~
 
@@ -97,7 +97,7 @@ hugo server --disableFastRender
 hugo new site my-blog
 cd my-blog
 git init
-git submodule add https://github.com/GuZhengSVT/hugo-theme-ruri.git themes/ruri
+git submodule add https://github.com/TruE-aL/sasaOrange-blog-hugo.git themes/ruri
 ~~~
 
 在站点 `hugo.toml` 顶层添加（放在任何 `[表]` 之前）：
@@ -507,7 +507,7 @@ python3 -m http.server 8080 --directory public
 Hugo Module：
 
 ~~~sh
-hugo mod get github.com/GuZhengSVT/hugo-theme-ruri@main
+hugo mod get github.com/TruE-aL/sasaOrange-blog-hugo@main
 hugo mod tidy
 ~~~
 

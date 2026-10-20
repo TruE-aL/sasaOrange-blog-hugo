@@ -1,3 +1,3 @@
-module github.com/GuZhengSVT/hugo-theme-ruri
+module github.com/TruE-aL/sasaOrange-blog-hugo
 
 go 1.22
