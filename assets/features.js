@@ -11,6 +11,8 @@ const label=i=>(messages[document.documentElement.lang.toLowerCase()]||messages.
 let controller,lightbox,qrPromise,searchModules=new Map(),epoch=0;
 const vendor=()=>document.body.dataset.vendor;
 function bindDialog(dialog){
+ if(dialog.dataset.dialogBound)return;
+ dialog.dataset.dialogBound='';
  dialog.addEventListener('click',e=>{if(e.target!==dialog)return;const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()});
  dialog.querySelector('[data-close]')?.addEventListener('click',()=>dialog.close());
 }
@@ -84,7 +86,7 @@ function initSearch(){
    }catch{status.textContent=label(10)}finally{more.disabled=false}}
    more.addEventListener('click',next);await next();
   }catch{if(!signal.aborted&&token===sequence)status.textContent=label(10)}
- },180)});
+ },180)},{signal});
  signal.addEventListener('abort',()=>clearTimeout(timer),{once:true});
 }
 async function initBangumi(){
@@ -97,5 +99,12 @@ async function initCulture(){
  try{const module=await import(root.dataset.cultureModule);if(!signal.aborted)module.init(root,{signal})}
  catch{if(!signal.aborted)root.querySelector('.bangumi-status').textContent=JSON.parse(root.dataset.labels).error}
 }
-window.RuriFeatures={init(){controller=new AbortController();const version=++epoch;initSearch();initCode();initQR();initLightbox(version);initBangumi();initCulture()},destroy(){epoch++;controller?.abort();lightbox?.destroy();lightbox=null;document.querySelectorAll('[data-feature-dialog]').forEach(d=>{d.close();d.remove()})}};
+function clearSearch(){
+ const dialog=$('#search-dialog');if(!dialog)return;
+ if(dialog.open)dialog.close();
+ const input=$('#search-input');if(input)input.value='';
+ $('#search-status')?.replaceChildren();
+ $('#search-results')?.replaceChildren();
+}
+window.RuriFeatures={init(){controller=new AbortController();const version=++epoch;initSearch();initCode();initQR();initLightbox(version);initBangumi();initCulture()},destroy(){epoch++;controller?.abort();lightbox?.destroy();lightbox=null;clearSearch();document.querySelectorAll('[data-feature-dialog]').forEach(d=>{d.close();d.remove()})}};
 })();

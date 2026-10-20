@@ -480,6 +480,7 @@ python3 tests/media-build.py
 node --check assets/ruri.js
 node --check assets/features.js
 node tests/lyrics.cjs
+node tests/heatmap.cjs
 ~~~
 
 Tests cover minimal/example/subpath builds, Module imports, links, copyright precedence, automatic excerpts, image processing and lyrics. They do not replace visual QA or third-party service checks. See [QA_REPORT.md](QA_REPORT.md) and [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md).

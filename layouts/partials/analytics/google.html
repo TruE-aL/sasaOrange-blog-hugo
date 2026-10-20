@@ -10,6 +10,16 @@
 
   gtag('config', '{{ .Site.Params.google_analytics }}');
 
+  window.ruriAnalytics = window.ruriAnalytics || {};
+  window.ruriAnalytics.google = function (url) {
+    var pageUrl = new URL(url, window.location.href);
+    gtag('event', 'page_view', {
+      page_location: pageUrl.href,
+      page_path: pageUrl.pathname + pageUrl.search,
+      page_title: document.title
+    });
+  };
+
   (function () {
     var loadGtag = function () {
       var script = document.createElement('script');

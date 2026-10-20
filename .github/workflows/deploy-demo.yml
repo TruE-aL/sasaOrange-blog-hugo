@@ -99,6 +99,7 @@ jobs:
           python3 tests/media-build.py
           python3 tests/culture-build.py
           python3 tests/module-build.py
+          node tests/heatmap.cjs
 
       # PR 用源分支名做部署分支，Cloudflare 会生成 <slug>.<project>.pages.dev；
       # 非 PR 统一 main，落到生产环境。

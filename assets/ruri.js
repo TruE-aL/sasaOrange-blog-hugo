@@ -545,6 +545,14 @@ function finishProgress(){
      navigation that failed instead has to put its own bar away. */
   window.setTimeout(()=>{if(token===progressToken)paintProgress(0)},180);
 }
+function trackPageView(url){
+  const analytics=window.ruriAnalytics;
+  if(!analytics)return;
+  try{
+    analytics.google?.(url);
+    analytics.clarity?.(url);
+  }catch{}
+}
 async function navigate(url,push=true,link){
   closeMenu(false);
   navigationController?.abort();
@@ -573,6 +581,7 @@ async function navigate(url,push=true,link){
     document.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>x.remove());
     doc.querySelectorAll('head link[rel=canonical],head link[rel=alternate],head meta[name=description],head meta[property^="og:"]').forEach(x=>document.head.append(x.cloneNode(true)));
     if(push)history.pushState({},'',response.url+new URL(url).hash);
+    trackPageView(response.url);
     /* The sheet is not part of the shell and survives the swap untouched — it is
        still open, and still the one that will draw back. The borrowed marks,
        though, belong to links that are no longer in the document, so they are

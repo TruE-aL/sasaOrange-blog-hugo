@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Review follow-up
+
+- Heatmap dates now use local `YYYY-MM-DD` keys end to end. Clicking a tile no
+  longer shifts the date through UTC, custom `dateFormat` values cannot break
+  article matching, and the current year starts on January 1 instead of a
+  rolling 365-day window. The archive window still starts in 2020 but follows
+  the current year instead of stopping at a hard-coded 2026.
+- In-site navigation now reports a new page view to Google Analytics and
+  updates Clarity's page path. Search is reset and closed before the page shell
+  is replaced, and its persistent input listener is removed on every swap.
+
 ### Maintainable stylesheet boundaries
 
 - Split `ruri.css` into eight ordered files under `assets/css/` without changing

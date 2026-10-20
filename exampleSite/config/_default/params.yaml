@@ -18,8 +18,8 @@ cover: ""
 # 头像文件名，相对 static/avatar/；点击跳转 /about/。
 # Avatar filename relative to static/avatar/; links to /about/.
 avatar: ""
-# 热力图与文章版权日期格式，建议保持 ISO 格式。
-# Heatmap and copyright date format; ISO is recommended.
+# 文章版权等展示日期格式；热力图内部始终使用 ISO 日期键。
+# Display format for copyright and similar dates; the heatmap always uses ISO keys.
 dateFormat: "2006-01-02"
 # 文章详情显示最后修改日期。
 # Show last-modified date on article pages.

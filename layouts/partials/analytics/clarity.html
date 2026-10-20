@@ -5,6 +5,12 @@
       (c[a].q = c[a].q || []).push(arguments);
     };
 
+    c.ruriAnalytics = c.ruriAnalytics || {};
+    c.ruriAnalytics.clarity = function (url) {
+      var pageUrl = new URL(url, c.location.href);
+      c.clarity('set', 'page_path', pageUrl.pathname + pageUrl.search);
+    };
+
     var loadClarity = function () {
       t = l.createElement(r);
       t.async = 1;

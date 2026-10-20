@@ -2,7 +2,6 @@
 
 {{- $currentPath := "" -}}{{- with .Page.File -}}{{- $currentPath = .Path -}}{{- end -}}
 {{- $articlesData := slice -}}
-{{- $dateFormat := $.Page.Site.Params.dateFormat | default "2006-01-02" -}}
 {{- range where .Page.Site.RegularPages "File.Path" "ne" $currentPath -}}
   {{- $rawContent := .RawContent -}}
   {{- $postLinkCardPattern := `\{\{<\s*postLinkCard.*?>\}\}` -}}
@@ -15,7 +14,7 @@
   {{- if not .Date.IsZero -}}
   {{- $articlesData = $articlesData | append (dict
     "title" .Title
-    "date" ( .Date | time.Format $dateFormat )
+    "date" ( .Date.Format "2006-01-02" )
     "wordcount" ($cleanContent | $.Page.RenderString | string | countwords)
     "url" .RelPermalink
     )
@@ -45,13 +44,33 @@ const labels=JSON.parse(document.getElementById('ruri-i18n').textContent);
 const escapeHTML=value=>{const el=document.createElement('span');el.textContent=String(value);return el.innerHTML.replaceAll('"','&quot;')};
 var pluralize=(num,word)=>num+' '+labels[word==='post'?'posts_unit':'words'];
 
+/* Calendar dates are keys, not instants. Build and read them with local date
+   fields so a click never crosses a day boundary through UTC conversion. */
+function padDatePart(value) {
+  return String(value).padStart(2, "0");
+}
+
+function dateKey(date) {
+  return [
+    date.getFullYear(),
+    padDatePart(date.getMonth() + 1),
+    padDatePart(date.getDate()),
+  ].join("-");
+}
+
+function parseDateKey(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  if (!match) return null;
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+  );
+  return dateKey(date) === value ? date : null;
+}
+
 function getTooltip(contributionDay, contributionDate) {
-  // 修正日期转换逻辑，确保日期一致
-  const formattedDate = new Date(
-    contributionDate.getTime() - contributionDate.getTimezoneOffset() * 60000,
-  )
-    .toISOString()
-    .split("T")[0];
+  const formattedDate = dateKey(contributionDate);
 
   if (contributionDay.count === 0) {
     return `${labels.no_writing} · ${formattedDate}`;
@@ -75,7 +94,7 @@ function tileClickHandler(event) {
   if (!tile.classList.contains("tile")) return;
   
   const date = new Date(Number(tile.dataset.date));
-  const dateStr = date.toISOString().split('T')[0];
+  const dateStr = dateKey(date);
   
   // 获取当天的文章列表
   const articles = articleStats.filter(article => article.date === dateStr);
@@ -276,18 +295,15 @@ function createCalendar(element, contributionData) {
   generateYearContributions(currentDisplayYear);
 }
 
-function completeContributionData(userData) {
+function completeContributionData(userData, today = new Date()) {
   // 对用户数据按日期排序
   userData.sort((a, b) => a.date - b.date);
 
-  // The archive heatmap is a seven-year window, not a history of the calendar:
-  // starting at the earliest possible date used to build thousands of daily
-  // cells before the page could settle. Keep the same bounds in every locale.
+  // Keep the deliberately small archive window, but let it follow the current
+  // year instead of disappearing once the hard-coded end year is reached.
   const firstHeatmapYear = 2020;
-  const lastHeatmapYear = 2026;
-
-  // 获取当前日期；数据为空时仍从当前年份开始。
-  const currentDate = new Date();
+  const currentDate = today;
+  const currentYear = currentDate.getFullYear();
 
   // 初始化结果数组
   const allData = {};
@@ -295,26 +311,23 @@ function completeContributionData(userData) {
   const userDataMap = {};
   userData.forEach((data) => {
     const dataDate = new Date(data.date);
-    const key = `${dataDate.getFullYear()}-${dataDate.getMonth()}-${dataDate.getDate()}`;
-    userDataMap[key] = data;
+    if (!Number.isNaN(dataDate.getTime())) userDataMap[dateKey(dataDate)] = data;
   });
 
-  // 遍历固定范围；最后一年的末尾不超过今天。
-  const finalYear = Math.min(lastHeatmapYear, currentDate.getFullYear());
+  // 最后一年是当前自然年，当前年份只渲染到明天（不含）。
+  const finalYear = currentYear;
   for (let year = firstHeatmapYear; year <= finalYear; year++) {
     const [startYear, endYear] =
-      year === currentDate.getFullYear()
+      year === currentYear
         ? [
-            new Date(
-              new Date(currentDate).setDate(currentDate.getDate() - 365),
-            ),
-            new Date(currentDate.getTime() + 86400000),
+            new Date(year, 0, 1),
+            new Date(year, currentDate.getMonth(), currentDate.getDate() + 1),
           ]
         : [new Date(year, 0, 1), new Date(year + 1, 0, 1)];
 
     const yearData = [];
     for (let d = startYear; d < endYear; d.setDate(d.getDate() + 1)) {
-      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      const key = dateKey(d);
       yearData.push(
         userDataMap[key] || {
           level: 0,
@@ -341,11 +354,10 @@ function getLevelFromWordCount(totalCount) {
   return 4;
 }
 
-var currentDate = new Date();
-
-function transformArticlesData(articlesData) {
+function transformArticlesData(articlesData, today = new Date()) {
+  const todayKey = dateKey(today);
   const dailyStats = articlesData.reduce((map, { date, wordcount }) => {
-    if (new Date(date) > currentDate) {
+    if (!parseDateKey(date) || date > todayKey) {
       return map; // 忽略未来的日期
     }
     const entry = map.get(date) ?? { count: 0, post: 0 };
@@ -357,7 +369,7 @@ function transformArticlesData(articlesData) {
 
   return Array.from(dailyStats, ([dayStr, { count, post }]) => ({
     level: getLevelFromWordCount(count),
-    date: new Date(dayStr).getTime(),
+    date: parseDateKey(dayStr).getTime(),
     count,
     post,
   }));

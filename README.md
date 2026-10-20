@@ -537,6 +537,7 @@ python3 tests/media-build.py
 node --check assets/ruri.js
 node --check assets/features.js
 node tests/lyrics.cjs
+node tests/heatmap.cjs
 ~~~
 
 覆盖最小站点、四语言示例、子路径、Module 导入、站内链接、版权优先级、自动摘要、图片处理与歌词；不替代第三方服务或完整视觉验收。参见 [QA_REPORT.md](QA_REPORT.md) 与 [RELEASE_CHECKLIST.md](RELEASE_CHECKLIST.md)。
