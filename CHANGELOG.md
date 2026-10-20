@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Maintainable stylesheet boundaries
+
+- Split `ruri.css` into eight ordered files under `assets/css/` without changing
+  a byte of the concatenated source. `baseof.html` concatenates them in filename
+  order and still emits one minified, fingerprinted stylesheet, so the production
+  CSS and its cache key are identical to the previous release.
+- The split follows the stylesheet's existing sections: foundation, light and
+  dark syntax, two component blocks, the reading-room skin, navigation and
+  motion. It deliberately preserves the cascade rather than merging duplicate
+  selectors; later files still override earlier ones exactly as before.
+- Documented the ordering contract in both READMEs so future changes land in the
+  component's own file instead of growing another end-of-file override layer.
+
 ### The hero has an entrance
 
 - The banner fades in and rises 18px over 900ms, then the eyebrow, heading,

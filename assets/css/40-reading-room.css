@@ -1,0 +1,395 @@
+
+/* ==================================================================
+   Reading-room skin
+   ------------------------------------------------------------------
+   Everything below is the visual pass that turns the neutral ruri shell
+   into cream paper: a centred title page on the home screen, book-like
+   section labels, indented justified prose, quiet cards with warm shadows.
+   It sits at the end of the sheet on purpose — the rules above are left
+   untouched so the earlier layout logic keeps working, and this block only
+   layers type, colour and spacing on top of it.
+   ================================================================== */
+
+/* ---- Header: the brand becomes a small orange seal + serif wordmark ---- */
+.site-header{border-bottom:1px solid var(--line);min-height:76px;gap:28px}
+.brand{font-size:17px;font-weight:600;letter-spacing:.04em;gap:11px}
+.brand-mark{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fffdf8;font:600 13px/1 var(--serif);letter-spacing:0;transition:transform .3s ease}
+.brand:hover .brand-mark{transform:rotate(-8deg)}
+:root[data-theme=dark] .brand-mark{color:#2b1a12}
+.brand small{font-family:var(--serif);font-style:italic;font-size:11px;font-weight:400;letter-spacing:.06em;color:var(--muted);margin-top:1px;text-transform:none}
+.main-nav{font-size:14px;letter-spacing:.06em}
+.main-nav a{transition:color .2s ease,border-bottom-color .2s ease}
+/* The mark under the item is drawn even before it is current, in transparent
+   ink, so borrowing it for the page being fetched costs no layout shift. */
+.main-nav a{border-bottom:1px solid transparent;padding-bottom:2px}
+.main-nav a[aria-current]{border-bottom-color:var(--accent)}
+.tools{gap:4px}
+.tools>a,.tools>button,.tools summary{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;color:var(--muted);transition:color .2s ease,background-color .2s ease}
+.tools>a:hover,.tools>button:hover,.tools summary:hover{color:var(--accent);background:var(--tint)}
+.tools button{border:0;padding:0;font-size:inherit}
+.tools button:hover{background:transparent}
+.languages>div{border-radius:12px;box-shadow:var(--shadow-md);padding:8px 10px;min-width:120px}
+.languages>div a{padding:6px 12px;border-radius:8px;font-size:13px;text-align:center}
+.languages>div a:hover{background:var(--tint);color:var(--accent)}
+
+/* ---- Title page (home hero): a centred colophon, not a banner ----
+   The wash fades both ways (down the page and out to the left/right) so it
+   never shows a straight edge where the full-bleed band would end. */
+/* The hero also carries .shell, whose margin-inline:auto is what centres it.
+   `margin:0` here is a shorthand and wipes that out; on wide screens the two
+   happen to agree (1240px box in a wider viewport), but as soon as the 760px
+   breakpoint shrinks .shell to calc(100% - 32px) the hero falls to the left
+   edge and leaves a strip of page on its right. Put the centring back.
+   The bottom padding keeps a strip of the hero wash below the banner, and the
+   rule drawn by ::after closes it. */
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;margin:0 auto;padding:84px 0 34px;background:var(--bg);text-align:center;position:relative}
+/* The hero is a .shell, so it already sits on the 1240px track. Centring the
+   rule with left:50% pushed it past the right edge instead of aligning it,
+   leaving a visible gap where the line stopped short. Let it span the box. */
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,var(--line) 18%,var(--line) 82%,transparent)}
+.hero-copy{display:flex;flex-direction:column;align-items:center;padding:0;max-width:44rem}
+.hero .eyebrow{margin:0 0 22px;color:var(--accent);font-size:11px;letter-spacing:.28em;font-weight:500}
+.hero h1{margin:0;font-size:2.7rem;font-weight:600;line-height:1.45;letter-spacing:.16em;text-indent:.16em;color:var(--ink);background:linear-gradient(120deg,var(--accent) 20%,var(--accent-deep));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero h1 span{color:inherit}
+.hero-copy>p:not(.eyebrow){margin:18px 0 0;font-size:1rem;letter-spacing:.08em;color:var(--muted);max-width:36em}
+.hero-source{display:block;margin:12px 0 0;color:var(--muted);font-size:.85rem;letter-spacing:.14em;text-align:center}
+.hero-source:before{content:none}
+.hero-source:empty{display:none}
+/* the closing rule: a short line fading out at both ends */
+.hero .hero-link{display:inline-flex;align-items:center;gap:8px;margin:0;max-width:none;border:0;padding:0;font-size:0;color:var(--accent);width:auto}
+.hero .hero-link::after{content:"";display:block;width:68px;height:3px;margin:28px auto 0;border-radius:2px;background:linear-gradient(90deg,transparent,var(--accent-deep),transparent)}
+.hero .hero-link span{display:none}
+/* Full bleed inside the shell: a fixed 960px cap left gutters on wide screens,
+   and the 16/7 box then cropped the artwork twice — once by the cap, once by
+   object-fit. Now the box is the shell width and the ratio is the source's.
+   No drop shadow either: a soft shadow on an 1240px panel reads as a hard
+   right-edge seam against the page (the warm palette tints the page, so the
+   shadow's own tint shows), which looked like the image stopped short. */
+.hero-image{width:100%;margin-top:40px;border-radius:16px;overflow:hidden;box-shadow:none;aspect-ratio:16/7;position:relative;background:var(--bg)}
+.hero-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+/* Opt-in "whole artwork" mode (.is-natural, set by ruri.bannerFit): the box drops
+   its fixed 16:7 crop and the picture keeps its own ratio, so nothing at the top
+   or bottom is shaved off. The img leaves the absolute track and becomes the
+   thing that gives the panel its height; the caption still sits on the picture. */
+.hero-image.is-natural{aspect-ratio:auto;padding:0;background:transparent}
+.hero-image.is-natural img{position:static;display:block;width:100%;height:auto;object-fit:contain}
+/* The caption sits on top of the banner image, not on the page, so it keeps a
+   paper-white chip in both modes — tying it to --bg turned it into light text
+   on a light photo once dark mode was on. */
+.hero-image>span{background:color-mix(in srgb,#fffdf8 90%,transparent);color:#5a4e3f;border-radius:999px;padding:4px 12px;font-size:11px;letter-spacing:.06em}
+
+/* ---- Section labels: a short accent bar, then a rule fading to the right ---- */
+.section-heading{display:flex;align-items:center;gap:14px;border-bottom:0;padding:0;margin:3em 0 1.3em}
+.section-heading>div{display:contents}
+.section-heading .eyebrow{order:0;margin:0;font-size:0}
+.section-heading h1,.section-heading h2{order:1;flex:0 0 auto;font-size:1.3rem;font-weight:600;letter-spacing:.06em}
+.section-heading h1::before,.section-heading h2::before{content:"";display:inline-block;width:6px;height:1.05em;margin-right:14px;border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--accent-deep));vertical-align:-.14em}
+.section-heading::after{content:"";order:2;flex:1 1 auto;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.section-heading>a{order:3;flex:0 0 auto;font-size:12px;color:var(--muted);letter-spacing:.06em}
+.section-heading>a:hover{color:var(--accent)}
+.section-heading.article-list-heading{margin-bottom:1.3em}
+
+/* ---- Home cards: text first, hairline between entries ---- */
+.post-card{grid-template-columns:minmax(0,1fr);gap:0;padding:26px 0;border-bottom:1px solid var(--line);position:relative;transition:transform .3s cubic-bezier(.2,.7,.3,1)}
+.post-card:hover{transform:translateY(-2px)}
+.post-card>div{display:block}
+.post-card .post-meta{font-size:11.5px;letter-spacing:.06em;gap:10px}
+.post-card .post-meta a{color:var(--accent);opacity:.85}
+.post-card h2{font-size:1.22rem;font-weight:600;letter-spacing:.02em;margin:8px 0 6px;line-height:1.5}
+.post-card h2 a{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .35s ease,color .2s ease}
+.post-card:hover h2 a{color:var(--accent);background-size:100% 1px}
+.post-card p{font-size:.9rem;line-height:1.75;color:var(--muted);margin:0;max-width:62ch}
+.post-card .post-image{display:none}
+.post-card .card-reading{color:var(--faint)}
+
+/* ---- Pager ---- */
+.pagination{gap:8px;margin:40px 0 10px}
+.pagination a{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;color:var(--muted);transition:border-color .2s ease,color .2s ease,background-color .2s ease}
+.pagination a:hover{border-color:var(--accent);color:var(--accent);background:var(--tint)}
+.pagination [aria-current]{background:var(--accent);border-color:var(--accent);color:#fffdf8}
+:root[data-theme=dark] .pagination [aria-current]{color:#2b1a12}
+
+/* ---- Sidebar: quiet blocks, no heavy rules ---- */
+.sidebar{border-left:1px solid var(--line);padding-left:34px}
+.sidebar h3{font-size:.95rem;font-weight:600;letter-spacing:.04em}
+.sidebar h3>span{font-size:9px;letter-spacing:.2em;color:var(--faint)}
+.profile h2{font-size:1.35rem;font-weight:600}
+.profile .eyebrow{letter-spacing:.24em;color:var(--accent);font-size:10px}
+/* Desktop keeps the two featured categories in the sidebar, beneath the
+   author card and above the recommendation tabs. The drawer owns them below
+   760px, so this block is deliberately absent there. */
+.sidebar-categories{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sidebar-categories a{position:relative;display:block;aspect-ratio:4/3;overflow:hidden;border-radius:10px;background:var(--tint)}
+.sidebar-categories img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease,opacity .45s ease}
+.sidebar-categories a::after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 38%,transparent);transition:background-color .25s ease}
+.sidebar-categories a[data-category="story"]::after{background:color-mix(in srgb,var(--ink) 46%,transparent)}
+.sidebar-categories a:hover::after,.sidebar-categories a:focus-visible::after{background:color-mix(in srgb,var(--accent-deep) 54%,transparent)}
+.sidebar-categories a:hover img{transform:scale(1.04)}
+.sidebar-categories span{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:4px;font-family:"Apple Chancery","URW Chancery L","Brush Script MT",cursive;font-style:italic;font-size:22px;font-weight:600;line-height:1.1;letter-spacing:.03em;color:#fffdf8;text-shadow:0 2px 5px #2b1b12cc,0 0 14px #2b1b1266}
+@media(max-width:1100px){.sidebar-categories{grid-template-columns:1fr}
+.sidebar-categories a{aspect-ratio:16/7}
+.sidebar-categories span{font-size:24px}}
+@media(max-width:760px){.sidebar-categories{display:none}}
+@media(prefers-reduced-motion:reduce){.sidebar-categories img{transition:none}
+.sidebar-categories a:hover img{transform:none}}
+.avatar{box-shadow:var(--shadow-sm);border:3px solid var(--paper)}
+.stats b{font-size:1.4rem;font-weight:600;color:var(--accent)}
+.stats{color:var(--faint)}
+.sidebar .sidebar-inner>section,.sidebar .sidebar-inner>.toc{padding-bottom:24px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.sidebar .sidebar-inner>section:last-child{border-bottom:0}
+.tags a{background:var(--tint);border:1px solid transparent;padding:2px 10px;border-radius:999px;transition:border-color .2s ease,color .2s ease}
+.tags a:hover{border-color:var(--accent);color:var(--accent)}
+.recent li::marker{color:var(--accent)}
+.recent a:hover{color:var(--accent)}
+.category-list a{padding:6px 0;border-bottom:1px dashed transparent;transition:color .2s ease}
+.category-list a:hover{color:var(--accent)}
+.post-tabs [role=tab]{letter-spacing:.04em}
+.post-tabs [aria-selected=true]{border-bottom:2px solid var(--accent);color:var(--accent)}
+.toc summary{letter-spacing:.04em;color:var(--ink)}
+.toc a:hover{color:var(--accent)}
+
+/* ---- Article: a centred title, a rule under it, text set like a page ---- */
+.layout main{min-width:0}
+.article-heading{text-align:center;display:flex;flex-direction:column;align-items:center;margin:6px 0 34px;padding-bottom:30px;position:relative}
+.article-heading .eyebrow{order:0;margin:0 0 16px;color:var(--accent);font-size:10.5px;letter-spacing:.24em;text-transform:uppercase}
+.article-heading h1{order:1;font-size:2.05rem;line-height:1.45;font-weight:600;letter-spacing:.06em;margin:0 0 6px;max-width:26em}
+.article-heading .post-meta{order:2;justify-content:center;margin-top:14px;font-size:11.5px;letter-spacing:.06em;color:var(--faint)}
+.article-heading::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:3em;height:3px;border-radius:2px;background:linear-gradient(90deg,var(--accent-deep),var(--accent))}
+.article-cover{border-radius:14px;box-shadow:var(--shadow-sm);margin-bottom:36px}
+/* The first paragraph of an article opens with a dropped-in lead, not a gap. */
+.prose>p:first-of-type{font-size:1.08rem;color:var(--ink)}
+
+.prose{font-size:1.0625rem;line-height:2;letter-spacing:.012em;color:var(--ink)}
+.prose p{margin:0 0 1.1em;text-align:justify;text-indent:2em}
+.prose>p:first-of-type{text-indent:2em}
+/* Headings inside an article read as marginal notes, not loud banners. */
+.prose h2,.prose h3,.prose h4{text-indent:0;letter-spacing:.04em;color:var(--ink);scroll-margin-top:24px}
+.prose h2{display:flex;align-items:center;gap:12px;font-size:1.35rem;font-weight:600;margin:2.4em 0 1em}
+.prose h2::before{content:"";flex:0 0 auto;width:5px;height:1em;border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--accent-deep))}
+.prose h3{font-size:1.14rem;font-weight:600;margin:1.9em 0 .8em;padding-left:.7em;border-left:3px solid var(--line)}
+.prose h4{font-size:1rem;margin:1.6em 0 .6em;color:var(--muted)}
+.prose ul,.prose ol{text-align:left;padding-left:1.6em;margin:0 0 1.2em}
+.prose li{margin:.35em 0}
+.prose li>p{text-indent:0;margin:.3em 0}
+.prose a{color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent);transition:border-color .2s ease,color .2s ease}
+.prose a:hover{border-bottom-color:var(--accent)}
+.prose img{border-radius:10px}
+.prose figure{text-indent:0;margin:1.6em 0}
+.prose figcaption{text-align:center;font-size:.85rem;color:var(--faint);margin-top:.6em}
+.prose blockquote{position:relative;border-left:3px solid var(--accent);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--accent) 7%,var(--bg));padding:.85em 1.2em;margin:1.4em 0;color:var(--muted);text-indent:0}
+.prose blockquote p{text-indent:0;margin:.35em 0}
+.prose hr{border:0;height:1px;margin:2.4em auto;width:60%;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+/* A table that is too wide for the column scrolls sideways rather than
+   squeezing its cells: `display:block` up top makes the table scroll, but it
+   also threw away the equal-width columns, so a cell holding `WebP` wrapped to
+   `We`/`bP` while a neighbouring cell sat half empty. The cells take their
+   natural width and the table sets a floor, so a short word never breaks; on a
+   phone the table is then wider than the column and the block overflow above
+   scrolls it, which is the behaviour that rule was there for. */
+.prose table{border:1px solid var(--line);border-radius:10px;font-size:.92rem;width:max-content;max-width:100%;min-width:100%}
+.prose td,.prose th{white-space:nowrap}
+.prose th{background:var(--tint);font-weight:600;letter-spacing:.02em}
+.prose td,.prose th{text-indent:0}
+.prose :not(pre)>code{background:color-mix(in srgb,var(--accent) 8%,var(--bg));color:var(--accent-deep);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.86em;text-indent:0;white-space:pre-wrap;overflow-wrap:anywhere}
+/* Inside a table cell, the code span keeps its width. The `pre-wrap` and
+   `anywhere` above are right in a paragraph, where a long path has to break —
+   but a cell already refuses to wrap, and all `anywhere` did there was split a
+   short token: `/fj` came out as `/f` plus `j`. `break-word` is the one that
+   actually breaks inside a word; `anywhere` here only ever grants the same
+   permission, so both are reset. It has to sit after the rules it overrides. */
+.prose td code,.prose th code{white-space:nowrap;overflow-wrap:normal;word-break:keep-all}
+:root[data-theme=dark] .prose :not(pre)>code{color:var(--accent-deep)}
+
+/* ---- Article tail ---- */
+.article-tags{margin:34px 0 10px}
+.post-navigation{border-block:1px solid var(--line);padding:18px 0;font-size:13.5px;color:var(--muted)}
+.post-navigation a:hover{color:var(--accent)}
+.notice{border-radius:0 10px 10px 0;border-left:3px solid var(--accent-deep);background:color-mix(in srgb,var(--accent-deep) 8%,var(--bg));color:var(--muted);text-indent:0}
+
+/* ---- Floating furniture ---- */
+.back-top{border:1px solid var(--line);border-radius:50%;box-shadow:var(--shadow-sm);transition:transform .3s ease,color .2s ease,border-color .2s ease}
+.back-top:hover{transform:translateY(-3px);border-color:var(--accent)}
+#floating-player{border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow-md);background:var(--paper)}
+#floating-player button{border-radius:8px}
+dialog{border-radius:16px;box-shadow:var(--shadow-lg)}
+dialog input{border-radius:10px}
+#search-results a:hover strong,#search-results a:hover{color:var(--accent)}
+.skip{border-radius:8px;border:1px solid var(--line)}
+
+/* ---- Footer ---- */
+.site-footer{border-top:1px solid var(--line);margin-top:64px;font-size:12px;color:var(--faint);letter-spacing:.03em}
+.site-footer small{font-size:11px}
+.site-footer a:hover{color:var(--accent)}
+
+/* ---- Scheme switcher: two paint dots, the active one ringed ---- */
+.scheme-switch{display:inline-flex;align-items:center;gap:6px;margin-right:4px}
+.scheme-switch button{width:15px;height:15px;padding:0;border:1px solid var(--line);border-radius:50%;transition:transform .2s ease,box-shadow .2s ease}
+.scheme-switch button:hover{transform:scale(1.15);background:transparent}
+.scheme-switch button[data-scheme=warm]{background:linear-gradient(135deg,#fdf4e6,#9c601e)}
+.scheme-switch button[data-scheme=ruri]{background:linear-gradient(135deg,#eef3f3,#467889)}
+.scheme-switch button[aria-pressed=true]{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--accent)}
+.scheme-switch button[aria-pressed=true]:hover{transform:none}
+
+/* ---- Archive / list pages ---- */
+.archive-year>h2,.archive-year h2{display:flex;align-items:center;gap:12px;border-left:0;padding-left:0;font-weight:600;letter-spacing:.06em}
+.archive-year>h2::before,.archive-year h2::before{content:"";flex:0 0 auto;width:5px;height:1em;border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--accent-deep))}
+.archive-heatmap>h2,.archive-heatmap h2{display:flex;align-items:center;gap:12px;font-weight:600;letter-spacing:.06em}
+.archive-heatmap>h2::before,.archive-heatmap h2::before{content:"";flex:0 0 auto;width:5px;height:1em;border-radius:3px;background:linear-gradient(180deg,var(--accent),var(--accent-deep))}
+.archive-month h3{letter-spacing:.18em;color:var(--faint)}
+.archive-tree a:hover{color:var(--accent)}
+.archive-taxonomies{border-radius:14px;background:var(--tint)}
+.term-grid>a{border-radius:12px;transition:transform .3s ease,box-shadow .3s ease}
+.term-grid>a:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}
+.friend-grid>a{border-radius:12px;transition:border-color .2s ease,box-shadow .2s ease}
+.friend-grid>a:hover{border-color:var(--accent);box-shadow:var(--shadow-sm)}
+.link-card{border-radius:12px}
+.culture-categories a{border-radius:999px;letter-spacing:.04em}
+.culture-categories a[aria-current=page]{background:var(--tint);color:var(--accent);box-shadow:inset 0 -2px var(--accent)}
+
+/* ---- Page-in animation: the article rises, the title settles after it ---- */
+@keyframes ruri-page-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes ruri-title-in{0%,40%{opacity:0;transform:translateY(-40%)}100%{opacity:1;transform:none}}
+.article .article-heading{animation:ruri-page-in .5s cubic-bezier(.22,.61,.36,1) both}
+.article .article-heading h1{animation:ruri-title-in 1s both}
+
+
+/* ---- ruri scheme: the flat, square look the theme shipped with ----
+   The reading-room pass rounds corners, lifts cards with warm shadows and
+   spaces type out for long-form prose. The original palette was deliberately
+   flat, so switching back to it also restores square frames and removes the
+   lift — otherwise teal on cream-paper geometry reads as a half-applied skin. */
+html.theme-ruri .brand-mark{border-radius:3px;transform:none}
+html.theme-ruri .brand:hover .brand-mark{transform:none}
+html.theme-ruri .hero{background:var(--bg)}
+html.theme-ruri .hero h1{background:none;-webkit-text-fill-color:currentColor;color:var(--ink);letter-spacing:.04em;text-indent:.04em;font-weight:500}
+html.theme-ruri .hero .hero-link::after{background:linear-gradient(90deg,transparent,var(--accent),transparent);height:2px}
+html.theme-ruri .hero-image{border-radius:0;box-shadow:none}
+html.theme-ruri .post-card:hover{transform:none}
+html.theme-ruri .post-card h2 a{background:none}
+html.theme-ruri .post-card:hover h2 a{color:var(--accent)}
+html.theme-ruri .article-heading h1{letter-spacing:.01em;font-weight:550}
+html.theme-ruri .article-heading::after{background:var(--accent);height:2px}
+html.theme-ruri .article-cover{border-radius:0;box-shadow:none}
+html.theme-ruri .prose{line-height:1.95;letter-spacing:0}
+html.theme-ruri .prose h2::before,html.theme-ruri .prose h3{border-left:0}
+html.theme-ruri .prose h2{display:block}
+html.theme-ruri .prose h2::before{display:none}
+html.theme-ruri .prose h3{padding-left:0}
+html.theme-ruri .prose blockquote{background:var(--tint);color:var(--muted);border-radius:0}
+html.theme-ruri .prose img,html.theme-ruri .prose :not(pre)>code{border-radius:0}
+html.theme-ruri .avatar{border:0;box-shadow:none}
+html.theme-ruri .tags a{border-radius:0;background:var(--tint)}
+html.theme-ruri .pagination a{border-radius:0}
+html.theme-ruri .pagination [aria-current]{background:var(--accent);color:#fff}
+html.theme-ruri .back-top{border-radius:0;box-shadow:none}
+html.theme-ruri .back-top:hover{transform:none}
+html.theme-ruri #floating-player{border-radius:0;box-shadow:0 4px 24px #0001}
+html.theme-ruri #floating-player button{border-radius:0}
+html.theme-ruri dialog,html.theme-ruri dialog input,html.theme-ruri .languages>div,html.theme-ruri .languages>div a{border-radius:0}
+/* Book-style section labels stay: they carry structure, not decoration. Only
+   the archive years go back to a plain head, as they read fine on their own. */
+html.theme-ruri .archive-year>h2::before,html.theme-ruri .archive-heatmap>h2::before{width:0;margin-right:0}
+html.theme-ruri .archive-taxonomies,html.theme-ruri .term-grid>a,html.theme-ruri .friend-grid>a,html.theme-ruri .link-card,html.theme-ruri .culture-categories a{border-radius:0}
+html.theme-ruri .term-grid>a:hover{transform:none;box-shadow:none;border-color:var(--accent)}
+html.theme-ruri .skills,.html.theme-ruri .skip{border-radius:0}
+/* The header's height belongs to the layout, not to the palette: ruri keeps
+   the reading-room band it shares with warm. The 88px compact band was the
+   pre-redesign height, and restoring it here moved the hairline, the progress
+   rail and the veil's top edge every time the palette changed — the rail hangs
+   off a measured `--header-h`, so a bar that grows under it leaves the rail
+   stranded inside the header as a second line. Flat frames, sans-serif type
+   and square corners carry the original look; the bar's metrics do not. */
+/* The original palette keeps the system sans-serif it was designed with: the
+   face ruri actually published, taken from its last release (its `:root` sets
+   the font-family directly). The serif stack above is this blog's own addition. */
+html.theme-ruri{--serif:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+
+/* ---- Narrow screens ---- */
+@media(max-width:1100px){
+.site-header{gap:16px}
+.sidebar{padding-left:26px}
+.hero{padding:56px 0 26px}
+.hero h1{font-size:2.35rem}
+}
+/* ---- Narrow screens: the menu moves into a drawer ----
+   The header keeps one row: menu button, brand, tools. The links leave the
+   header entirely rather than wrapping onto a second line, which is what used to
+   make the bar two rows tall on a phone. Both the button and the panel are
+   inert above 760px; the desktop header still lists the pages inline. */
+.menu-toggle,.menu-scrim,.menu-drawer{display:none}
+@media(max-width:760px){
+.shell{width:calc(100% - 32px)}
+.site-header{padding:12px 0;gap:8px 10px;min-height:0;flex-wrap:nowrap}
+.main-nav{display:none}
+/* The button leads the row, then the brand, then the tools pushed to the right.
+   A hair of negative margin pulls it into the gutter so the icon optically
+   lines up with the text edge below it; the box stays 44px tall so the target
+   is thumb-sized even though the icon inside is not. */
+.menu-toggle{display:grid;place-items:center;order:0;flex:0 0 auto;width:36px;height:44px;margin:-6px 0 -6px -9px;padding:0;border:0;border-radius:9px;background:transparent;color:var(--ink);font-size:0;transition:color .2s ease,background-color .2s ease}
+.menu-toggle:hover,.menu-toggle:focus-visible{color:var(--accent);background:var(--tint)}
+.menu-toggle svg{display:block;width:20px;height:20px}
+/* The name may give way (ellipsis) before the tagline does: a truncated name is
+   still recognisable, a tagline cut mid-word is not. */
+.brand{order:1;min-width:0}
+.brand>span:last-child{min-width:0}
+.tools{order:2;gap:2px;margin-left:auto;min-width:0}
+/* The drawer rises from the bottom edge: a thumb reaches the bottom of a phone,
+   and a sheet that slides up from there needs no reaching into the top corner
+   twice. Round top corners and a grab handle say it can be dismissed. */
+.menu-drawer{display:block;position:fixed;left:0;right:0;bottom:0;z-index:76;padding:10px 16px calc(22px + env(safe-area-inset-bottom));text-align:left;border-top:1px solid var(--line);border-radius:18px 18px 0 0;background:var(--paper);box-shadow:0 -14px 38px rgba(var(--shadow-rgb),.18);transform:translateY(102%);transition:transform .28s cubic-bezier(.2,.7,.3,1);visibility:hidden;overscroll-behavior:contain;max-height:82vh;overflow-y:auto}
+.menu-drawer.is-open{transform:none;visibility:visible}
+.menu-drawer::before{content:"";display:block;width:38px;height:4px;margin:0 auto 10px;border-radius:2px;background:var(--line)}
+.menu-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:0 0 8px 4px;font-size:12px;letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
+.menu-close{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:50%;font-size:22px;line-height:1;color:var(--muted)}
+.menu-close:hover,.menu-close:focus-visible{background:var(--tint);color:var(--accent)}
+/* The two featured categories sit above the navigation, so the artwork stays
+   available without competing with the hero for the first screen. */
+.menu-categories{display:flex;gap:10px;padding:2px 0 12px}
+.menu-drawer .menu-categories a{position:relative;display:block;flex:1;min-width:0;height:112px;overflow:hidden;border-radius:10px;border-bottom:0}
+.menu-drawer .menu-categories a::before{display:none}
+.menu-drawer .menu-categories img{display:block;width:100%;height:100%;object-fit:cover}
+.menu-drawer .menu-categories a::after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 36%,transparent);transition:background-color .25s ease}
+.menu-drawer .menu-categories a[data-category="story"]::after{background:color-mix(in srgb,var(--ink) 44%,transparent)}
+.menu-drawer .menu-categories a:hover::after,.menu-drawer .menu-categories a:focus-visible::after{background:color-mix(in srgb,var(--accent-deep) 52%,transparent)}
+.menu-drawer .menu-categories span{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:6px;font-family:"Apple Chancery","URW Chancery L","Brush Script MT",cursive;font-style:italic;font-size:24px;font-weight:600;line-height:1.15;letter-spacing:.04em;color:#fffdf8;text-shadow:0 2px 4px #2b1b12d9,0 0 12px #2b1b1259}
+/* The links read as a stack of ruled rows, the same language as the home list,
+   with the current page marked by the accent and a bar on the left. */
+.menu-drawer a{display:flex;align-items:center;min-height:50px;padding:0 4px 0 0;border-bottom:1px solid var(--line);font-size:15px;letter-spacing:.06em;color:var(--ink);transition:color .2s ease}
+.menu-drawer a:last-child{border-bottom:0}
+.menu-drawer a:hover,.menu-drawer a:focus-visible{color:var(--accent)}
+.menu-drawer a[aria-current]{color:var(--accent);font-weight:600}
+/* The mark is always drawn, transparent when the row is not current, so marking
+   a page never shifts its label sideways against the other rows. */
+.menu-drawer a::before{content:"";flex:0 0 3px;width:3px;height:16px;margin-right:11px;border-radius:2px;background:transparent;transition:background-color .2s ease}
+.menu-drawer a[aria-current]::before{background:var(--accent)}
+.menu-scrim{position:fixed;inset:0;z-index:75;background:#0e1b2252;opacity:0;transition:opacity .28s ease;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.menu-scrim.is-open{display:block;opacity:1}
+body.menu-open{overflow:hidden}
+.brand{font-size:15px}
+.brand-mark{width:22px;height:22px;font-size:11px}
+/* The tagline wraps to two lines beside the tools on a phone; keep it on one. */
+.brand small{font-size:9.5px;letter-spacing:.04em;white-space:nowrap}
+/* The palette dots shrink on a phone so four colours fit beside the brand. */
+.tools{gap:2px;margin-left:auto}
+.tools>a,.tools>button,.tools summary{width:30px;height:30px;padding:5px}
+.scheme-switch{gap:5px;margin-right:2px}
+.scheme-switch button{width:12px;height:12px}
+/* A 320px phone cannot hold the seal, the name, four dots and four icons in one
+   row, and something has to give: the name does. Below 380px it gives way whole
+   rather than truncating to "sasaOra…", which reads as a bug, and the dots lose
+   most of their padding so the icons stay full size. */
+@media(max-width:379px){
+.brand>span:last-child{display:none}
+.scheme-switch{gap:4px;margin-right:0}
+.tools>a,.tools>button,.tools summary{width:28px;height:28px;padding:4px}
+}
+.hero{padding:46px 0 22px}
+.hero::after{width:calc(100% - 32px)}
+.hero h1{font-size:1.85rem;letter-spacing:.1em}
+.hero-copy>p:not(.eyebrow){font-size:.92rem;margin-top:12px;line-height:1.9}
+.hero-image{margin-top:28px;border-radius:12px;aspect-ratio:4/3}
+.hero-image.is-natural{aspect-ratio:auto}
+.hero .hero-link::after{margin-top:22px;width:56px}
+.section-heading h1,.section-heading h2{font-size:1.18rem}
+.section-heading h1::before,.section-heading h2::before{width:5px;margin-right:11px}
+.post-card{padding:20px 0}

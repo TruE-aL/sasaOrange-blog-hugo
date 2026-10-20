@@ -43,13 +43,13 @@ sasaOrange 源自 [hugo-theme-reimu](https://github.com/D-Sketon/hugo-theme-reim
 
 第一套是"纸感书页"的语言：圆角卡片、暖调投影、宋体扉页。第二套**冷青**是主题原本的配色，切过去时会一并还原它当初的视觉语言——直角边框、无投影、系统无衬线、标题去掉渐变，只保留本书页式结构（扉页居中、分组竖条、首行缩进）。也就是说原配色不是被染成暖色的旧值，而是完整的一套。
 
-两套配色都各有深色版本，与右上角的明暗切换互相独立。所有色值集中在 `assets/ruri.css` 开头的 CSS 变量里，改 `--bg`／`--ink`／`--accent` 等即可整体换色；每套配色只需追加一段 `html.theme-<名字>` 变量，把名字加进 `ruri.js` 的 `SCHEMES`，再到 `baseof.html` 顶栏补一枚按钮。
+两套配色都各有深色版本，与右上角的明暗切换互相独立。所有色值集中在 `assets/css/00-foundation.css` 开头的 CSS 变量里，改 `--bg`／`--ink`／`--accent` 等即可整体换色；每套配色只需追加一段 `html.theme-<名字>` 变量，把名字加进 `ruri.js` 的 `SCHEMES`，再到 `baseof.html` 顶栏补一枚按钮。
 
 ### 阅读字体
 
 正文用读者系统的字体，和 ruri 原本的做法一致：CJK 走系统衬线栈（macOS / iOS 的宋体、Windows 的 SimSun、Linux 的 Noto Serif CJK），西文走 Georgia。**主题不再自带任何字体文件**，页面也就不必为字重付下载成本。
 
-早先版本曾打包一份 1.8 MB 的思源宋体子集（GB 2312，OFL 1.1）。实测下来，子集化后笔画密集的字容易发虚，行距里看着比系统字更"糊"，密度高的文章页显得杂乱，因此连同 `scripts/build-font.py` 一起移除了。需要自托管字体时，在 `assets/ruri.css` 开头的 `--serif` 变量里把自己的字体名放到最前，并自行补 `@font-face`。
+早先版本曾打包一份 1.8 MB 的思源宋体子集（GB 2312，OFL 1.1）。实测下来，子集化后笔画密集的字容易发虚，行距里看着比系统字更"糊"，密度高的文章页显得杂乱，因此连同 `scripts/build-font.py` 一起移除了。需要自托管字体时，在 `assets/css/00-foundation.css` 开头的 `--serif` 变量里把自己的字体名放到最前，并自行补 `@font-face`。
 
 冷青（原版）配色另有自己的字体规则：它沿用主题改造前的系统无衬线字体，切到这套配色时正文会变成无衬线。
 
@@ -524,6 +524,8 @@ git commit -m "chore: update theme"
 更新前阅读 [CHANGELOG.md](CHANGELOG.md)。个人配置、内容与覆盖模板应保存在站点仓库。Reimu 用户请逐项迁移：Ruri 不支持 Reimu 的所有配置和插件，已删除的旧字段见 [参数文件末尾](exampleSite/config/_default/params.yaml)。主题资源变动后完整刷新浏览器。
 
 ## 开发与测试
+
+样式按 `assets/css/` 中文件名的顺序由 `baseof.html` 拼接，最终仍是一个带指纹的请求。后面的文件会覆盖前面的同名规则，这是现有视觉设计的一部分；调整顺序、合并规则或删除“重复”声明前，必须检查所有页面。新增样式应放进语义对应的文件，避免在文件末尾继续追加整页覆盖层。
 
 在主题仓库根目录运行：
 

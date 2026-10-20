@@ -1,0 +1,176 @@
+
+/* Dark code surface with matching token palette in both themes. */
+.prose pre,.prose .highlight,.prose .highlight .chroma{background:#282a36;color:#f8f8f2;border-radius:8px;color-scheme:dark}
+
+.prose .highlight{margin:20px 0;overflow:auto}
+
+.prose .highlight pre{margin:0}
+
+.prose pre code,.prose .chroma code{background:transparent;padding:0;color:inherit}
+
+
+.prose .bg { color:#f8f8f2;background-color:#282a36; }
+
+.prose .chroma { color:#f8f8f2;background-color:#282a36;-webkit-text-size-adjust:none; }
+
+.prose .chroma .x { color:#f8f8f2 }
+
+.prose .chroma .err { color:#f8f8f2 }
+
+.prose .chroma .lnlinks { outline:none;text-decoration:none;color:inherit }
+
+.prose .chroma .lntd { vertical-align:top;padding:0;margin:0;border:0; }
+
+.prose .chroma .lntable { border-spacing:0;padding:0;margin:0;border:0; }
+
+.prose .chroma .hl { background-color:#3d3f4a }
+
+.prose .chroma .lnt { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f }
+
+.prose .chroma .ln { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f }
+
+.prose .chroma .line { display:flex; }
+
+.prose .chroma .k { color:#ff79c6 }
+
+.prose .chroma .kc { color:#ff79c6 }
+
+.prose .chroma .kd { color:#8be9fd;font-style:italic }
+
+.prose .chroma .kn { color:#ff79c6 }
+
+.prose .chroma .kp { color:#ff79c6 }
+
+.prose .chroma .kr { color:#ff79c6 }
+
+.prose .chroma .kt { color:#8be9fd }
+
+.prose .chroma .na { color:#50fa7b }
+
+.prose .chroma .nc { color:#50fa7b }
+
+.prose .chroma .no { color:#f8f8f2 }
+
+.prose .chroma .nd { color:#f8f8f2 }
+
+.prose .chroma .ni { color:#f8f8f2 }
+
+.prose .chroma .ne { color:#f8f8f2 }
+
+.prose .chroma .nl { color:#8be9fd;font-style:italic }
+
+.prose .chroma .nn { color:#f8f8f2 }
+
+.prose .chroma .nx { color:#f8f8f2 }
+
+.prose .chroma .nt { color:#ff79c6 }
+
+.prose .chroma .nb { color:#8be9fd;font-style:italic }
+
+.prose .chroma .bp { font-style:italic }
+
+.prose .chroma .nv { color:#8be9fd;font-style:italic }
+
+.prose .chroma .vc { color:#8be9fd;font-style:italic }
+
+.prose .chroma .vg { color:#8be9fd;font-style:italic }
+
+.prose .chroma .vi { color:#8be9fd;font-style:italic }
+
+.prose .chroma .vm { color:#8be9fd;font-style:italic }
+
+.prose .chroma .nf { color:#50fa7b }
+
+.prose .chroma .fm { color:#50fa7b }
+
+.prose .chroma .ld { color:#f8f8f2 }
+
+.prose .chroma .s { color:#f1fa8c }
+
+.prose .chroma .sa { color:#f1fa8c }
+
+.prose .chroma .sb { color:#f1fa8c }
+
+.prose .chroma .sc { color:#f1fa8c }
+
+.prose .chroma .dl { color:#f1fa8c }
+
+.prose .chroma .sd { color:#f1fa8c }
+
+.prose .chroma .s2 { color:#f1fa8c }
+
+.prose .chroma .se { color:#f1fa8c }
+
+.prose .chroma .sh { color:#f1fa8c }
+
+.prose .chroma .si { color:#f1fa8c }
+
+.prose .chroma .sx { color:#f1fa8c }
+
+.prose .chroma .sr { color:#f1fa8c }
+
+.prose .chroma .s1 { color:#f1fa8c }
+
+.prose .chroma .ss { color:#f1fa8c }
+
+.prose .chroma .m { color:#bd93f9 }
+
+.prose .chroma .mb { color:#bd93f9 }
+
+.prose .chroma .mf { color:#bd93f9 }
+
+.prose .chroma .mh { color:#bd93f9 }
+
+.prose .chroma .mi { color:#bd93f9 }
+
+.prose .chroma .il { color:#bd93f9 }
+
+.prose .chroma .mo { color:#bd93f9 }
+
+.prose .chroma .o { color:#ff79c6 }
+
+.prose .chroma .ow { color:#ff79c6 }
+
+.prose .chroma .or { color:#ff79c6 }
+
+.prose .chroma .p { color:#f8f8f2 }
+
+.prose .chroma .c { color:#6272a4 }
+
+.prose .chroma .ch { color:#6272a4 }
+
+.prose .chroma .cm { color:#6272a4 }
+
+.prose .chroma .c1 { color:#6272a4 }
+
+.prose .chroma .cs { color:#6272a4 }
+
+.prose .chroma .cp { color:#ff79c6 }
+
+.prose .chroma .cpf { color:#ff79c6 }
+
+.prose .chroma .gd { color:#f55 }
+
+.prose .chroma .ge { text-decoration:underline }
+
+.prose .chroma .gr { color:#f8f8f2 }
+
+.prose .chroma .gh { font-weight:bold }
+
+.prose .chroma .gi { color:#50fa7b;font-weight:bold }
+
+.prose .chroma .go { color:#44475a }
+
+.prose .chroma .gp { color:#f8f8f2 }
+
+.prose .chroma .gs { color:#f8f8f2 }
+
+.prose .chroma .gu { font-weight:bold }
+
+.prose .chroma .gt { color:#f8f8f2 }
+
+.prose .chroma .gl { text-decoration:underline }
+
+.prose .chroma .w { color:#f8f8f2 }
+
+.prose .chroma .lnt,.prose .chroma .ln{color:#a4a8b8}

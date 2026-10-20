@@ -470,6 +470,8 @@ Read [CHANGELOG.md](CHANGELOG.md) first. Keep personal configuration, content an
 
 ## Development and tests
 
+Styles are concatenated in filename order from `assets/css/` by `baseof.html`, then served as one fingerprinted request. Later files intentionally override earlier rules in places; do not reorder, merge or delete "duplicate" declarations without checking every page. Add new rules to the file that owns the component instead of appending another page-wide override layer.
+
 ~~~sh
 python3 tests/smoke.py
 python3 tests/module-build.py

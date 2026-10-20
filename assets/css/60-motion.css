@@ -1,0 +1,232 @@
+   whatever wording happens to be underneath. */
+.nav-veil-text{margin:0;padding:7px 16px;border-radius:999px;background:var(--paper);border:1px solid var(--line);font-size:.86rem;letter-spacing:.08em;color:var(--muted)}
+
+/* Reduced motion: the cog stands still and the paper simply appears. The text
+   still says what is happening, so nothing is lost with the motion gone. The
+   selectors have to match the specificity of the rules they silence — the veil
+   opens through `.nav-veil.is-open .nav-veil-core`, and a plain `.nav-veil-core`
+   here would lose to it and leave the fade running. */
+@media(prefers-reduced-motion:reduce){
+.menu-drawer,.menu-scrim{transition:none}
+.nav-progress i,.nav-progress.is-running i{transition:none}
+.nav-veil-wing,.nav-veil.is-open .nav-veil-wing{transition:none}
+.nav-veil-core,.nav-veil.is-open .nav-veil-core{transition:none}
+.nav-veil{transition:none}
+.nav-gear{animation:none;opacity:.6}
+}
+
+/* The bar and the veil are pinned to the header they hang from. The shell has
+   to be the positioning context for that, and it has no other reason to be one. */
+#page-shell{position:relative}
+
+
+/* ---- Reveal on scroll: each component rises into place as it is reached ----
+   This is reimu's fade-up, kept because a page of cards that arrive one by one
+   reads as a room being furnished rather than a wall being pasted up. The
+   waiting state is a class on <html> that the inline script in baseof.html sets
+   before first paint: with no JavaScript at all nothing ever hides, and if the
+   script bundle itself fails to arrive the same script takes the class away
+   again — the page is never held hostage by its own animation.
+
+   The motion travels on the independent `translate` property rather than on
+   `transform`, which stays free for the hover lift the cards already have; the
+   `transform` entry in the transition list is that lift's own timing, carried
+   over so marking a card does not change how it answers the pointer. */
+html.reveal-on [data-reveal]{opacity:0;translate:0 30px;pointer-events:none;transition:opacity .4s ease,translate .4s ease,transform .3s cubic-bezier(.2,.7,.3,1)}
+html.reveal-on [data-reveal].is-revealed{opacity:1;translate:none;pointer-events:auto}
+/* Reduced motion: nothing drifts and nothing fades — a component that has been
+   reached is simply there. `translate:none` matters as much as the missing
+   transition: a 30px offset held forever would itself be a displacement the
+   reader never asked for. */
+@media(prefers-reduced-motion:reduce){
+html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition:none;translate:none}
+}
+
+/* ---- Home card: cover beside the text on desktop, above it on a phone ----
+   The last word on `.post-card`, deliberately: the card picked up several
+   generations of layout rules on the way here (a thumbnail on the right, then
+   none at all, then a full-width frame), and the older ones still sit further up
+   the file. Rather than excavating them, this block states the final shape once,
+   at the end, where it wins on order alone.
+
+   The layout changes at 760px because the two screens are doing different jobs.
+   On a phone there is one column, so the picture goes on top and carries the
+   entry: 16:9 across the full reading width. On a desktop the reading column is
+   860px wide and a 16:9 frame there is 478px tall — two entries per screen, and
+   the list stops reading as a list. So from 760px up the cover returns to
+   ruri's arrangement: a fixed-height block beside the text, cropping whatever
+   the endpoint sends (`object-fit:cover`), which leaves four or five entries in
+   view.
+
+   What is deliberately not borrowed from either theme: no card boxes, no
+   shadows, no rounded frames, no clip-path slants, no icon row. The entries are
+   still separated by the same hairline and set in the same type.
+
+   `aspect-ratio`/`height` plus `object-fit:cover` is what makes a random image
+   safe here: whatever shape it arrives in, the frame is the same size and the
+   list does not jump. The frame carries `--tint` underneath, so an interface
+   that is slow — or one that has gone away — shows a quiet block of the page's
+   own colour rather than a broken-image icon and a collapsed row. */
+.post-card.has-cover{display:grid;grid-template-columns:minmax(0,1fr) 190px;grid-template-areas:"body image";gap:26px;align-items:stretch;padding:26px 0;border-bottom:1px solid var(--line)}
+.post-card.has-cover>div{grid-area:body;display:block;min-width:0}
+.post-card.has-cover .post-image{grid-area:image;display:block;align-self:stretch;height:132px;margin:0;overflow:hidden;background:var(--tint)}
+.post-card.has-cover .post-image img{display:block;width:100%;height:100%;object-fit:cover}
+/* The hover lift belongs to a row of text, not to a card with a picture in it:
+   moving the block two pixels reads as a wobble, and the picture would slide
+   against its own frame. The card stays put; the title still takes the accent
+   and the underline the cards already had. */
+.post-card.has-cover:hover{transform:none}
+/* A cover is decoration for a link that the title already provides, and the
+   reveal animation is not worth a repaint of a half-megabyte image: it fades in
+   with the card, but it does not travel. */
+.post-card.has-cover .post-image{translate:none}
+/* The reading time is pushed to the right edge of the meta line in the plain
+   text card, which works when the line is one thing wide. Next to a picture the
+   line wraps, and a push would leave it stranded on a line of its own, so in a
+   cover card it follows the tags and wraps with them. */
+.post-card.has-cover .post-meta .card-reading{margin-left:0}
+.post-card.has-cover .post-meta{row-gap:6px}
+/* The cover is never the full column here, so a phone-sized download would be
+   upscaled and a desktop-sized one wasted: 280/420/560 covers 190px at 2x and
+   the 34%-of-viewport frame the narrow layout uses. */
+@media(max-width:1180px){
+.post-card.has-cover{grid-template-columns:minmax(0,1fr) 172px;gap:22px}
+.post-card.has-cover .post-image{height:122px}
+}
+
+/* Phones: one column, so the picture goes above the text and takes the full
+   reading width at 16:9. A 4:3 crop of a wide random image loses the sides,
+   which is where these pictures keep their subject; a shorter band would make
+   the list read as a pile of strips. */
+@media(max-width:760px){
+.post-card.has-cover{display:block;padding:22px 0}
+.post-card.has-cover .post-image{height:auto;aspect-ratio:16/9;margin:0 0 14px}
+.post-card.has-cover h2{font-size:1.16rem}
+}
+
+/* ---- Hero: the picture arrives, and the words follow it -------------------
+   reimu's entrance, in this theme's terms. Three motions, each doing one job:
+
+   1. The banner fades up out of the paper — opacity plus an 18px rise. It is
+      the first thing on the page and the largest, so it earns the only long
+      animation here (900ms); everything else is 400–600ms, which is the rule
+      this theme already followed for `[data-reveal]`.
+   2. The three lines of the hero copy follow, staggered 90ms apart, each rising
+      16px. They are wrapped in `.hero-rise`, which exists only for the motion —
+      the same rule, with no wrapper, would have to animate the whole copy block
+      as one, and a block that arrives in one piece reads as a page that
+      appeared rather than as words being written.
+   3. The banner keeps drifting: scale 1 → 1.04 and back over 18s, in
+      alternating directions so a reader who comes back to the top does not find
+      it frozen. It is paused when the hero leaves the fold, so the transform is
+      not repainting a 1200px image under a scrolled page.
+
+   All of it is CSS, started by one class on the section and by the image's own
+   `load` event for the fade. No new dependency: reimu uses AOS, which is a
+   scroll library — this page needs two one-shot entrances, and the scroll-in
+   motion already exists here as `[data-reveal]`. What AOS does that is worth
+   keeping is not the library but the two habits: `once`, so nothing replays,
+   and `prefers-reduced-motion`, so nothing moves at all for a reader who asked
+   for that. */
+.hero-motion .hero-image{opacity:0;translate:0 18px}
+.hero-motion .hero-image.is-in{opacity:1;translate:none;transition:opacity .9s ease,translate .9s cubic-bezier(.2,.7,.3,1)}
+/* reimu resolves its banner out of an 8px blur. Deliberate departure: blurring
+   a half-megabyte photograph animates a filter across the whole layer on every
+   frame for 900ms, and at 1200px wide the blur is not what the eye notices — the
+   rise is. So the rise carries the motion alone, and the frame stays free of a
+   filter it would have to keep alive. */
+.hero-motion .hero-rise{opacity:0;translate:0 16px;filter:blur(4px)}
+.hero-motion.is-in .hero-rise{opacity:1;translate:none;filter:none;transition:opacity .6s ease,translate .6s cubic-bezier(.2,.7,.3,1),filter .6s ease;transition-delay:calc(var(--rise) * 90ms + 180ms)}
+/* The drift. `animation` rather than a transition because it has to keep going
+   after it arrives — 4% over 18s is slow enough that nobody catches it moving,
+   which is the point: a still picture that reads as alive. */
+.hero-motion .hero-image:not(.is-natural) img{animation:hero-drift 18s ease-in-out infinite alternate}
+@keyframes hero-drift{from{transform:scale(1)}to{transform:scale(1.04)}}
+/* Off-screen or scrolled away, the drift is paused: it is the one thing here
+   that never ends, so it is the one thing that must not run forever. */
+.hero-motion.is-asleep .hero-image img{animation-play-state:paused}
+.hero-motion .hero-link span{display:inline-block;animation:hero-nudge 2.6s ease-in-out infinite}
+@keyframes hero-nudge{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(3px)}}
+.hero-motion.is-asleep .hero-link span{animation-play-state:paused}
+/* The caption sits inside the frame, so it comes in last and from the bottom,
+   as a caption should. */
+.hero-motion .hero-image>span{opacity:0;translate:0 8px}
+.hero-motion .hero-image.is-in>span{opacity:1;translate:none;transition:opacity .6s ease .7s,translate .6s ease .7s}
+@media(prefers-reduced-motion:reduce){
+.hero-motion .hero-image,.hero-motion .hero-rise,.hero-motion .hero-image>span{opacity:1;translate:none;filter:none;transition:none}
+.hero-motion .hero-image img,.hero-motion .hero-link span{animation:none}
+}
+
+
+/* Reimu's AOS mixes fade-up with zoom-in. The reveal observer here has one
+   waiting state, so these variants refine that state instead of adding a second
+   library: category tiles and friend links scale from 0.96 as they arrive, and
+   article tags pop from 0.88 once they are reached. */
+html.reveal-on .featured-categories [data-reveal],
+html.reveal-on .friend-grid [data-reveal]{scale:.96}
+html.reveal-on .featured-categories [data-reveal].is-revealed,
+html.reveal-on .friend-grid [data-reveal].is-revealed{scale:1;transition:opacity .4s ease,translate .4s ease,scale .4s cubic-bezier(.22,.61,.36,1),transform .3s cubic-bezier(.2,.7,.3,1)}
+html.reveal-on .article-tags [data-reveal]{scale:.88}
+html.reveal-on .article-tags [data-reveal].is-revealed{scale:1;transition:opacity .35s ease,translate .35s ease,scale .35s cubic-bezier(.22,.61,.36,1)}
+
+@media(prefers-reduced-motion:reduce){
+html.reveal-on .featured-categories [data-reveal],
+html.reveal-on .friend-grid [data-reveal],
+html.reveal-on .article-tags [data-reveal]{scale:1}
+}
+
+/* ---- Borrowed from reimu: small arrivals around the still page -----------
+   These are the motions reimu applies to its covers and archive rows. They sit
+   at the end of the file so the final layout rules above keep precedence, and
+   they leave `transform` to the components that already use it for hover. */
+
+/* Home category covers answer the pointer like reimu's post covers: the frame
+   stays put, the photograph comes forward, and the wash deepens so the label
+   keeps its contrast. */
+.featured-categories a img{transition:transform .6s ease,opacity .6s ease}
+@media(hover:hover){
+.featured-categories a:hover img{transform:scale(1.05);opacity:.7}
+}
+
+/* Reimu resolves a loaded cover out of an 8px blur. The same arrival is applied
+   to card and category covers, but the transform is left alone: those images
+   already have a hover scale, and an animation there would overwrite it. */
+.post-image img,.featured-categories img{animation:ruri-cover-in .8s ease both}
+@keyframes ruri-cover-in{
+from{opacity:0;filter:blur(10px)}
+to{opacity:1;filter:blur(0)}
+}
+
+/* Reimu's archive marker grows from a small bar into a round dot as the row is
+   reached. Here it is the month bullet that comes forward, while the title
+   takes the accent colour the archive already uses on hover. */
+.archive-month li::before{transition:width .2s ease,height .2s ease,top .2s ease,border-radius .2s ease,background-color .2s ease}
+.archive-month li:hover::before{width:6px;height:6px;top:16px;border-radius:50%;background:var(--accent)}
+
+@media(prefers-reduced-motion:reduce){
+.featured-categories a img{transition:none}
+.featured-categories a:hover img{transform:none;opacity:1}
+.post-image img,.featured-categories img{animation:none;filter:none}
+.archive-month li::before{transition:none}
+}
+
+/* Opt-in reimu motion: the header leaves while the reader scrolls down and
+   returns as soon as they scroll back. Enabled by ruri.pageMotion.headerHide. */
+.site-header{transition:translate .28s cubic-bezier(.2,.7,.3,1)}
+html.header-away .site-header{translate:0 -105%}
+@media(prefers-reduced-motion:reduce){
+.site-header{transition:none}
+html.header-away .site-header{translate:none}
+}
+
+/* Featured category labels stay legible over artwork without hiding it. */
+.featured-categories span{font-family:"Apple Chancery","URW Chancery L","Brush Script MT",cursive;font-style:italic;font-size:38px;font-weight:600;letter-spacing:.06em;color:#fffdf8;text-shadow:0 2px 5px #2b1b12cc,0 0 18px #2b1b1266}
+@media(max-width:760px){.featured-categories span{font-size:24px;font-weight:600;letter-spacing:.04em;line-height:1.15;text-shadow:0 2px 4px #2b1b12d9,0 0 12px #2b1b1259}}
+
+
+/* User-supplied gear: favicon, brand companion, and navigation loader. */
+.brand-gear{display:block;width:24px;height:24px;flex:0 0 auto;opacity:.9;transition:transform .35s ease}
+.brand:hover .brand-gear{transform:rotate(35deg)}
+.nav-gear .nav-gear-fill{fill:var(--ink)}
+@media(max-width:760px){.brand-gear{width:20px;height:20px}}
+@media(prefers-reduced-motion:reduce){.brand-gear{transition:none}.brand:hover .brand-gear{transform:none}}
