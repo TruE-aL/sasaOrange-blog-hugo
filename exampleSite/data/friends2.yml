@@ -1,0 +1,8 @@
+- name: Ember Lab
+  url: https://example.org/ember
+  desc: Tiny tools, experiments and useful front-end notes.
+  image: images/friends/ember.png
+- name: Inkwell
+  url: https://example.org/inkwell
+  desc: Long-form notes on design, language and reading.
+  image: images/friends/ink.png

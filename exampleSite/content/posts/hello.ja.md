@@ -2,7 +2,7 @@
 title: "こんにちは、sasaOrange"
 date: 2025-01-01T12:00:00+08:00
 tags: [Hugo, Notes]
-categories: [Journal]
+categories: [story]
 ---
 ## Welcome
 A minimal multilingual journal. No remote services are required.

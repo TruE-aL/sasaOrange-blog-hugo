@@ -411,11 +411,13 @@ dialog input{width:100%;border:1px solid var(--line);background:var(--bg);color:
 .highlight .chroma{background:var(--tint);color:var(--ink)}
 
 /* ruri refinement: navigation keeps the audio element outside page-shell. */
-.featured-categories{gap:20px;margin:0 0 38px}
-.featured-categories a{position:relative;display:block;height:180px;overflow:hidden}
+.featured-categories{display:flex;gap:20px;margin:0 0 38px}
+.featured-categories a{position:relative;display:block;flex:1;min-width:0;height:180px;overflow:hidden}
 .featured-categories img{width:100%;height:100%;object-fit:cover}
-.featured-categories a:after{content:"";position:absolute;inset:0;background:#12242c55}
-.featured-categories span{position:absolute;inset:0;display:grid;place-items:center;font-size:25px;letter-spacing:2px;color:white;z-index:1;text-shadow:0 1px 5px #0008}
+.featured-categories a:after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 32%,transparent);transition:background-color .35s ease}
+.featured-categories a[data-category="story"]:after{background:color-mix(in srgb,var(--ink) 42%,transparent)}
+.featured-categories a:hover:after,.featured-categories a:focus-visible:after{background:color-mix(in srgb,var(--accent-deep) 48%,transparent)}
+.featured-categories span{position:absolute;inset:0;display:grid;place-items:center;padding:6px;font-size:25px;line-height:1.25;letter-spacing:2px;text-align:center;color:#fffaf0;z-index:1;text-shadow:0 1px 5px #0008}
 .avatar{width:104px;height:104px}
 .post-card{grid-template-columns:minmax(0,1fr) 240px;gap:26px}
 .post-image{height:180px}
@@ -503,8 +505,9 @@ html.waline-dark #heatmap .outer-box{--heat-level-0:var(--tint);--heat-level-1:c
 .comments-jump{display:block;margin-top:18px;padding:8px 12px;background:var(--tint);color:var(--accent);font-size:12px;text-align:center}
 .no-sidebar{grid-template-columns:minmax(0,900px);justify-content:center}
 .reading-sidebar .sidebar-inner{max-width:460px}
-@media(max-width:760px){.featured-categories a{height:175px}
-.featured-categories span{font-size:26px}
+@media(max-width:760px){.featured-categories{gap:12px;margin-bottom:28px}
+.featured-categories a{flex:1;min-width:0;height:135px}
+.featured-categories span{font-size:21px;letter-spacing:1px;padding:4px}
 .post-card{grid-template-columns:minmax(0,1fr) 155px}
 .post-image{aspect-ratio:16/10}
 .toc{min-width:0;max-width:none}
@@ -1342,7 +1345,7 @@ body.toc-open #toc-toggle{display:none}
    edge and leaves a strip of page on its right. Put the centring back.
    The bottom padding keeps a strip of the hero wash below the banner, and the
    rule drawn by ::after closes it. */
-.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;margin:0 auto;padding:84px 0 34px;background:radial-gradient(120% 130% at 50% 0%,var(--hero-wash),transparent 72%);text-align:center;position:relative}
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0;margin:0 auto;padding:84px 0 34px;background:var(--bg);text-align:center;position:relative}
 /* The hero is a .shell, so it already sits on the 1240px track. Centring the
    rule with left:50% pushed it past the right edge instead of aligning it,
    leaving a visible gap where the line stopped short. Let it span the box. */
@@ -1415,6 +1418,23 @@ body.toc-open #toc-toggle{display:none}
 .sidebar h3>span{font-size:9px;letter-spacing:.2em;color:var(--faint)}
 .profile h2{font-size:1.35rem;font-weight:600}
 .profile .eyebrow{letter-spacing:.24em;color:var(--accent);font-size:10px}
+/* Desktop keeps the two featured categories in the sidebar, beneath the
+   author card and above the recommendation tabs. The drawer owns them below
+   760px, so this block is deliberately absent there. */
+.sidebar-categories{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sidebar-categories a{position:relative;display:block;aspect-ratio:4/3;overflow:hidden;border-radius:10px;background:var(--tint)}
+.sidebar-categories img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s ease,opacity .45s ease}
+.sidebar-categories a::after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 38%,transparent);transition:background-color .25s ease}
+.sidebar-categories a[data-category="story"]::after{background:color-mix(in srgb,var(--ink) 46%,transparent)}
+.sidebar-categories a:hover::after,.sidebar-categories a:focus-visible::after{background:color-mix(in srgb,var(--accent-deep) 54%,transparent)}
+.sidebar-categories a:hover img{transform:scale(1.04)}
+.sidebar-categories span{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:4px;font-family:"Apple Chancery","URW Chancery L","Brush Script MT",cursive;font-style:italic;font-size:22px;font-weight:600;line-height:1.1;letter-spacing:.03em;color:#fffdf8;text-shadow:0 2px 5px #2b1b12cc,0 0 14px #2b1b1266}
+@media(max-width:1100px){.sidebar-categories{grid-template-columns:1fr}
+.sidebar-categories a{aspect-ratio:16/7}
+.sidebar-categories span{font-size:24px}}
+@media(max-width:760px){.sidebar-categories{display:none}}
+@media(prefers-reduced-motion:reduce){.sidebar-categories img{transition:none}
+.sidebar-categories a:hover img{transform:none}}
 .avatar{box-shadow:var(--shadow-sm);border:3px solid var(--paper)}
 .stats b{font-size:1.4rem;font-weight:600;color:var(--accent)}
 .stats{color:var(--faint)}
@@ -1543,7 +1563,6 @@ dialog input{border-radius:10px}
    lift — otherwise teal on cream-paper geometry reads as a half-applied skin. */
 html.theme-ruri .brand-mark{border-radius:3px;transform:none}
 html.theme-ruri .brand:hover .brand-mark{transform:none}
-html.theme-ruri .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 130% at 50% 0%,var(--hero-wash),transparent 72%);pointer-events:none;z-index:-1}
 html.theme-ruri .hero{background:var(--bg)}
 html.theme-ruri .hero h1{background:none;-webkit-text-fill-color:currentColor;color:var(--ink);letter-spacing:.04em;text-indent:.04em;font-weight:500}
 html.theme-ruri .hero .hero-link::after{background:linear-gradient(90deg,transparent,var(--accent),transparent);height:2px}
@@ -1626,6 +1645,16 @@ html.theme-ruri{--serif:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC
 .menu-drawer-head{display:flex;align-items:center;justify-content:space-between;padding:0 0 8px 4px;font-size:12px;letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
 .menu-close{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;border-radius:50%;font-size:22px;line-height:1;color:var(--muted)}
 .menu-close:hover,.menu-close:focus-visible{background:var(--tint);color:var(--accent)}
+/* The two featured categories sit above the navigation, so the artwork stays
+   available without competing with the hero for the first screen. */
+.menu-categories{display:flex;gap:10px;padding:2px 0 12px}
+.menu-drawer .menu-categories a{position:relative;display:block;flex:1;min-width:0;height:112px;overflow:hidden;border-radius:10px;border-bottom:0}
+.menu-drawer .menu-categories a::before{display:none}
+.menu-drawer .menu-categories img{display:block;width:100%;height:100%;object-fit:cover}
+.menu-drawer .menu-categories a::after{content:"";position:absolute;inset:0;background:color-mix(in srgb,var(--ink) 36%,transparent);transition:background-color .25s ease}
+.menu-drawer .menu-categories a[data-category="story"]::after{background:color-mix(in srgb,var(--ink) 44%,transparent)}
+.menu-drawer .menu-categories a:hover::after,.menu-drawer .menu-categories a:focus-visible::after{background:color-mix(in srgb,var(--accent-deep) 52%,transparent)}
+.menu-drawer .menu-categories span{position:absolute;inset:0;z-index:1;display:grid;place-items:center;padding:6px;font-family:"Apple Chancery","URW Chancery L","Brush Script MT",cursive;font-style:italic;font-size:24px;font-weight:600;line-height:1.15;letter-spacing:.04em;color:#fffdf8;text-shadow:0 2px 4px #2b1b12d9,0 0 12px #2b1b1259}
 /* The links read as a stack of ruled rows, the same language as the home list,
    with the current page marked by the accent and a bar on the left. */
 .menu-drawer a{display:flex;align-items:center;min-height:50px;padding:0 4px 0 0;border-bottom:1px solid var(--line);font-size:15px;letter-spacing:.06em;color:var(--ink);transition:color .2s ease}
@@ -1922,7 +1951,7 @@ html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition
 /* The drift. `animation` rather than a transition because it has to keep going
    after it arrives — 4% over 18s is slow enough that nobody catches it moving,
    which is the point: a still picture that reads as alive. */
-.hero-motion .hero-image img{animation:hero-drift 18s ease-in-out infinite alternate}
+.hero-motion .hero-image:not(.is-natural) img{animation:hero-drift 18s ease-in-out infinite alternate}
 @keyframes hero-drift{from{transform:scale(1)}to{transform:scale(1.04)}}
 /* Off-screen or scrolled away, the drift is paused: it is the one thing here
    that never ends, so it is the one thing that must not run forever. */
@@ -2000,3 +2029,15 @@ html.header-away .site-header{translate:0 -105%}
 .site-header{transition:none}
 html.header-away .site-header{translate:none}
 }
+
+/* Featured category labels stay legible over artwork without hiding it. */
+.featured-categories span{font-family:"Apple Chancery","URW Chancery L","Brush Script MT",cursive;font-style:italic;font-size:38px;font-weight:600;letter-spacing:.06em;color:#fffdf8;text-shadow:0 2px 5px #2b1b12cc,0 0 18px #2b1b1266}
+@media(max-width:760px){.featured-categories span{font-size:24px;font-weight:600;letter-spacing:.04em;line-height:1.15;text-shadow:0 2px 4px #2b1b12d9,0 0 12px #2b1b1259}}
+
+
+/* User-supplied gear: favicon, brand companion, and navigation loader. */
+.brand-gear{display:block;width:24px;height:24px;flex:0 0 auto;opacity:.9;transition:transform .35s ease}
+.brand:hover .brand-gear{transform:rotate(35deg)}
+.nav-gear .nav-gear-fill{fill:var(--ink)}
+@media(max-width:760px){.brand-gear{width:20px;height:20px}}
+@media(prefers-reduced-motion:reduce){.brand-gear{transition:none}.brand:hover .brand-gear{transform:none}}

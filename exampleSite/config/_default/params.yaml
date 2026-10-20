@@ -36,6 +36,8 @@ menu:
     url: /archives/
   - name: culture_title
     url: /culture/
+  - name: friend
+    url: /friends/
   - name: about
     url: /about/
 # 联系方式 name/url；twitter 显示 X，其他名称首字母大写。
@@ -67,7 +69,7 @@ ruri:
   # 首页上方小字与主标题逐行文本（不支持 HTML）。
   # Homepage eyebrow and heading lines (plain text, not HTML).
   homeEyebrow: NOTE, TECH & POEM
-  homeHeading: [A quiet place, for your words.]
+  homeHeading: [今天不是明天, 亦不是昨天]
   # 首屏大图入场动画（淡入上浮 + 文字逐行跟上 + 缓慢漂移）；false 关闭，
   # 读者系统里设了「减少动态效果」时一律不动。
   # Hero entrance: fade-up banner, staggered copy, slow drift. false disables it;
@@ -76,8 +78,8 @@ ruri:
   # Reimu-style optional motions. All default off; reduced-motion always wins.
   # headerHide: slide the header away while scrolling down.
   pageMotion:
-    enable: false
-    headerHide: false
+    enable: true
+    headerHide: true
   # 主标题下方细线处的出处文字。
   # Attribution on the rule below the main heading.
   homeSource: ""
@@ -113,7 +115,7 @@ search_visits:
   # 读取 static/search-visits.json，不自动采集；无文件不显示。
   # Read static/search-visits.json; does not collect data, hidden if file is absent.
   # JSON: {"totals":{"weekly":0,"yearly":0,"total":0},"updatedAt":"2026-01-01"}
-  enable: false
+  enable: true
 rss:
   # 条目数；正整数，-1 不限，0 会回退 10。
   # Item count; positive integer, -1 unlimited, 0 falls back to 10.
@@ -139,7 +141,7 @@ math:
   katex:
     # 全局公式开关，文章还需 math: true；从 jsDelivr 加载。
     # Global math gate; pages also need math: true; loads from jsDelivr.
-    enable: false
+    enable: true
 comment:
   # 评论区标题，使用小写语言代码；未配置则使用主题翻译。
   # Comment headings keyed by lowercase language code; missing entries use theme translations.
@@ -176,7 +178,7 @@ waline:
 article_copyright:
   # 文章元数据优先，缺失字段继承这里；显式 false 可关闭。
   # Page metadata overrides these defaults; explicit false disables fields.
-  enable: false
+  enable: true
   content:
     author: true
     title: true
@@ -203,7 +205,7 @@ outdate:
 sponsor:
   # 打赏开关；单篇 sponsor: false 可关闭。
   # Donation gate; page sponsor: false disables it.
-  enable: false
+  enable: true
   # 本地化提示 / Localized donation prompt.
   tip:
     en: Support this blog
@@ -212,33 +214,41 @@ sponsor:
     ja: このブログを支援する
   # 二维码数组，每项 name 为名称，src 为 static 路径或 URL。
   # QR array; each entry has name (label) and src (static path or URL).
-  qr: []
+  qr:
+    - name: Buy me a coffee
+      src: images/sponsor/coffee.png
   # qr:
   #   - name: Donate
   #     src: images/donate.webp
 # 分享平台数组；空数组关闭；仅支持下列名称，weixin 为本地分享二维码。
 # Share platforms; empty disables; only names below supported, weixin generates a local sharing QR code.
 # facebook, twitter, linkedin, reddit, weibo, qq, weixin, bluesky
-share: []
+share: [weibo, qq, weixin]
 home_categories:
-  # 首页分类大图；分类必须存在且名称匹配。
-  # Featured homepage categories; taxonomy must exist and title must match.
-  enable: false
+  # 手机端菜单抽屉顶部的分类大图；分类必须存在且名称匹配。
+  # Featured categories at the top of the mobile menu drawer; the taxonomy must exist and the title must match.
+  enable: true
   # 每项 categories 为分类名，cover 为图片 URL（子路径部署需带前缀）。
   # Each entry has categories (taxonomy title) and cover (image URL; include deployment subpath).
-  content: []
+  content:
+    - categories: story
+      cover: images/categories/story.webp
+    - categories: thoughts
+      cover: images/categories/thoughts.webp
   # content:
   #   - categories: Poetry
   #     cover: /images/poetry.webp
 player:
   # 原生播放器，自动加载歌单但绝不自动播放；默认关闭。
   # Native player, auto-loads playlist but never autoplays; disabled by default.
-  enable: false
+  enable: true
   # 直接歌曲列表优先于 Meting；不加载 APlayer 库。
   # Direct tracks take priority over Meting; no APlayer library loaded.
   audio: []
-  # url 必须 HTTP(S)；name 标题；artist 字符串或数组。
-  # url must be HTTP(S); name is title; artist is string or array.
+  # 直接歌曲列表优先于 Meting；留空时使用下面的网易云歌单。
+  # Direct tracks take priority over Meting; leave empty to use the NetEase playlist below.
+  # url 支持 HTTP(S) 或站内相对路径；name 标题；artist 字符串或数组。
+  # url supports HTTP(S) or a site-relative path; name is title; artist is string or array.
   # pic/cover 为封面；lrc/lyric 为原文 LRC；tlyric/translation/translatedLyric 为译文。
   # pic/cover artwork; lrc/lyric original LRC; tlyric/translation/translatedLyric translated LRC.
   # audio:
@@ -251,13 +261,13 @@ player:
   meting:
     # 歌单 API 模板，支持 :server/:type/:id/:r 占位符；留空不请求。
     # Playlist API template with :server/:type/:id/:r placeholders; empty makes no request.
-    meting_api: ""
+    meting_api: "https://api.injahow.cn/meting/?server=:server&type=:type&id=:id&r=:r"
     options:
       # 服务商、类型、ID（字符串）；取值由你的 API 决定。
       # Provider, resource type, ID (string); valid values depend on your API.
       server: netease
       type: playlist
-      id: ""
+      id: "17845153000"
   # 播放顺序、音量和歌词由按钮及本地存储管理，不是站点参数。
   # Playback order, volume and lyrics are managed by controls/local storage, not site parameters.
 

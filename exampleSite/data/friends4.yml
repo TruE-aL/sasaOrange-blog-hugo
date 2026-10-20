@@ -1,0 +1,4 @@
+- name: Placeholder Garden
+  url: https://example.org/garden
+  desc: A reserved spot for another good corner of the web.
+  image: images/friends/moss.png

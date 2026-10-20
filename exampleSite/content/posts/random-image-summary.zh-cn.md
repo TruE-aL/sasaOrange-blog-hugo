@@ -2,8 +2,8 @@
 title: "挑图的标准：尺寸、体积、可重复性"
 date: 2026-10-19T16:00:00+08:00
 tags: [图片, 实测, 总结]
-categories: [总结]
-cover: "https://t.alcy.cc/fj"
+categories: [thoughts]
+cover: false
 description: "把上面几篇的实测数据收拢成一张表，附一个能直接抄的挑图清单。"
 ---
 

@@ -2,8 +2,8 @@
 title: "随机图 API 实测：亮色壁纸这一路"
 date: 2026-10-19T21:00:00+08:00
 tags: [图片, 实测]
-categories: [笔记]
-cover: "https://t.alcy.cc/pc"
+categories: [thoughts]
+cover: false
 description: "把 alcy.cc 的三路接口挨个试了一遍，看它们在文章里的实际占比和清晰度。"
 ---
 

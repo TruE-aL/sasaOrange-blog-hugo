@@ -2,8 +2,8 @@
 title: "anosu 的两个池子：pc 与 pixiv"
 date: 2026-10-19T18:30:00+08:00
 tags: [图片, 实测]
-categories: [笔记]
-cover: "https://api.anosu.top/img/?sort=pc&num=1"
+categories: [thoughts]
+cover: false
 description: "anosu 的 pc 池很快，pixiv 池慢到要 20 秒——同一个域名下速度差了一个数量级。"
 ---
 

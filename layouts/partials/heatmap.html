@@ -12,6 +12,7 @@
   {{- $step1 := replaceRE $postLinkCardPattern "" $rawContent -}}
   {{- $step2 := replaceRE $linkPattern "" $step1 -}}
   {{- $cleanContent := replaceRE $heatMapCardPattern "" $step2 -}}
+  {{- if not .Date.IsZero -}}
   {{- $articlesData = $articlesData | append (dict
     "title" .Title
     "date" ( .Date | time.Format $dateFormat )
@@ -19,6 +20,7 @@
     "url" .RelPermalink
     )
   -}}
+  {{- end -}}
 {{- end -}}
 
 <div id="heatmap"></div><div id="heatmap-tooltip" role="dialog" aria-label="{{ i18n "ruri_heat_details" }}"></div>
@@ -178,7 +180,10 @@ function createCalendar(element, contributionData) {
   const tilesContainer = element.querySelector(".tiles");
 
   const allContributionData = completeContributionData(contributionData);
-  const currentDisplayYear = new Date().getFullYear();
+  const years = Object.keys(allContributionData);
+  const currentDisplayYear = years.includes(String(new Date().getFullYear()))
+    ? new Date().getFullYear()
+    : Number(years[years.length - 1]);
 
   yearSelector.innerHTML = Object.keys(allContributionData)
     .sort((a, b) => b - a)
@@ -275,8 +280,13 @@ function completeContributionData(userData) {
   // 对用户数据按日期排序
   userData.sort((a, b) => a.date - b.date);
 
-  // 获取起始日期和当前日期
-  const startDate = userData.length ? new Date(userData[0].date) : new Date();
+  // The archive heatmap is a seven-year window, not a history of the calendar:
+  // starting at the earliest possible date used to build thousands of daily
+  // cells before the page could settle. Keep the same bounds in every locale.
+  const firstHeatmapYear = 2020;
+  const lastHeatmapYear = 2026;
+
+  // 获取当前日期；数据为空时仍从当前年份开始。
   const currentDate = new Date();
 
   // 初始化结果数组
@@ -289,12 +299,9 @@ function completeContributionData(userData) {
     userDataMap[key] = data;
   });
 
-  // 遍历年份
-  for (
-    let year = startDate.getFullYear();
-    year <= currentDate.getFullYear();
-    year++
-  ) {
+  // 遍历固定范围；最后一年的末尾不超过今天。
+  const finalYear = Math.min(lastHeatmapYear, currentDate.getFullYear());
+  for (let year = firstHeatmapYear; year <= finalYear; year++) {
     const [startYear, endYear] =
       year === currentDate.getFullYear()
         ? [

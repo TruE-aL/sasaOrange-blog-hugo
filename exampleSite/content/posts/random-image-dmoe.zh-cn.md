@@ -2,8 +2,8 @@
 title: "另一个方向的池子：dmoe 与 mtyqx"
 date: 2026-10-19T20:30:00+08:00
 tags: [图片, 实测]
-categories: [笔记]
-cover: "https://www.dmoe.cc/random.php"
+categories: [thoughts]
+cover: false
 description: "换了两个老牌接口，比一比出图风格和体积——顺便看看它们在窄屏上的表现。"
 ---
 

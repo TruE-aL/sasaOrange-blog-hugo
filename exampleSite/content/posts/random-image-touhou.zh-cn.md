@@ -2,8 +2,8 @@
 title: "东方和 96 那两路：风格化随机图"
 date: 2026-10-19T19:45:00+08:00
 tags: [图片, 实测, 东方]
-categories: [收藏]
-cover: "https://img.paulzzh.com/touhou/random"
+categories: [story]
+cover: false
 description: "paulzzh 的东方池和 98qy 的随机图，出图稳定、体积适中，适合当收藏向文章的封面。"
 ---
 

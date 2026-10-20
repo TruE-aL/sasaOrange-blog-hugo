@@ -1,0 +1,8 @@
+- name: Aurora Notes
+  url: https://example.org/aurora
+  desc: Slow writing about light, cities and small observations.
+  image: images/friends/aurora.png
+- name: Moss & Ink
+  url: https://example.org/moss
+  desc: A quiet notebook for books, walks and handmade things.
+  image: images/friends/moss.png

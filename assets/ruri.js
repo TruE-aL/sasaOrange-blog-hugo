@@ -376,7 +376,10 @@ async function loadMusic(){
     songs=JSON.parse(player.dataset.audio||'[]');
     if(!Array.isArray(songs))songs=[];
     if(!songs.length&&!player.dataset.api)return;if(!songs.length){const url=player.dataset.api.replace(':server',encodeURIComponent(player.dataset.server)).replace(':type',encodeURIComponent(player.dataset.type)).replace(':id',encodeURIComponent(player.dataset.id)).replace(':r',String(Math.random()));const response=await fetch(url,{signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error();songs=await response.json()}
-    songs=songs.filter(song=>song.url&&/^https?:\/\//.test(song.url));if(!songs.length)throw Error();
+    songs=songs.filter(song=>{
+      if(!song?.url)return false;
+      try{return ['http:','https:'].includes(new URL(song.url,location.href).protocol)}catch{return false}
+    });if(!songs.length)throw Error();
     tracks.replaceChildren();songs.forEach((song,i)=>{const li=document.createElement('li'),button=document.createElement('button'),name=document.createElement('strong'),artist=document.createElement('small');button.type='button';name.textContent=song.name;artist.textContent=Array.isArray(song.artist)?song.artist.join(' / '):(song.artist||'');button.append(name,artist);button.addEventListener('click',()=>selectTrack(i,true));li.append(button);tracks.append(li)});
     $('#music-count').textContent=songs.length+tr('tracks');player.hidden=false;selectTrack(0);
   }catch{songs=[]}finally{loading=false}

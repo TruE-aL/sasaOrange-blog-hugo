@@ -2,8 +2,8 @@
 title: "把随机图接到主题里：三种接法"
 date: 2026-10-19T17:00:00+08:00
 tags: [Hugo, 图片, 教程]
-categories: [教程]
-cover: "https://t.alcy.cc/moe"
+categories: [thoughts]
+cover: false
 description: "页内 Markdown、front matter 封面、以及站点参数兜底——三种接法各自的取舍。"
 ---
 

@@ -1,0 +1,4 @@
+- name: Nova Studio
+  url: https://example.org/nova
+  desc: A small studio making thoughtful web things.
+  image: images/friends/nova.png
