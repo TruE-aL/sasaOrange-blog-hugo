@@ -471,6 +471,12 @@ If your site still uses the old `themes/ruri` directory, rename it first:
 ~~~sh
 git mv themes/ruri themes/sasaOrange
 sed -i 's/^theme = "ruri"/theme = "sasaOrange"/' hugo.toml
+# Rename the .gitmodules section too, otherwise reading submodule config by
+# the new path fails. Check the section first so re-running is quiet.
+if git config -f .gitmodules --get submodule.themes/ruri.path >/dev/null 2>&1; then
+  git config -f .gitmodules --rename-section \
+    submodule.themes/ruri submodule.themes/sasaOrange
+fi
 git submodule sync
 git add .gitmodules hugo.toml
 ~~~

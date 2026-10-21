@@ -57,9 +57,13 @@ jobs:
           set -euo pipefail
           # 旧站点仍用 themes/ruri，新安装用 themes/sasaOrange。自动识别，
           # 这样目录改名前后都不需要手动改这个工作流。
-          if [ -d themes/sasaOrange ] || grep -q 'themes/sasaOrange' .gitmodules; then
+          has_path() {
+            [ -d "$1" ] && return 0
+            [ -f .gitmodules ] && grep -q "path = $1" .gitmodules
+          }
+          if has_path themes/sasaOrange; then
             THEME_DIR=themes/sasaOrange
-          elif [ -d themes/ruri ] || grep -q 'themes/ruri' .gitmodules; then
+          elif has_path themes/ruri; then
             THEME_DIR=themes/ruri
           else
             echo "找不到主题子模块目录（themes/sasaOrange 或 themes/ruri）" >&2

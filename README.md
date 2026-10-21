@@ -526,6 +526,12 @@ git commit -m "chore: update theme"
 ~~~sh
 git mv themes/ruri themes/sasaOrange
 sed -i 's/^theme = "ruri"/theme = "sasaOrange"/' hugo.toml
+# 同时改 .gitmodules 里的节名，否则按新路径读 submodule 配置会失败。
+# 先判断节名，避免重复执行时 --rename-section 报错。
+if git config -f .gitmodules --get submodule.themes/ruri.path >/dev/null 2>&1; then
+  git config -f .gitmodules --rename-section \
+    submodule.themes/ruri submodule.themes/sasaOrange
+fi
 git submodule sync
 git add .gitmodules hugo.toml
 ~~~
