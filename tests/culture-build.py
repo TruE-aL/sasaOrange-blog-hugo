@@ -8,10 +8,10 @@ ROOT = Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix='ruri-culture-') as directory:
     site = Path(directory)
     (site / 'themes').mkdir()
-    (site / 'themes/ruri').symlink_to(ROOT)
+    (site / 'themes/sasaOrange').symlink_to(ROOT)
     (site / 'content/culture').mkdir(parents=True)
     (site / 'hugo.toml').write_text('''baseURL="https://example.org/blog/"
-theme="ruri"
+theme="sasaOrange"
 defaultContentLanguage="en"
 defaultContentLanguageInSubdir=true
 [[params.menu]]

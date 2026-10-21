@@ -33,10 +33,10 @@ with tempfile.TemporaryDirectory(prefix='ruri-smoke-') as d:
         site=base/kind
         if kind=='minimal':
             (site/'content/posts').mkdir(parents=True)
-            (site/'hugo.toml').write_text(chr(10).join(['baseURL="https://example.org/"', 'title="Minimal"', 'theme="ruri"']))
+            (site/'hugo.toml').write_text(chr(10).join(['baseURL="https://example.org/"', 'title="Minimal"', 'theme="sasaOrange"']))
             (site/'content/posts/hello.md').write_text(chr(10).join(['---','title: Hello','date: 2025-01-01','---','Hello world.']))
         else:shutil.copytree(THEME/'exampleSite',site)
-        (site/'themes').mkdir();(site/'themes/ruri').symlink_to(THEME)
+        (site/'themes').mkdir();(site/'themes/sasaOrange').symlink_to(THEME)
         # exampleSite 自身部署在 GitHub Pages 的项目子路径，链接会带 /<repo>/ 前缀。
         # 从它的 baseURL 里取出该前缀，交给 build() 剥掉，避免把「部署路径」误判成坏链。
         prefix=''

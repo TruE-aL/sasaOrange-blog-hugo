@@ -65,7 +65,7 @@ hugo mod get github.com/TruE-aL/sasaOrange-blog-hugo@main
 hugo server --disableFastRender
 ~~~
 
-No `themes/ruri` directory or `theme = "ruri"` setting is needed. Commit the site's `go.mod` and generated `go.sum`. CI also needs Go. Module files pin the imported version.
+No `themes/sasaOrange` directory or `theme = "sasaOrange"` setting is needed. Commit the site's `go.mod` and generated `go.sum`. CI also needs Go. Module files pin the imported version.
 
 ### Git submodule
 
@@ -73,13 +73,13 @@ No `themes/ruri` directory or `theme = "ruri"` setting is needed. Commit the sit
 hugo new site my-blog
 cd my-blog
 git init
-git submodule add https://github.com/TruE-aL/sasaOrange-blog-hugo.git themes/ruri
+git submodule add https://github.com/TruE-aL/sasaOrange-blog-hugo.git themes/sasaOrange
 ~~~
 
 Add this at the top level of `hugo.toml`, before all TOML tables:
 
 ~~~toml
-theme = "ruri"
+theme = "sasaOrange"
 ~~~
 
 ~~~sh
@@ -127,11 +127,11 @@ Before publishing, set `draft: false` and your real `baseURL`, including any dep
 For an empty submodule site, merge/remove the generated root config first, then:
 
 ~~~sh
-cp -R themes/ruri/exampleSite/. .
+cp -R themes/sasaOrange/exampleSite/. .
 hugo server --disableFastRender
 ~~~
 
-Module users can clone the theme separately to obtain `exampleSite`. Copy its `content`, `data` and `config` directories, remove `theme = "ruri"` from the example config, and retain the site's module import and module files. The four-language content requires the example language configuration. Do not overwrite an existing site's content.
+Module users can clone the theme separately to obtain `exampleSite`. Copy its `content`, `data` and `config` directories, remove `theme = "sasaOrange"` from the example config, and retain the site's module import and module files. The four-language content requires the example language configuration. Do not overwrite an existing site's content.
 
 ## Usage
 
@@ -272,7 +272,7 @@ For example, `culture.sources.movie: douban` selects Douban for films while othe
 Run from your site root using Hugo Extended, Python 3 and curl:
 
 ~~~sh
-python3 themes/ruri/scripts/sync-culture.py
+python3 themes/sasaOrange/scripts/sync-culture.py
 hugo --gc --minify
 npx -y pagefind@1.4.0 --site public --glob '**/*.html'
 ~~~
@@ -461,9 +461,18 @@ hugo mod tidy
 Commit changed site module files. Git submodule:
 
 ~~~sh
-git submodule update --remote themes/ruri
-git add themes/ruri
-git commit -m "chore: update ruri theme"
+git submodule update --remote themes/sasaOrange
+git add themes/sasaOrange
+git commit -m "chore: update sasaOrange theme"
+~~~
+
+If your site still uses the old `themes/ruri` directory, rename it first:
+
+~~~sh
+git mv themes/ruri themes/sasaOrange
+sed -i 's/^theme = "ruri"/theme = "sasaOrange"/' hugo.toml
+git submodule sync
+git add .gitmodules hugo.toml
 ~~~
 
 Read [CHANGELOG.md](CHANGELOG.md) first. Keep personal configuration, content and overrides in your site repository. Ruri does not support every Reimu plugin or setting; removed legacy fields are listed at the end of the [parameter reference](exampleSite/config/_default/params.yaml). Fully refresh after theme asset changes.

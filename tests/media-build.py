@@ -50,7 +50,7 @@ class Handler(SimpleHTTPRequestHandler):
 with tempfile.TemporaryDirectory(prefix='ruri-media-') as directory:
     site = Path(directory)
     (site / 'themes').mkdir()
-    (site / 'themes/ruri').symlink_to(THEME)
+    (site / 'themes/sasaOrange').symlink_to(THEME)
     (site / 'content/posts').mkdir(parents=True)
     (site / 'static').mkdir()
     (site / 'static/local.png').write_bytes(png(1000, 600))
@@ -63,7 +63,7 @@ with tempfile.TemporaryDirectory(prefix='ruri-media-') as directory:
     remote = f'http://127.0.0.1:{server.server_port}'
     (site / 'hugo.toml').write_text('''baseURL="https://example.org/blog/"
 title="Media fixture"
-theme="ruri"
+theme="sasaOrange"
 defaultContentLanguage="zh-cn"
 hasCJKLanguage=true
 [params]

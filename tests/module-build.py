@@ -10,7 +10,7 @@ with tempfile.TemporaryDirectory(prefix='ruri-module-') as tmp:
     site = Path(tmp) / 'site'
     shutil.copytree(THEME / 'exampleSite', site)
     config = site / 'config/_default/hugo.toml'
-    config.write_text(config.read_text().replace('theme = "ruri"', '') +
+    config.write_text(config.read_text().replace('theme = "sasaOrange"', '') +
                       '\n[module]\n[[module.imports]]\npath = "' + MODULE + '"\n')
     subprocess.run(['hugo', 'mod', 'init', 'example.org/module-test'], cwd=site, check=True)
     subprocess.run(['go', 'mod', 'edit', '-require=' + MODULE + '@v0.0.0',

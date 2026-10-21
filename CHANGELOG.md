@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+### Theme install name is now `sasaOrange`
+
+- The documented install path and `theme` value changed from `ruri` to
+  `sasaOrange`: `git submodule add ... themes/sasaOrange` with
+  `theme = "sasaOrange"`. Hugo requires the `theme` value to match the
+  directory name under `themes/`, so both had to change together.
+- This is a breaking change for existing submodule sites. Rename the directory
+  and update `hugo.toml`; the migration steps are in both READMEs. Sites using
+  Hugo Modules are unaffected because they never reference the theme directory.
+- Static assets moved from `static/ruri/` to `static/sasaOrange/`, so the
+  vendor path is now `/sasaOrange/vendor/` and the player fallback cover is
+  `/sasaOrange/cover.svg`. Theme submodule users get this automatically; only
+  sites that hard-coded `/ruri/vendor/` need updating.
+- The `params.ruri` configuration namespace, `ruri_*` i18n keys, the `ruri`
+  reading palette and the `ruri-media/` output directory are unchanged so
+  existing site configuration keeps working.
+
 ### Review follow-up
 
 - Heatmap dates now use local `YYYY-MM-DD` keys end to end. Clicking a tile no

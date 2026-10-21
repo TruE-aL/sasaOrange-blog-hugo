@@ -64,11 +64,11 @@ jobs:
         with:
           node-version: 22
 
-      # 主题就在本仓库根目录，挂成 themes/ruri，和用户「装进 themes/」的用法一致。
+      # 主题就在本仓库根目录，挂成 themes/sasaOrange，和用户「装进 themes/」的用法一致。
       - name: Link theme
         run: |
           mkdir -p exampleSite/themes
-          ln -s "$PWD" exampleSite/themes/ruri
+          ln -s "$PWD" exampleSite/themes/sasaOrange
 
       # 生产（main / 手动）用 config 里的正式网址；PR 用 Cloudflare 给该分支的
       # 预览地址。分支名按 Cloudflare 的 alias 规则转成 slug：小写、非字母数字

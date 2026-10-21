@@ -1,6 +1,6 @@
 name: Bump site submodule
 
-# 主题更新后，把个人站点里的 themes/ruri 指针推到最新提交。
+# 主题更新后，把个人站点里的主题子模块指针推到最新提交。
 #
 # 为什么需要它：站点用 submodule 引用主题，指针不会自己走。没有这个工作流，
 # 每次改完主题都得手动去站点仓库提交一次「升级主题」，很容易忘。
@@ -55,18 +55,30 @@ jobs:
           THEME_REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          git submodule update --init themes/ruri
-          git -C themes/ruri fetch --depth 1 origin "$THEME_SHA"
-          git -C themes/ruri checkout "$THEME_SHA"
+          # 旧站点仍用 themes/ruri，新安装用 themes/sasaOrange。自动识别，
+          # 这样目录改名前后都不需要手动改这个工作流。
+          if [ -d themes/sasaOrange ] || grep -q 'themes/sasaOrange' .gitmodules; then
+            THEME_DIR=themes/sasaOrange
+          elif [ -d themes/ruri ] || grep -q 'themes/ruri' .gitmodules; then
+            THEME_DIR=themes/ruri
+          else
+            echo "找不到主题子模块目录（themes/sasaOrange 或 themes/ruri）" >&2
+            exit 1
+          fi
+          echo "使用主题目录：$THEME_DIR"
 
-          if git diff --quiet -- themes/ruri; then
+          git submodule update --init "$THEME_DIR"
+          git -C "$THEME_DIR" fetch --depth 1 origin "$THEME_SHA"
+          git -C "$THEME_DIR" checkout "$THEME_SHA"
+
+          if git diff --quiet -- "$THEME_DIR"; then
             echo "站点已经指向 $THEME_SHA，无需更新。"
             exit 0
           fi
 
           git config user.name "sasaOrange"
           git config user.email "sasaOrange@users.noreply.github.com"
-          git add themes/ruri
+          git add "$THEME_DIR"
           git commit -m "chore: 升级主题到 ${THEME_SHA:0:7}
 
           由 ${THEME_REPO} 的 Bump site submodule 工作流自动提交。"

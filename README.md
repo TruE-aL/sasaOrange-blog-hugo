@@ -89,7 +89,7 @@ hugo mod get github.com/TruE-aL/sasaOrange-blog-hugo@main
 hugo server --disableFastRender
 ~~~
 
-此方式无需 `themes/ruri` 目录，也无需 `theme = "ruri"`。将站点的 `go.mod` 和生成的 `go.sum` 提交到自己的仓库；CI 中同样需要安装 Go。主题版本由站点模块文件锁定。
+此方式无需 `themes/sasaOrange` 目录，也无需 `theme = "sasaOrange"`。将站点的 `go.mod` 和生成的 `go.sum` 提交到自己的仓库；CI 中同样需要安装 Go。主题版本由站点模块文件锁定。
 
 ### 方式二：Git submodule
 
@@ -97,13 +97,13 @@ hugo server --disableFastRender
 hugo new site my-blog
 cd my-blog
 git init
-git submodule add https://github.com/TruE-aL/sasaOrange-blog-hugo.git themes/ruri
+git submodule add https://github.com/TruE-aL/sasaOrange-blog-hugo.git themes/sasaOrange
 ~~~
 
 在站点 `hugo.toml` 顶层添加（放在任何 `[表]` 之前）：
 
 ~~~toml
-theme = "ruri"
+theme = "sasaOrange"
 ~~~
 
 ~~~sh
@@ -154,11 +154,11 @@ hugo server -D --disableFastRender
 Submodule 用户可在新建空站点中执行以下命令运行完整示例；先移除或合并 `hugo new site` 生成的根配置，避免同一设置存在两处：
 
 ~~~sh
-cp -R themes/ruri/exampleSite/. .
+cp -R themes/sasaOrange/exampleSite/. .
 hugo server --disableFastRender
 ~~~
 
-Module 用户可单独克隆本仓库获取 `exampleSite`，复制其中的 `content`、`data` 和 `config` 到空站点；删除示例配置中的 `theme = "ruri"`，保留自己的 `[module]` 导入与站点模块文件。四语言内容需要配套的 `[languages]` 配置。已有博客请按需合并，不要整目录覆盖自己的内容。
+Module 用户可单独克隆本仓库获取 `exampleSite`，复制其中的 `content`、`data` 和 `config` 到空站点；删除示例配置中的 `theme = "sasaOrange"`，保留自己的 `[module]` 导入与站点模块文件。四语言内容需要配套的 `[languages]` 配置。已有博客请按需合并，不要整目录覆盖自己的内容。
 
 ## 使用
 
@@ -308,7 +308,7 @@ culture:
 在博客根目录运行（需要 Hugo Extended、Python 3 和 curl）：
 
 ~~~sh
-python3 themes/ruri/scripts/sync-culture.py
+python3 themes/sasaOrange/scripts/sync-culture.py
 hugo --gc --minify
 npx -y pagefind@1.4.0 --site public --glob '**/*.html'
 ~~~
@@ -494,7 +494,7 @@ python3 -m http.server 8080 --directory public
 | `sasaOrange-blog-hugo`（本仓库） | [Cloudflare Pages](https://sasaorange-blog-hugo-demo.pages.dev/)（项目 `sasaorange-blog-hugo-demo`） | `exampleSite/` 的通用示例 | `deploy-demo.yml` |
 | `sasaOrange-blog-hugo-personalsite` | Cloudflare Pages（项目 `sasaorange-blog-hugo-personalsite`） | 真实文章与个人配置 | 站点仓库的 `deploy.yml` |
 
-演示站用 `--themesDir themes` 把仓库根目录挂成 `themes/ruri` 再构建 `exampleSite`，所以 `exampleSite` 始终是一份可以整目录复制走的独立站点。它的 `baseURL` 是 Cloudflare 项目的根域名（`https://sasaorange-blog-hugo-demo.pages.dev/`，不带子路径），换域名或部署到子路径时要改掉。
+演示站用 `--themesDir themes` 把仓库根目录挂成 `themes/sasaOrange` 再构建 `exampleSite`，所以 `exampleSite` 始终是一份可以整目录复制走的独立站点。它的 `baseURL` 是 Cloudflare 项目的根域名（`https://sasaorange-blog-hugo-demo.pages.dev/`，不带子路径），换域名或部署到子路径时要改掉。
 
 演示站的分支规则与站点仓库一致：`main` 发生产环境，PR 发 `<分支名>.sasaorange-blog-hugo-demo.pages.dev` 预览环境并把地址回帖到 PR。预览和生产是 Cloudflare 上两条独立的分支部署，互不覆盖。`*.pages.dev` 是公开域名，预览靠 Cloudflare Access 保护——那部分在 Zero Trust 面板里配，工作流只负责部署，需要 `CLOUDFLARE_API_TOKEN` 与 `CLOUDFLARE_ACCOUNT_ID` 两个密钥。
 
@@ -516,9 +516,18 @@ hugo mod tidy
 Git submodule：
 
 ~~~sh
-git submodule update --remote themes/ruri
-git add themes/ruri
+git submodule update --remote themes/sasaOrange
+git add themes/sasaOrange
 git commit -m "chore: update theme"
+~~~
+
+如果站点仍在使用旧目录名 `themes/ruri`，先改名再更新：
+
+~~~sh
+git mv themes/ruri themes/sasaOrange
+sed -i 's/^theme = "ruri"/theme = "sasaOrange"/' hugo.toml
+git submodule sync
+git add .gitmodules hugo.toml
 ~~~
 
 更新前阅读 [CHANGELOG.md](CHANGELOG.md)。个人配置、内容与覆盖模板应保存在站点仓库。Reimu 用户请逐项迁移：Ruri 不支持 Reimu 的所有配置和插件，已删除的旧字段见 [参数文件末尾](exampleSite/config/_default/params.yaml)。主题资源变动后完整刷新浏览器。

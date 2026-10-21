@@ -4,10 +4,10 @@ import re
 import tempfile, subprocess, shutil
 ROOT=Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix='ruri-features-') as d:
- s=Path(d);(s/'themes').mkdir();(s/'themes/ruri').symlink_to(ROOT)
+ s=Path(d);(s/'themes').mkdir();(s/'themes/sasaOrange').symlink_to(ROOT)
  (s/'content').mkdir()
  (s/'hugo.toml').write_text('''baseURL="https://example.org/blog/"
-theme="ruri"
+theme="sasaOrange"
 title="Fixture"
 [params]
 author="Site Author"
@@ -38,7 +38,7 @@ license_type="by-nc-sa"
  for name in ['off','legacy-off']:
   assert 'class="notice article-copyright"' not in (s/f'public/{name}/index.html').read_text(),name
  assert 'class="site-totals"' not in default
- assert 'data-vendor="/blog/ruri/vendor/"' in default
+ assert 'data-vendor="/blog/sasaOrange/vendor/"' in default
  assert 'data-index="/blog/pagefind/pagefind.js"' in default
  for name, kind in [('ruri','css'), ('heat-map','css'), ('ruri','js'), ('features','js')]:
   url=re.search(r'/blog/assets/'+kind+'/'+name+r'\.min\.[a-f0-9]+\.'+kind,default).group(0)
