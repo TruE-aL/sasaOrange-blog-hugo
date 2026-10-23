@@ -182,10 +182,6 @@ html.waline-dark #heatmap .outer-box{--heat-level-0:var(--tint);--heat-level-1:c
 .featured-categories span{font-size:32px}
 }
 
-@media(prefers-reduced-motion:reduce){#floating-player,#floating-player .player-body{transition:none}
-}
-
-
 /* Compact article rhythm and responsive friend cards. */
 .section-heading.article-list-heading{margin-bottom:0}
 

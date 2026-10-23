@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "The Unwritten Atlas",
+      "cover": "/collections/demo/book/cover-1.webp",
+      "subtitle": "地图册之后",
+      "status": "complete",
+      "community_rating": 8.8,
+      "rating": 9.1,
+      "progress": null,
+      "comment": "A hand-drawn journey through places that only exist after midnight."
+    }
+  ],
+  "total": 1,
+  "pages": 1,
+  "source": "sasaOrange local demo",
+  "updated_at": "2026-10-23T00:00:00+08:00",
+  "unavailable": false
+}

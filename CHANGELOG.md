@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Experimental motion pass
+
+- Added the Reimu-inspired motion layer on `feat/reimu-motion-overhaul`: a
+  layered page and header entrance, a hero image wipe and light pass, staggered
+  article content, a reading relay for prose children, image blur resolution,
+  archive marks and hover states, sidebar recommendation tabs, search-dialog
+  motion, and shortcodes for tabs, spoilers and a tag roulette.
+- The header now carries a motion switch. It persists in local storage and
+  exposes `html.motion-off`; this experimental pass deliberately ignores the
+  operating system `prefers-reduced-motion` preference, while the explicit
+  switch still provides a complete still state.
+- Added a local demo article in all four languages and enabled the avatar,
+  social link and local collections demo in `exampleSite`, with no external
+  account or tracking service required.
+
 ### Theme install name is now `sasaOrange`
 
 - The documented install path and `theme` value changed from `ruri` to
@@ -64,7 +79,7 @@
 - Not copied either: AOS. reimu's entrances are driven by a scroll library;
   this page needs two one-shot entrances, and the scroll-in motion already
   exists here as `[data-reveal]`. What is kept is the two habits worth having —
-  nothing replays, and `prefers-reduced-motion` turns all of it off.
+  nothing replays.
 
 ### Card covers: beside the text on desktop, above it on a phone
 
@@ -154,7 +169,7 @@
 - Fixed: the loading cog sat off-centre on phones and travelled in a small circle instead of spinning in place. `transform-origin:24px 24px` was being read against the element's own 112px box by some engines rather than the SVG's viewBox, which moved the pivot 32px off the middle — a revolution, not a spin. `transform-box:view-box;transform-origin:center` pins the pivot to the viewBox where both engines agree.
 - The loading sheet now has exactly one motion: the two halves slide together when the wait starts, and the sheet is simply gone when it ends. The closing had been running the opening's transitions in reverse — a slide apart and a fade that announced the arriving page twice. `.nav-veil:not(.is-open)` now takes `transition:none`, so the wings snap back off-screen and the content the reader came for appears at once.
 - Removed the soft-orange and pale-blue reading schemes: the header's paint dots and their translations, the `html.theme-orange` / `html.theme-blue` variable blocks and their dark variants, and the rules that referenced them. The scheme switch keeps warm apricot and the original cool teal — two dots leave room for the site name and the tools on a phone, where four of them had begun to crowd the bar. A stored choice of a removed scheme is ignored on the next visit.
-- Added reimu's scroll-reveal motion to the theme's own components: post cards, home category tiles, section headings, the archive heatmap and year groups, term and friend grids, sidebar widgets, pagination, and the article's tags, copyright notice, sponsor block, share row, post navigation and comments each wait a little below their place and rise into it as they are reached. The waiting state is a class on `<html>` set before first paint, so without JavaScript every component is simply where it belongs; the motion travels on the independent `translate` property so a card's hover lift stays its own business; archive years that fold open later are picked up by a mutation observer; reduced motion removes both the drift and the fade.
+- Added reimu's scroll-reveal motion to the theme's own components: post cards, home category tiles, section headings, the archive heatmap and year groups, term and friend grids, sidebar widgets, pagination, and the article's tags, copyright notice, sponsor block, share row, post navigation and comments each wait a little below their place and rise into it as they are reached. The waiting state is a class on `<html>` set before first paint, so without JavaScript every component is simply where it belongs; the motion travels on the independent `translate` property so a card's hover lift stays its own business; archive years that fold open later are picked up by a mutation observer; and the header motion switch removes both the drift and the fade.
 
 - Replaced the cool grey palette with a paper-toned one: cream background, warm brown ink, orange-red accent, serif type throughout.
 - Added switchable reading schemes (warm cream / cool teal), each with its own dark variant; the choice is remembered and restored before first paint.

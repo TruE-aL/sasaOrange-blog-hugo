@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "The Orange Window",
+      "cover": "/collections/demo/movie/cover-1.webp",
+      "subtitle": "橙色窗边",
+      "status": "complete",
+      "community_rating": 8.6,
+      "rating": 8.9,
+      "progress": null,
+      "comment": "A film about waiting, light and a room that remembers its guests."
+    },
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "A Quiet Signal",
+      "cover": "/collections/demo/movie/cover-2.webp",
+      "subtitle": "安静信号",
+      "status": "progress",
+      "community_rating": 8.2,
+      "rating": 8.5,
+      "progress": null,
+      "comment": "A late-night radio drama told through ten unsent messages."
+    }
+  ],
+  "total": 2,
+  "pages": 1,
+  "source": "sasaOrange local demo",
+  "updated_at": "2026-10-23T00:00:00+08:00",
+  "unavailable": false
+}

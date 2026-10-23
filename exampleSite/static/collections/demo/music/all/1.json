@@ -1,0 +1,31 @@
+{
+  "items": [
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "Afterimage",
+      "cover": "/collections/demo/music/cover-1.webp",
+      "subtitle": "残响",
+      "status": "complete",
+      "community_rating": 8.7,
+      "rating": 9.0,
+      "progress": null,
+      "comment": "Layered guitars and soft percussion for walking home slowly."
+    },
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "Tiny Machinery",
+      "cover": "/collections/demo/music/cover-2.webp",
+      "subtitle": "小小机械",
+      "status": "progress",
+      "community_rating": 8.4,
+      "rating": 8.7,
+      "progress": null,
+      "comment": "Electronic miniatures with the patience of a music box."
+    }
+  ],
+  "total": 2,
+  "pages": 1,
+  "source": "sasaOrange local demo",
+  "updated_at": "2026-10-23T00:00:00+08:00",
+  "unavailable": false
+}

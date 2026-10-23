@@ -6,15 +6,6 @@
    selectors have to match the specificity of the rules they silence — the veil
    opens through `.nav-veil.is-open .nav-veil-core`, and a plain `.nav-veil-core`
    here would lose to it and leave the fade running. */
-@media(prefers-reduced-motion:reduce){
-.menu-drawer,.menu-scrim{transition:none}
-.nav-progress i,.nav-progress.is-running i{transition:none}
-.nav-veil-wing,.nav-veil.is-open .nav-veil-wing{transition:none}
-.nav-veil-core,.nav-veil.is-open .nav-veil-core{transition:none}
-.nav-veil{transition:none}
-.nav-gear{animation:none;opacity:.6}
-}
-
 /* The bar and the veil are pinned to the header they hang from. The shell has
    to be the positioning context for that, and it has no other reason to be one. */
 #page-shell{position:relative}
@@ -38,10 +29,6 @@ html.reveal-on [data-reveal].is-revealed{opacity:1;translate:none;pointer-events
    reached is simply there. `translate:none` matters as much as the missing
    transition: a 30px offset held forever would itself be a displacement the
    reader never asked for. */
-@media(prefers-reduced-motion:reduce){
-html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition:none;translate:none}
-}
-
 /* ---- In-page navigation: the content rises as the paper draws back ----
    The sheet already covers the swap, so the new page is laid in unseen. What it
    lacked was any arrival of its own: the paper slid away to reveal a page that
@@ -52,10 +39,6 @@ html.reveal-on [data-reveal],html.reveal-on [data-reveal].is-revealed{transition
    so it never lingers to fight the `[data-reveal]` observer on later scrolls. */
 html.nav-arriving #main{opacity:0;translate:0 12px}
 html.nav-arriving.nav-arrived #main{opacity:1;translate:none;transition:opacity .34s ease,translate .34s cubic-bezier(.2,.7,.3,1)}
-@media(prefers-reduced-motion:reduce){
-html.nav-arriving #main,html.nav-arriving.nav-arrived #main{opacity:1;translate:none;transition:none}
-}
-
 /* ---- Home card: cover beside the text on desktop, above it on a phone ----
    The last word on `.post-card`, deliberately: the card picked up several
    generations of layout rules on the way here (a thumbnail on the right, then
@@ -140,8 +123,7 @@ html.nav-arriving #main,html.nav-arriving.nav-arrived #main{opacity:1;translate:
    scroll library — this page needs two one-shot entrances, and the scroll-in
    motion already exists here as `[data-reveal]`. What AOS does that is worth
    keeping is not the library but the two habits: `once`, so nothing replays,
-   and `prefers-reduced-motion`, so nothing moves at all for a reader who asked
-   for that. */
+   and `once`, so nothing replays. */
 .hero-motion .hero-image{opacity:0;translate:0 18px}
 .hero-motion .hero-image.is-in{opacity:1;translate:none;transition:opacity .9s ease,translate .9s cubic-bezier(.2,.7,.3,1)}
 /* reimu resolves its banner out of an 8px blur. Deliberate departure: blurring
@@ -166,12 +148,6 @@ html.nav-arriving #main,html.nav-arriving.nav-arrived #main{opacity:1;translate:
    as a caption should. */
 .hero-motion .hero-image>span{opacity:0;translate:0 8px}
 .hero-motion .hero-image.is-in>span{opacity:1;translate:none;transition:opacity .6s ease .7s,translate .6s ease .7s}
-@media(prefers-reduced-motion:reduce){
-.hero-motion .hero-image,.hero-motion .hero-rise,.hero-motion .hero-image>span{opacity:1;translate:none;filter:none;transition:none}
-.hero-motion .hero-image img,.hero-motion .hero-link span{animation:none}
-}
-
-
 /* Reimu's AOS mixes fade-up with zoom-in. The reveal observer here has one
    waiting state, so these variants refine that state instead of adding a second
    library: category tiles and friend links scale from 0.96 as they arrive, and
@@ -182,12 +158,6 @@ html.reveal-on .featured-categories [data-reveal].is-revealed,
 html.reveal-on .friend-grid [data-reveal].is-revealed{scale:1;transition:opacity .4s ease,translate .4s ease,scale .4s cubic-bezier(.22,.61,.36,1),transform .3s cubic-bezier(.2,.7,.3,1)}
 html.reveal-on .article-tags [data-reveal]{scale:.88}
 html.reveal-on .article-tags [data-reveal].is-revealed{scale:1;transition:opacity .35s ease,translate .35s ease,scale .35s cubic-bezier(.22,.61,.36,1)}
-
-@media(prefers-reduced-motion:reduce){
-html.reveal-on .featured-categories [data-reveal],
-html.reveal-on .friend-grid [data-reveal],
-html.reveal-on .article-tags [data-reveal]{scale:1}
-}
 
 /* ---- Borrowed from reimu: small arrivals around the still page -----------
    These are the motions reimu applies to its covers and archive rows. They sit
@@ -217,22 +187,10 @@ to{opacity:1;filter:blur(0)}
 .archive-month li::before{transition:width .2s ease,height .2s ease,top .2s ease,border-radius .2s ease,background-color .2s ease}
 .archive-month li:hover::before{width:6px;height:6px;top:16px;border-radius:50%;background:var(--accent)}
 
-@media(prefers-reduced-motion:reduce){
-.featured-categories a img{transition:none}
-.featured-categories a:hover img{transform:none;opacity:1}
-.post-image img,.featured-categories img{animation:none;filter:none}
-.archive-month li::before{transition:none}
-}
-
 /* Opt-in reimu motion: the header leaves while the reader scrolls down and
    returns as soon as they scroll back. Enabled by ruri.pageMotion.headerHide. */
 .site-header{transition:translate .28s cubic-bezier(.2,.7,.3,1)}
 html.header-away .site-header{translate:0 -105%}
-@media(prefers-reduced-motion:reduce){
-.site-header{transition:none}
-html.header-away .site-header{translate:none}
-}
-
 /* Featured category labels stay legible over artwork without hiding it. */
 .featured-categories span{font-family:"Apple Chancery","URW Chancery L","Brush Script MT",cursive;font-style:italic;font-size:38px;font-weight:600;letter-spacing:.06em;color:#fffdf8;text-shadow:0 2px 5px #2b1b12cc,0 0 18px #2b1b1266}
 @media(max-width:760px){.featured-categories span{font-size:24px;font-weight:600;letter-spacing:.04em;line-height:1.15;text-shadow:0 2px 4px #2b1b12d9,0 0 12px #2b1b1259}}
@@ -243,4 +201,3 @@ html.header-away .site-header{translate:none}
 .brand:hover .brand-gear{transform:rotate(35deg)}
 .nav-gear .nav-gear-fill{fill:var(--ink)}
 @media(max-width:760px){.brand-gear{width:20px;height:20px}}
-@media(prefers-reduced-motion:reduce){.brand-gear{transition:none}.brand:hover .brand-gear{transform:none}}

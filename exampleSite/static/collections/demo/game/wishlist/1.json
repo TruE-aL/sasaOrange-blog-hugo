@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "One More Lantern",
+      "cover": "/collections/demo/game/cover-1.webp",
+      "subtitle": "再点一盏灯",
+      "status": "wishlist",
+      "community_rating": 8.5,
+      "rating": 8.8,
+      "progress": {
+        "watched": 0,
+        "total": 12
+      },
+      "comment": "A short night walk where every choice changes the colour of the sky."
+    }
+  ],
+  "total": 1,
+  "pages": 1,
+  "source": "sasaOrange local demo",
+  "updated_at": "2026-10-23T00:00:00+08:00",
+  "unavailable": false
+}

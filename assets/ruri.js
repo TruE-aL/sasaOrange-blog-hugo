@@ -83,15 +83,17 @@ function initArchive(){
    waiting state is a class on <html> set before first paint (baseof.html), so
    the page is complete without JavaScript — this only decides when each marked
    component gets to arrive, and the moving itself is done in CSS. */
-let revealObserver=null,revealWatch=null;
+let revealObserver=null,revealWatch=null,proseObserver=null;
 function initReveal(){
-  revealObserver?.disconnect();revealWatch?.disconnect();
+  revealObserver?.disconnect();revealWatch?.disconnect();proseObserver?.disconnect();
+  revealObserver=null;revealWatch=null;proseObserver=null;
   if(!('IntersectionObserver' in window)){
     /* Nothing to wait for: every component is simply where it belongs. */
     document.documentElement.classList.remove('reveal-on');
     window.__ruriRevealReady=true;return;
   }
   window.__ruriRevealReady=true;
+  const motionOff=document.documentElement.classList.contains('motion-off');
   revealObserver=new IntersectionObserver(entries=>{
     for(const entry of entries){
       if(!entry.isIntersecting)continue;
@@ -99,13 +101,53 @@ function initReveal(){
       revealObserver.unobserve(entry.target);
     }
   },{rootMargin:'0px 0px -8% 0px',threshold:0});
-  const scan=()=>document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(node=>revealObserver.observe(node));
-  scan();
+
+  /* The article's direct children are the reading rhythm: paragraphs, headings,
+     figures, code, tables. Marking them once, here, means the CSS can stage the
+     first screenful without hiding anything when the observer cannot run. */
+  const prose=document.querySelector('.article .prose');
+  let proseChildren=[];
+  if(prose){
+    proseChildren=[...prose.children].filter(node=>{
+      if(/^(SCRIPT|STYLE|TEMPLATE)$/.test(node.tagName))return false;
+      return !node.matches('.reimu-tabs,.tag-roulette');
+    });
+    proseChildren.forEach((node,index)=>{
+      node.classList.add('motion-prose-child');
+      node.style.setProperty('--prose-index',String(Math.min(index,7)));
+    });
+    if(motionOff)proseChildren.forEach(node=>node.classList.add('is-prose-revealed'));
+  }
+  if(proseChildren.length){
+    proseObserver=new IntersectionObserver(entries=>{
+      for(const entry of entries){
+        if(!entry.isIntersecting)continue;
+        entry.target.classList.add('is-prose-revealed');
+        proseObserver.unobserve(entry.target);
+      }
+    },{rootMargin:'0px 0px -12% 0px',threshold:0});
+    proseChildren.forEach(node=>proseObserver.observe(node));
+  }
+
+  /* Anything already in the first viewport is released on the next frame. The
+     tiny delay gives the browser one paint at the held state, which is what
+     makes the entrance visible instead of being coalesced into the final state. */
+  const revealScan=()=>{
+    document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(node=>revealObserver.observe(node));
+    if(proseChildren.length){
+      const viewport=innerHeight*.92;
+      proseChildren.forEach(node=>{
+        if(node.getBoundingClientRect().top<viewport)node.classList.add('is-prose-revealed');
+        else proseObserver.observe(node);
+      });
+    }
+  };
+  requestAnimationFrame(revealScan);
   /* Archive years folded away below the first one come back on demand, and a
      year that was hidden was never observed, so the tree is watched for the
      ones that appear. */
   const tree=$('.archive-tree');
-  if(tree){revealWatch=new MutationObserver(scan);revealWatch.observe(tree,{attributes:true,subtree:true,attributeFilter:['hidden']})}
+  if(tree){revealWatch=new MutationObserver(()=>document.querySelectorAll('[data-reveal]:not(.is-revealed)').forEach(node=>revealObserver.observe(node)));revealWatch.observe(tree,{attributes:true,subtree:true,attributeFilter:['hidden']})}
 }
 function localizePlayer(){
  document.querySelectorAll('[data-ruri-label]').forEach(el=>{const label=tr(el.dataset.ruriLabel);el.setAttribute('aria-label',label);if(el.hasAttribute('title'))el.title=label});
@@ -184,7 +226,7 @@ function initHero(){
   heroObserver.observe(hero);
 }
 function initPage(){tocObserver?.disconnect();window.sasaOrangeMobileUi?.refresh();initMenu();localizePlayer();paintScheme();shuffleFriends();
-initArchive();initReveal();initHero();initPageMotion();window.RuriFeatures.init();
+initArchive();initReveal();initHero();initPageMotion();initReadingMotion();initArticleWidgets();window.RuriFeatures.init();
 $('#theme-toggle')?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);const mode=dark?'light':'dark';document.documentElement.dataset.theme=mode;try{localStorage.setItem('ruri-theme',mode)}catch{}syncDark()});
 
 initTabs();initComments();document.querySelectorAll('.toc ul ul').forEach(ul=>{const li=ul.parentElement;if(!li||li.querySelector(':scope > details'))return;const link=li.querySelector(':scope > a'),d=document.createElement('details'),summary=document.createElement('summary');d.open=false;if(link){summary.innerHTML=link.outerHTML;link.remove()}d.append(summary,ul);li.append(d)});loadMusic();const toc=document.querySelector('.toc');if(toc){const links=[...toc.querySelectorAll('a[href^=\"#\"]')],heads=[...document.querySelectorAll('.prose h2,.prose h3,.prose h4,.prose h5,.prose h6')];const reveal=id=>{toc.querySelectorAll('details').forEach(d=>d.open=false);const a=links.find(x=>x.getAttribute('href')==='#'+id);if(a){let d=a.closest('details');while(d){d.open=true;d=d.parentElement.closest('details')}}};const observer=new IntersectionObserver(es=>{const hit=es.filter(e=>e.isIntersecting).sort((a,b)=>a.boundingClientRect.top-b.boundingClientRect.top)[0];if(hit)reveal(hit.target.id)},{rootMargin:'-18% 0px -68% 0px',threshold:0});tocObserver=observer;heads.forEach(h=>observer.observe(h))}document.querySelectorAll('.copy-link').forEach(b=>b.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(b.dataset.url);b.textContent=tr('copied')}catch{b.textContent=b.dataset.url}}));
@@ -204,8 +246,14 @@ function initPageMotion(){
      returns after the reader scrolls again. */
   document.documentElement.classList.remove('header-away');
   const config=pageMotionConfig();
-  if(!config.enable||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const motionOff=document.documentElement.classList.contains('motion-off');
   const cleanups=[];
+  const releaseHeader=()=>{
+    requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.add('header-revealed')));
+  };
+  if(motionOff)document.documentElement.classList.add('header-revealed');
+  else releaseHeader();
+  if(!config.enable||motionOff)return;
   if(config.headerHide){
     let lastY=scrollY;
     const onScroll=()=>{
@@ -217,7 +265,132 @@ function initPageMotion(){
     addEventListener('scroll',onScroll,{passive:true});
     cleanups.push(()=>removeEventListener('scroll',onScroll));
   }
-  motionCleanup=()=>cleanups.forEach(fn=>fn());
+  const cleanupsReady=()=>cleanups.forEach(fn=>fn());
+  motionCleanup=cleanupsReady;
+}
+
+/* Reading-motion bridge. The body children are marked in initReveal(), while
+   their release is owned by the article entrance in arriveWithVeil(). Exposing
+   this tiny hook keeps the veil timer authoritative instead of relying on a
+   second, drifting timeout. */
+function initReadingMotion(){
+  const prose=document.querySelector('.article .prose');
+  if(!prose)return;
+  const children=[...prose.children].filter(node=>node.classList.contains('motion-prose-child'));
+  if(document.documentElement.classList.contains('motion-off')){
+    children.forEach(node=>node.classList.add('is-prose-revealed'));
+    return;
+  }
+  /* Mark the first screenful immediately; the CSS delay only becomes visible
+     once article-arrived is added by the veil entrances. */
+  const viewport=innerHeight*.92;
+  children.forEach(node=>{
+    if(node.getBoundingClientRect().top<viewport)node.classList.add('is-prose-revealed');
+  });
+}
+
+/* Reimu's shortcodes, kept local and dependency-free. */
+function initArticleWidgets(){
+  document.querySelectorAll('.reimu-tabs').forEach(widget=>{
+    if(widget.dataset.ready)return;
+    widget.dataset.ready='';
+    const tabs=[...widget.querySelectorAll('[role=tab]')];
+    const nav=widget.querySelector('.reimu-tabs-nav');
+    const ink=widget.querySelector('.reimu-tabs-ink');
+    const move=button=>{
+      if(!nav||!ink||!button)return;
+      const n=nav.getBoundingClientRect(),r=button.getBoundingClientRect();
+      ink.style.left=Math.round(r.left-n.left)+'px';
+      ink.style.width=Math.round(r.width)+'px';
+    };
+    const select=(button,focus=false)=>{
+      tabs.forEach(tab=>{
+        const active=tab===button;
+        tab.setAttribute('aria-selected',String(active));
+        tab.tabIndex=active?0:-1;
+        const panel=document.getElementById(tab.getAttribute('aria-controls'));
+        if(panel)panel.hidden=!active;
+      });
+      move(button);
+      if(focus)button.focus();
+    };
+    tabs.forEach((button,index)=>{
+      button.addEventListener('click',()=>select(button));
+      button.addEventListener('keydown',event=>{
+        if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+        event.preventDefault();
+        let next=index;
+        if(event.key==='ArrowRight')next=(index+1)%tabs.length;
+        else if(event.key==='ArrowLeft')next=(index-1+tabs.length)%tabs.length;
+        else if(event.key==='Home')next=0;
+        else next=tabs.length-1;
+        select(tabs[next],true);
+      });
+    });
+    if(typeof ResizeObserver==='function'&&nav){
+      const resize=new ResizeObserver(()=>move(tabs.find(tab=>tab.getAttribute('aria-selected')==='true')));
+      resize.observe(nav);
+    }
+    requestAnimationFrame(()=>move(tabs.find(tab=>tab.getAttribute('aria-selected')==='true')));
+  });
+
+  document.querySelectorAll('.reimu-spoiler').forEach(node=>{
+    if(node.dataset.ready)return;
+    node.dataset.ready='';
+    node.tabIndex=0;
+    node.setAttribute('role','button');
+    node.setAttribute('aria-expanded','false');
+    const toggle=()=>{
+      const open=node.classList.toggle('is-revealed');
+      node.setAttribute('aria-expanded',String(open));
+    };
+    node.addEventListener('click',toggle);
+    node.addEventListener('keydown',event=>{
+      if(event.key==='Enter'||event.key===' '){event.preventDefault();toggle()}
+    });
+  });
+
+  document.querySelectorAll('.tag-roulette').forEach(widget=>{
+    if(widget.dataset.ready)return;
+    widget.dataset.ready='';
+    let words=[];
+    try{words=JSON.parse(widget.dataset.tags||'[]')}catch{}
+    if(!Array.isArray(words)||!words.length)words=['sasaOrange'];
+    const windowNode=widget.querySelector('.tag-roulette-window');
+    const button=widget.querySelector('.tag-roulette-button');
+    let timer=0,rolling=false;
+    const put=word=>{
+      const span=document.createElement('span');
+      span.className='tag-roulette-word';
+      span.textContent=word;
+      windowNode.replaceChildren(span);
+      return span;
+    };
+    const roll=()=>{
+      if(rolling)return;
+      rolling=true;
+      let ticks=0;
+      button.disabled=true;
+      timer=setInterval(()=>{
+        const old=windowNode.querySelector('.tag-roulette-word');
+        if(old){
+          old.classList.add('is-leaving');
+          setTimeout(()=>old.remove(),150);
+        }
+        const next=put(words[Math.floor(Math.random()*words.length)]);
+        next.classList.add('is-blur');
+        if(++ticks>9){
+          clearInterval(timer);
+          setTimeout(()=>{
+            windowNode.querySelector('.tag-roulette-word')?.classList.remove('is-blur');
+            button.disabled=false;rolling=false;
+          },180);
+        }
+      },95);
+    };
+    put(words[0]);
+    button.addEventListener('click',roll);
+  });
 }
 
 const audio=$('#music-audio'),tracks=$('#music-tracks'),player=$('#floating-player');
@@ -410,8 +583,56 @@ async function loadMusic(){
 }
 let walineModule;
 async function initComments(){const button=$('#comments-load');if(!button)return;const version=pageVersion;button.disabled=true;button.textContent=tr('comments_loading');try{if(!$('#waline-css')){const css=document.createElement('link');css.id='waline-css';css.rel='stylesheet';css.href='https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.css';document.head.append(css)}walineModule??=import('https://cdn.jsdelivr.net/npm/@waline/client@3/dist/waline.js').catch(e=>{walineModule=null;throw e});const {init}=await walineModule;if(version!==pageVersion||!button.isConnected)return;waline=init({...JSON.parse(button.dataset.options),el:'#waline',serverURL:button.dataset.server,lang:button.dataset.lang,path:location.pathname,comment:true,dark:'html.waline-dark'});button.hidden=true}catch{if(!button.isConnected)return;button.disabled=false;button.textContent=tr('comments_error');button.onclick=initComments}}
-function initTabs(){const widget=$('.post-tabs');if(!widget)return;const candidates=JSON.parse(widget.querySelector('.post-candidates').textContent);function render(list,items){list.replaceChildren();items.forEach(x=>{const li=document.createElement('li'),a=document.createElement('a');a.href=x.url;a.textContent=x.title+(x.count===undefined?'':' · '+x.count);li.append(a);list.append(li)})}const shuffled=[...candidates];for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}render(widget.querySelector('[data-panel="random"] ol'),shuffled.slice(0,5));let popularLoaded=false;
-widget.querySelectorAll('[role=tab]').forEach(button=>{button.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const tabs=[...widget.querySelectorAll('[role=tab]')],i=tabs.indexOf(button);tabs[(i+(e.key==='ArrowRight'?1:2))%3].focus();tabs[(i+(e.key==='ArrowRight'?1:2))%3].click()});button.addEventListener('click',async()=>{widget.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));widget.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==button.dataset.tab);if(button.dataset.tab!=='popular'||popularLoaded)return;const status=widget.querySelector('.popular-status');status.textContent=tr('views_loading');try{const counts=[];for(let i=0;i<candidates.length;i+=20){const batch=candidates.slice(i,i+20),url=new URL(widget.dataset.server.replace(/\/$/,'')+'/api/article');url.searchParams.set('path',batch.map(x=>x.url).join(','));url.searchParams.set('type','time');const r=await fetch(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error();const payload=await r.json();if(!Array.isArray(payload.data))throw Error();counts.push(...payload.data.map((item,j)=>({...item,url:batch[j]?.url})))}const mapped=candidates.map(x=>({...x,count:Number(counts.find(c=>decodeURI(c.url||c.path||'')===decodeURI(x.url))?.time||0)})).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);render(widget.querySelector('[data-panel="popular"] ol'),mapped.slice(0,5));status.textContent=mapped.length?tr('views_sort'):tr('views_empty');popularLoaded=true}catch{status.textContent=tr('views_error')}})})}
+function initTabs(){
+  const widget=$('.post-tabs');if(!widget)return;
+  const candidates=JSON.parse(widget.querySelector('.post-candidates').textContent);
+  function render(list,items){list.replaceChildren();items.forEach(x=>{const li=document.createElement('li'),a=document.createElement('a');a.href=x.url;a.textContent=x.title+(x.count===undefined?'':' · '+x.count);li.append(a);list.append(li)})}
+  const shuffled=[...candidates];
+  for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]]}
+  render(widget.querySelector('[data-panel="random"] ol'),shuffled.slice(0,5));
+  let popularLoaded=false;
+  const tablist=widget.querySelector('[role=tablist]');
+  function moveTabInk(button){
+    if(!tablist||!button)return;
+    const navRect=tablist.getBoundingClientRect(),rect=button.getBoundingClientRect();
+    const width=Math.min(28,Math.round(rect.width*.58));
+    tablist.style.setProperty('--tab-x',Math.round(rect.left-navRect.left+(rect.width-width)/2)+'px');
+    tablist.style.setProperty('--tab-w',width+'px');
+  }
+  requestAnimationFrame(()=>moveTabInk(widget.querySelector('[role=tab][aria-selected=true]')));
+  if(typeof ResizeObserver==='function'&&tablist){
+    const resize=new ResizeObserver(()=>moveTabInk(widget.querySelector('[role=tab][aria-selected=true]')));
+    resize.observe(tablist);
+  }
+  widget.querySelectorAll('[role=tab]').forEach(button=>{
+    button.addEventListener('keydown',e=>{
+      if(!['ArrowLeft','ArrowRight'].includes(e.key))return;
+      e.preventDefault();
+      const tabs=[...widget.querySelectorAll('[role=tab]')],i=tabs.indexOf(button),next=tabs[(i+(e.key==='ArrowRight'?1:2))%3];
+      next.focus();next.click();
+    });
+    button.addEventListener('click',async()=>{
+      widget.querySelectorAll('[role=tab]').forEach(b=>b.setAttribute('aria-selected',String(b===button)));
+      widget.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==button.dataset.tab);
+      moveTabInk(button);
+      if(button.dataset.tab!=='popular'||popularLoaded)return;
+      const status=widget.querySelector('.popular-status');status.textContent=tr('views_loading');
+      try{
+        const counts=[];
+        for(let i=0;i<candidates.length;i+=20){
+          const batch=candidates.slice(i,i+20),url=new URL(widget.dataset.server.replace(/\/$/,'')+'/api/article');
+          url.searchParams.set('path',batch.map(x=>x.url).join(','));url.searchParams.set('type','time');
+          const r=await fetch(url,{signal:AbortSignal.timeout(12000)});if(!r.ok)throw Error();
+          const payload=await r.json();if(!Array.isArray(payload.data))throw Error();
+          counts.push(...payload.data.map((item,j)=>({...item,url:batch[j]?.url})));
+        }
+        const mapped=candidates.map(x=>({...x,count:Number(counts.find(c=>decodeURI(c.url||c.path||'')===decodeURI(x.url))?.time||0)})).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);
+        render(widget.querySelector('[data-panel="popular"] ol'),mapped.slice(0,5));
+        status.textContent=mapped.length?tr('views_sort'):tr('views_empty');popularLoaded=true;
+      }catch{status.textContent=tr('views_error')}
+    });
+  });
+}
 let navigationController;
 /* ---- in-page navigation feedback -------------------------------------------
    Clicking a link used to do nothing visible until the next page had been
@@ -577,20 +798,77 @@ function trackPageView(url){
     analytics.clarity?.(url);
   }catch{}
 }
-/* The content's own arrival, timed to the sheet's opening. `nav-arriving`
-   holds the start state (faded, nudged down) with no transition; the next frame
-   adds `nav-arrived`, which owns the transition to rest. Both classes are
-   dropped when it ends so nothing is left to interfere with the scroll-reveal
-   observer or a later navigation. */
+/* The content's own arrival. `nav-arriving` holds the start state for an
+   ordinary page and the next frame adds `nav-arrived`, the transition to rest.
+   An article starts hidden behind the sheet, so the opening never reveals a
+   fully visible article and then blanks it for the entrance. The article is
+   released on the opening half of the wing transition, not after visibility
+   disappears: the reader sees the paper draw back and the words emerge together
+   rather than a static page under the paper followed by a second entrance. */
+let articleArrivalToken=0;
+function articleTiming(article){
+  const prose=article?.querySelector('.prose');
+  const style=prose&&getComputedStyle(prose);
+  const duration=style?parseFloat(style.transitionDuration.split(',')[0])||.7:0;
+  const delay=style?parseFloat(style.transitionDelay.split(',')[0])||0:0;
+  const maxDelay=prose?Math.max(0,...[...prose.children].map(node=>parseFloat(getComputedStyle(node).transitionDelay)||0)):0;
+  return Math.max(1100,Math.ceil((duration+delay+maxDelay)*1000)+140);
+}
 function arriveWithVeil(){
-  const html=document.documentElement;
-  html.classList.remove('nav-arrived');
+  const html=document.documentElement,main=document.getElementById('main');
+  const token=++articleArrivalToken;
+  html.classList.remove('nav-arriving','nav-arrived','article-arriving','article-arrived');
+  const article=main?.querySelector('.article');
+  if(article){
+    window.__ruriArticleReady=true;
+    /* This class is applied while the sheet is still closed. Nothing is ever
+       shown, blanked, and shown again. */
+    html.classList.add('article-arriving');
+    if(html.classList.contains('motion-off')){
+      html.classList.add('article-arrived');
+      requestAnimationFrame(()=>html.classList.remove('article-arriving','article-arrived'));
+      return;
+    }
+    let cleanup=0,started=false;
+    const start=()=>{
+      if(started||token!==articleArrivalToken)return;
+      started=true;
+      const veil=$('.nav-veil');
+      veil?.removeEventListener('transitionstart',onWingStart);
+      clearTimeout(fallback);
+      /* Two frames: one paints the held state under the still-closed sheet,
+         the next begins the transitions as the wings start to separate. */
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        if(token!==articleArrivalToken)return;
+        html.classList.add('article-arrived');
+        clearTimeout(cleanup);
+        cleanup=setTimeout(()=>{
+          if(token===articleArrivalToken)html.classList.remove('article-arriving','article-arrived');
+        },articleTiming(article));
+      }));
+    };
+    const onWingStart=event=>{
+      if(event.target?.classList?.contains('nav-veil-wing')&&event.propertyName==='transform')start();
+    };
+    const veil=$('.nav-veil');
+    let fallback=0;
+    if(veil){
+      /* finishProgress() removes is-open before this function is called, so a
+         transitionstart on the wings is the exact moment the paper begins to
+         draw apart. The timeout is only a safety net for interrupted motion. */
+      veil.addEventListener('transitionstart',onWingStart);
+      fallback=setTimeout(start,90);
+    }else{
+      start();
+    }
+    return;
+  }
   html.classList.add('nav-arriving');
-  const done=()=>{html.classList.remove('nav-arriving','nav-arrived')};
-  if(matchMedia('(prefers-reduced-motion: reduce)').matches){done();return}
+  const done=()=>{if(token===articleArrivalToken)html.classList.remove('nav-arriving','nav-arrived')};
+  if(html.classList.contains('motion-off')){done();return}
   requestAnimationFrame(()=>{
+    if(token!==articleArrivalToken)return;
     html.classList.add('nav-arrived');
-    const main=document.getElementById('main');
     if(!main){done();return}
     const end=()=>{main.removeEventListener('transitionend',end);done()};
     main.addEventListener('transitionend',end,{once:true});
@@ -696,4 +974,45 @@ window.addEventListener('pageshow',event=>{if(event.persisted)finishProgress()})
 document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin||!/^https?:$/.test(u.protocol)||/\.[a-z0-9]+$/i.test(u.pathname))return;if(u.pathname===location.pathname&&u.search===location.search&&u.hash)return;e.preventDefault();navigate(u.href,true,a)});
 window.addEventListener('popstate',()=>navigate(location.href,false));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();$('#search-open')?.click()}});
 initPage();
+window.__ruriRevealReady=true;
+/* Motion toggle. Stored under a neutral key; the switch also applies the old
+   reduced-motion path for the veil and hero, so turning it off really is quiet. */
+function paintMotionToggle(){
+  const button=document.getElementById('motion-toggle');
+  if(!button)return;
+  const enabled=!document.documentElement.classList.contains('motion-off');
+  button.setAttribute('aria-pressed',String(enabled));
+  button.setAttribute('title',enabled?'Motion on':'Motion off');
+}
+document.addEventListener('click',event=>{
+  const button=event.target.closest('#motion-toggle');if(!button)return;
+  const html=document.documentElement,off=html.classList.toggle('motion-off');
+  try{localStorage.setItem('sasa-motion',off?'off':'on')}catch{}
+  if(off){
+    html.classList.add('reveal-on','header-revealed');
+    document.querySelectorAll('[data-reveal]').forEach(node=>node.classList.add('is-revealed'));
+    document.querySelectorAll('.motion-prose-child').forEach(node=>node.classList.add('is-prose-revealed'));
+    html.classList.remove('article-arriving','article-arrived');
+    initReveal();
+  }else{
+    html.classList.remove('header-revealed');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>html.classList.add('header-revealed')));
+  }
+  paintMotionToggle();
+});
+paintMotionToggle();
+/* Direct article visits have no navigation veil, so release the pre-paint start
+   state here. In-page navigation calls the same function after its shell swap. */
+if(document.querySelector('.article .prose')){
+  const html=document.documentElement;
+  if(html.classList.contains('motion-off')){
+    html.classList.remove('article-arriving','article-arrived');
+  }else{
+    html.classList.add('article-arriving');
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      html.classList.add('article-arrived');
+      setTimeout(()=>html.classList.remove('article-arriving','article-arrived'),articleTiming(document.querySelector('.article')));
+    }));
+  }
+}
 })();

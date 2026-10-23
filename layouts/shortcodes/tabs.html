@@ -1,0 +1,23 @@
+{{- $labels := slice -}}
+{{- $bodies := slice -}}
+{{- range $index, $block := split .Inner "<!-- tab:" -}}
+  {{- if gt $index 0 -}}
+    {{- $parts := split $block "-->" -}}
+    {{- $label := index $parts 0 | strings.TrimSpace -}}
+    {{- $body := delimit (after 1 $parts) "-->" | strings.TrimSpace | markdownify -}}
+    {{- $labels = $labels | append $label -}}
+    {{- $bodies = $bodies | append $body -}}
+  {{- end -}}
+{{- end -}}
+{{- $id := printf "tabs-%s" (substr (md5 .Inner) 0 10) -}}
+<div class="reimu-tabs" id="{{ $id }}">
+  <div class="reimu-tabs-nav" role="tablist">
+    {{- range $index, $label := $labels }}
+    <button type="button" role="tab" id="{{ $id }}-tab-{{ $index }}" aria-controls="{{ $id }}-panel-{{ $index }}" aria-selected="{{ if eq $index 0 }}true{{ else }}false{{ end }}" tabindex="{{ if eq $index 0 }}0{{ else }}-1{{ end }}">{{ $label }}</button>
+    {{- end }}
+    <span class="reimu-tabs-ink" aria-hidden="true"></span>
+  </div>
+  {{- range $index, $body := $bodies }}
+  <div class="reimu-tab-panel" role="tabpanel" id="{{ $id }}-panel-{{ $index }}" aria-labelledby="{{ $id }}-tab-{{ $index }}"{{ if ne $index 0 }} hidden{{ end }}>{{ $body }}</div>
+  {{- end }}
+</div>

@@ -239,6 +239,3 @@ dialog input{width:100%;border:1px solid var(--line);background:var(--bg);color:
 .term-grid{grid-template-columns:1fr}
 .comments h2{font-size:18px}
 }
-
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}
-}
