@@ -246,13 +246,6 @@ dialog input{border-radius:10px}
 .culture-categories a{border-radius:999px;letter-spacing:.04em}
 .culture-categories a[aria-current=page]{background:var(--tint);color:var(--accent);box-shadow:inset 0 -2px var(--accent)}
 
-/* ---- Page-in animation: the article rises, the title settles after it ---- */
-@keyframes ruri-page-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@keyframes ruri-title-in{0%,40%{opacity:0;transform:translateY(-40%)}100%{opacity:1;transform:none}}
-.article .article-heading{animation:ruri-page-in .5s cubic-bezier(.22,.61,.36,1) both}
-.article .article-heading h1{animation:ruri-title-in 1s both}
-
-
 /* ---- ruri scheme: the flat, square look the theme shipped with ----
    The reading-room pass rounds corners, lifts cards with warm shadows and
    spaces type out for long-form prose. The original palette was deliberately
