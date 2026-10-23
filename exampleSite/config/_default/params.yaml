@@ -17,7 +17,7 @@ banner: images/banner.webp
 cover: ""
 # 头像文件名，相对 static/avatar/；点击跳转 /about/。
 # Avatar filename relative to static/avatar/; links to /about/.
-avatar: ""
+avatar: "avatar.webp"
 # 文章版权等展示日期格式；热力图内部始终使用 ISO 日期键。
 # Display format for copyright and similar dates; the heatmap always uses ISO keys.
 dateFormat: "2006-01-02"
@@ -42,12 +42,10 @@ menu:
     url: /about/
 # 联系方式 name/url；twitter 显示 X，其他名称首字母大写。
 # Contacts with name/url; twitter renders as X, other names are capitalized.
-social: []
-# social:
-#   - name: github
-#     url: https://github.com/your-name
-#   - name: email
-#     url: mailto:you@example.org
+social:
+  - name: github
+    url: https://github.com/TruE-aL/sasaOrange-blog-hugo
+# Add only accounts and contact addresses you actually control.
 
 ruri:
   # 每次加载页面时，在各友链分类内独立随机排序；false 保持数据文件顺序。
@@ -70,12 +68,12 @@ ruri:
   # Homepage eyebrow and heading lines (plain text, not HTML).
   homeEyebrow: NOTE, TECH & POEM
   homeHeading: [今天不是明天, 亦不是昨天]
-  # 首屏大图入场动画（淡入上浮 + 文字逐行跟上 + 缓慢漂移）；false 关闭，
-  # 读者系统里设了「减少动态效果」时一律不动。
-  # Hero entrance: fade-up banner, staggered copy, slow drift. false disables it;
-  # a reader's reduced-motion setting always wins.
+  # 首屏大图入场动画（淡入上浮 + 文字逐行跟上 + 缓慢漂移）；false 关闭。
+  # 实验版忽略系统「减少动态效果」偏好；顶栏动效开关可随时静止页面。
+  # Hero entrance: fade-up banner, staggered copy, slow drift. false disables it.
+  # The experimental pass ignores prefers-reduced-motion; use the header switch.
   heroMotion: true
-  # Reimu-style optional motions. All default off; reduced-motion always wins.
+  # Reimu-style optional motions; the header switch can quiet the page at any time.
   # headerHide: slide the header away while scrolling down.
   pageMotion:
     enable: true
@@ -285,14 +283,15 @@ player:
 # 文艺功能默认关闭；复制 exampleSite/content/culture/ 后启用。
 # Optional collections. Copy exampleSite/content/culture/ before enabling.
 culture:
-  enable: false
+  enable: true
+  provider: demo
   categories: [book, anime, movie, music, game]
   sources:
-    book: neodb
-    anime: bangumi
-    movie: neodb
-    music: neodb
-    game: neodb
+    book: demo
+    anime: demo
+    movie: demo
+    music: demo
+    game: demo
   bangumi:
     username: ""
     mode: live # live: anime only; snapshot: build-time API sync

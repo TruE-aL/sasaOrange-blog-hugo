@@ -16,11 +16,6 @@ html.theme-ruri .article-cover{border-radius:0}
 .hero h1{font-size:1.6rem}
 .scheme-switch{gap:6px}
 }
-@media(prefers-reduced-motion:reduce){
-.article .article-heading,.article .article-heading h1,.post-card,.post-card h2 a,.term-grid>a,.back-top,.brand-mark{animation:none;transition:none}
-.post-card:hover,.term-grid>a:hover,.back-top:hover{transform:none}
-}
-
 /* ---- in-page navigation feedback -----------------------------------------
    Two pieces, in two different places. The bar is rendered by
    layouts/partials/nav-progress.html right after the header, inside the page

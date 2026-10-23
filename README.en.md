@@ -197,7 +197,7 @@ The hero has an entrance, on by default (`ruri.heroMotion: true`):
 | Banner keeps drifting (scale 1 → 1.04 and back) | 18s, paused whenever the hero is off-screen |
 | The arrow after "recent posts" taps down | 2.6s loop, also paused off-screen |
 
-The fade waits for the image's own `load` event rather than the page's, so the reader never sees a blank block fading into a photograph; a cached image (second visit) starts at once. A reader with reduced motion enabled gets none of it — the content is simply in place. With `heroMotion: false` the wrapper elements are not rendered either, so the markup matches the older output.
+The fade waits for the image's own `load` event rather than the page's, so the reader never sees a blank block fading into a photograph; a cached image (second visit) starts at once. This experimental pass does not silence the motion for a reader's reduced-motion preference; use the header motion switch for a still page. With `heroMotion: false` the wrapper elements are not rendered either, so the markup matches the older output.
 
 On narrow screens (≤760px) the header keeps three things: the menu button on the left, the site name, and the tools on the right (palette, RSS, search, light/dark, language). Every `menu` entry moves into a bottom drawer: it slides up from the bottom edge behind a translucent scrim, the current page is bold in the accent with a small bar, and it closes on the scrim, the × button, Esc, or any menu item — with focus returning to the button. The drawer reads the same `menu` list as the desktop header, so the two can never disagree; above 760px neither the button nor the drawer is rendered and the links stay inline.
 

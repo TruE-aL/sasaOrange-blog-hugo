@@ -1,0 +1,7 @@
+{{- $tags := .Get "tags" | default "sasaOrange,动画,阅读,故事,想法,Reimu" -}}
+{{- $items := slice -}}
+{{- range split $tags "," }}{{ $items = $items | append (strings.TrimSpace .) }}{{ end -}}
+<div class="tag-roulette" data-tags="{{ $items | jsonify }}">
+  <button type="button" class="tag-roulette-button" aria-label="Roll tags" title="Roll tags">🕹️</button>
+  <div class="tag-roulette-window" aria-live="polite"><span class="tag-roulette-word">{{ index $items 0 }}</span></div>
+</div>

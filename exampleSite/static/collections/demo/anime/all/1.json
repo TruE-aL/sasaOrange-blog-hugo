@@ -1,0 +1,37 @@
+{
+  "items": [
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "Asterism Notes",
+      "cover": "/collections/demo/anime/cover-1.webp",
+      "subtitle": "星芒手记",
+      "status": "complete",
+      "community_rating": 9.0,
+      "rating": 9.3,
+      "progress": {
+        "watched": 12,
+        "total": 12
+      },
+      "comment": "A small constellation of characters learning how to say goodbye."
+    },
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "Gearwork Summer",
+      "cover": "/collections/demo/anime/cover-2.webp",
+      "subtitle": "齿轮夏日",
+      "status": "wishlist",
+      "community_rating": 8.5,
+      "rating": 8.8,
+      "progress": {
+        "watched": 0,
+        "total": 12
+      },
+      "comment": "Clockwork birds, warm streets and one last summer holiday."
+    }
+  ],
+  "total": 2,
+  "pages": 1,
+  "source": "sasaOrange local demo",
+  "updated_at": "2026-10-23T00:00:00+08:00",
+  "unavailable": false
+}

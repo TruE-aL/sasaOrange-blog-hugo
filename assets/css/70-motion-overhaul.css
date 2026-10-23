@@ -1,0 +1,601 @@
+/* ==========================================================================
+   Motion, second movement
+   --------------------------------------------------------------------------
+   The end-of-pipeline sheet for the full Reimu-inspired pass. Earlier sheets
+   keep their layout and the first generation of hover states; this file owns
+   the choreography. Everything here has a complete resting state, so content
+   is never visible only because JavaScript happened to arrive.
+   ========================================================================== */
+
+:root{
+  --motion-fast:180ms;
+  --motion-base:380ms;
+  --motion-slow:700ms;
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --ease-soft:cubic-bezier(.22,.61,.36,1);
+  --motion-blur:6px;
+}
+
+/* --------------------------------------------------------------------------
+   Page entrances
+   A direct visit gets a staggered page arrival. The veil path uses the same
+   primitives but starts when the wings begin to open, not after they vanish.
+   -------------------------------------------------------------------------- */
+html.reveal-on .site-header .brand,
+html.reveal-on .site-header .main-nav a,
+html.reveal-on .site-header .tools>*{
+  opacity:0;
+  translate:0 -8px;
+  filter:blur(4px);
+}
+html.reveal-on.header-revealed .site-header .brand,
+html.reveal-on.header-revealed .site-header .main-nav a,
+html.reveal-on.header-revealed .site-header .tools>*{
+  opacity:1;
+  translate:none;
+  filter:none;
+  transition:opacity .38s ease,translate .52s var(--ease-out),filter .52s ease;
+}
+html.reveal-on.header-revealed .site-header .main-nav a:nth-child(2){transition-delay:.035s}
+html.reveal-on.header-revealed .site-header .main-nav a:nth-child(3){transition-delay:.07s}
+html.reveal-on.header-revealed .site-header .main-nav a:nth-child(4){transition-delay:.105s}
+html.reveal-on.header-revealed .site-header .main-nav a:nth-child(5){transition-delay:.14s}
+html.reveal-on.header-revealed .site-header .tools>*{transition-delay:.08s}
+
+/* The brand's little gear gets a restrained arrival of its own. */
+.brand-gear{transform-origin:50% 50%}
+html.header-revealed .brand-gear{animation:brand-gear-in .8s var(--ease-out) both}
+@keyframes brand-gear-in{
+  from{opacity:0;transform:rotate(-70deg) scale(.55)}
+  to{opacity:.9;transform:rotate(0) scale(1)}
+}
+
+/* Hero: Reimu's image-first entrance, with a curtain wipe and light resolving
+   out of blur. The image may be large, so opacity/translate do the heavy work
+   and the blur is short enough not to become a sustained filter cost. */
+.hero-motion .hero-image{
+  opacity:0;
+  translate:0 24px;
+  filter:blur(10px);
+  clip-path:inset(0 0 100% 0 round 16px);
+}
+.hero-motion .hero-image.is-in{
+  opacity:1;
+  translate:none;
+  filter:none;
+  clip-path:inset(0 0 0 0 round 16px);
+  transition:
+    opacity .7s ease,
+    translate 1s var(--ease-out),
+    filter .9s ease,
+    clip-path 1.1s var(--ease-out);
+}
+.hero-motion .hero-image::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:linear-gradient(110deg,transparent 32%,color-mix(in srgb,var(--paper) 55%,transparent) 48%,transparent 62%);
+  translate:-120% 0;
+}
+.hero-motion .hero-image.is-in::after{animation:hero-light-pass 1.25s .22s var(--ease-soft) both}
+@keyframes hero-light-pass{
+  0%{translate:-120% 0;opacity:0}
+  18%{opacity:.75}
+  100%{translate:120% 0;opacity:0}
+}
+.hero-motion .hero-rise{filter:blur(7px)}
+.hero-motion.is-in .hero-rise{
+  transition:
+    opacity .7s ease,
+    translate .8s var(--ease-out),
+    filter .8s ease;
+  transition-delay:calc(var(--rise) * 105ms + 240ms);
+}
+.hero-motion.is-in .hero-image>span{
+  transition:opacity .55s ease .82s,translate .72s var(--ease-out) .82s;
+}
+
+/* Scroll reveal: a softer, more cinematic version of the former 30px rise.
+   Important cards can opt into a slight scale via .motion-card. */
+html.reveal-on [data-reveal]{
+  opacity:0;
+  translate:0 38px;
+  filter:blur(3px);
+  transition:
+    opacity .58s ease,
+    translate .78s var(--ease-out),
+    filter .64s ease,
+    transform .3s cubic-bezier(.2,.7,.3,1);
+}
+html.reveal-on [data-reveal].is-revealed{
+  opacity:1;
+  translate:none;
+  filter:none;
+}
+html.reveal-on .post-card[data-reveal]{
+  translate:0 46px;
+  transition:
+    opacity .64s ease,
+    translate .9s var(--ease-out),
+    filter .7s ease,
+    transform .3s cubic-bezier(.2,.7,.3,1);
+}
+html.reveal-on .post-card[data-reveal]:nth-of-type(2n){transition-delay:45ms}
+html.reveal-on .term-grid [data-reveal]{
+  scale:.93;
+  translate:0 26px;
+}
+html.reveal-on .term-grid [data-reveal].is-revealed{scale:1}
+
+/* Article arrival. The heading pieces are held with no transition; the prose
+   is held as a block but its direct children are staged separately once it is
+   released. This avoids the old flash where the whole article appeared first
+   and only then restarted its animation. */
+html.article-arriving .article-heading .eyebrow,
+html.article-arriving .article-heading h1,
+html.article-arriving .article-heading .post-meta,
+html.article-arriving .article-cover,
+html.article-arriving .prose{
+  opacity:0;
+}
+html.article-arriving .article-heading .eyebrow{translate:0 9px}
+html.article-arriving .article-heading h1{translate:0 20px;filter:blur(8px)}
+html.article-arriving .article-heading .post-meta{translate:0 12px}
+html.article-arriving .article-cover{translate:0 24px;scale:.985;filter:blur(9px)}
+html.article-arriving .article-heading::after{opacity:0;scale:.2 1}
+
+html.article-arriving.article-arrived .article-heading .eyebrow{
+  opacity:1;
+  translate:none;
+  transition:opacity .38s ease .03s,translate .5s var(--ease-out) .03s;
+}
+html.article-arriving.article-arrived .article-heading h1{
+  opacity:1;
+  translate:none;
+  filter:none;
+  transition:opacity .62s ease .09s,translate .78s var(--ease-out) .09s,filter .7s ease .09s;
+}
+html.article-arriving.article-arrived .article-heading .post-meta{
+  opacity:1;
+  translate:none;
+  transition:opacity .42s ease .2s,translate .58s var(--ease-out) .2s;
+}
+html.article-arriving.article-arrived .article-heading::after{
+  opacity:1;
+  scale:1 1;
+  transition:opacity .44s ease .24s,scale .72s var(--ease-out) .24s;
+}
+html.article-arriving.article-arrived .article-cover{
+  opacity:1;
+  translate:none;
+  scale:1;
+  filter:none;
+  transition:
+    opacity .68s ease .27s,
+    translate .9s var(--ease-out) .27s,
+    scale .9s var(--ease-out) .27s,
+    filter .8s ease .27s;
+}
+html.article-arriving.article-arrived .prose{opacity:1}
+
+/* The prose's own children. Elements already in view start as the veil clears;
+   elements below the fold are released by the reading observer. This is what
+   makes a long article feel written rather than pasted. */
+.motion-prose-child{
+  opacity:1;
+  translate:none;
+  filter:none;
+}
+html.article-arriving .prose>.motion-prose-child:not(.reimu-spoiler),
+html.reveal-on .prose>.motion-prose-child:not(.is-prose-revealed):not(.reimu-spoiler){
+  opacity:0;
+  translate:0 28px;
+  filter:blur(4px);
+}
+html.article-arriving.article-arrived .prose>.motion-prose-child.is-prose-revealed:not(.reimu-spoiler),
+html.reveal-on .prose>.motion-prose-child.is-prose-revealed:not(.reimu-spoiler){
+  opacity:1;
+  translate:none;
+  filter:none;
+  transition:
+    opacity .58s ease,
+    translate .78s var(--ease-out),
+    filter .66s ease;
+  transition-delay:calc(var(--prose-index,0) * 55ms + 360ms);
+}
+html.article-arriving.article-arrived .prose>.motion-prose-child:nth-child(n+9).is-prose-revealed:not(.reimu-spoiler){
+  transition-delay:calc(var(--prose-index,0) * 35ms);
+}
+
+/* Article furniture arrives after the body. */
+html.reveal-on .article-tags,
+html.reveal-on .article-copyright,
+html.reveal-on .sponsor,
+html.reveal-on .share-links,
+html.reveal-on .post-navigation{
+  translate:0 24px;
+}
+
+/* In-page navigation now starts the arrival as the wings open. */
+html.nav-arriving #main{
+  opacity:1;
+  translate:none;
+  filter:none;
+}
+html.nav-arriving.nav-arrived #main{
+  transition:none;
+}
+
+/* --------------------------------------------------------------------------
+   Images: the Reimu blur-resolve, applied to editorial imagery.
+   -------------------------------------------------------------------------- */
+.post-image img,
+.featured-categories img,
+.sidebar-categories img,
+.hero-image img,
+.article-cover,
+.prose img,
+.bangumi-cover img,
+.friend-grid img{
+  --image-enter-duration:.9s;
+}
+.post-image img,
+.featured-categories img,
+.sidebar-categories img,
+.article-cover,
+.prose img,
+.bangumi-cover img{
+  animation:image-resolve .9s var(--ease-soft) both;
+}
+@keyframes image-resolve{
+  0%{opacity:0;filter:blur(10px) saturate(.85);scale:1.015}
+  60%{opacity:1;filter:blur(1.5px) saturate(1)}
+  100%{opacity:1;filter:blur(0) saturate(1);scale:1}
+}
+.post-image:hover img{scale:1.045}
+.post-image img{transition:scale .65s var(--ease-out),filter .65s ease,opacity .5s ease}
+
+/* --------------------------------------------------------------------------
+   Home: category tiles, cards, section headings.
+   -------------------------------------------------------------------------- */
+.featured-categories a{
+  isolation:isolate;
+}
+.featured-categories a::before{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  z-index:2;
+  height:2px;
+  background:linear-gradient(90deg,var(--accent-deep),var(--accent),transparent);
+  scale:0 1;
+  transform-origin:left;
+  transition:scale .65s var(--ease-out);
+}
+.featured-categories a:hover::before,
+.featured-categories a:focus-visible::before{scale:1 1}
+.featured-categories span{
+  opacity:0;
+  translate:0 12px;
+  filter:blur(5px);
+}
+html.reveal-on .featured-categories a.is-revealed span,
+html.header-revealed .featured-categories span{
+  opacity:1;
+  translate:none;
+  filter:none;
+  transition:opacity .55s ease .12s,translate .7s var(--ease-out) .12s,filter .6s ease .12s;
+}
+.post-card{
+  isolation:isolate;
+}
+.post-card::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,var(--accent),transparent);
+  scale:0 1;
+  transform-origin:left;
+  transition:scale .55s var(--ease-out);
+  pointer-events:none;
+}
+.post-card:hover::after{scale:1 1}
+.post-card h2 a{
+  background-size:0 1px;
+}
+.post-card:hover h2 a{background-size:100% 1px}
+
+.section-heading h1::before,
+.section-heading h2::before,
+.archive-year>h2::before,
+.archive-heatmap>h2::before{
+  transform-origin:50% 100%;
+}
+html.header-revealed .section-heading h1::before,
+html.header-revealed .section-heading h2::before{
+  animation:heading-mark-in .7s .18s var(--ease-out) both;
+}
+@keyframes heading-mark-in{
+  from{scale:1 .2;opacity:0}
+  to{scale:1 1;opacity:1}
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar: profile and recommendation tabs.
+   -------------------------------------------------------------------------- */
+.profile .avatar-link{
+  position:relative;
+}
+.profile .avatar{
+  animation:avatar-in 1s var(--ease-out) both;
+}
+@keyframes avatar-in{
+  0%{opacity:0;scale:.72;filter:blur(8px)}
+  55%{opacity:1}
+  100%{opacity:1;scale:1;filter:none}
+}
+.profile .avatar-link::after{
+  content:"";
+  position:absolute;
+  inset:-5px;
+  border:1px solid var(--accent);
+  border-radius:50%;
+  opacity:0;
+  scale:.86;
+  transition:opacity .35s ease,scale .55s var(--ease-out);
+}
+.profile .avatar-link:hover::after{opacity:.55;scale:1}
+
+.post-tabs [role=tablist]{
+  position:relative;
+}
+.post-tabs [role=tablist]::after{
+  content:"";
+  position:absolute;
+  left:var(--tab-x,0);
+  bottom:-2px;
+  width:var(--tab-w,28px);
+  height:4px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--accent-deep),var(--accent));
+  box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 24%,transparent);
+  transition:left .36s var(--ease-out),width .36s var(--ease-out);
+  pointer-events:none;
+}
+.post-tabs [role=tab][aria-selected=true]{
+  border-bottom-color:transparent;
+}
+.post-tabs [role=tabpanel]:not([hidden]){
+  animation:tab-panel-in .4s var(--ease-out) both;
+}
+@keyframes tab-panel-in{
+  from{opacity:0;translate:0 7px;filter:blur(3px)}
+  to{opacity:1;translate:none;filter:none}
+}
+
+/* --------------------------------------------------------------------------
+   Archive: Reimu's growing year mark and the dot that rounds out under a row.
+   -------------------------------------------------------------------------- */
+.archive-year{
+  --year-mark:.8em;
+}
+.archive-year>h2::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-9px;
+  width:var(--year-mark);
+  height:6px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--accent-deep),var(--accent));
+  box-shadow:0 3px 12px color-mix(in srgb,var(--accent) 28%,transparent);
+  transition:width .8s var(--ease-out),opacity .5s ease;
+}
+.archive-year.is-revealed{--year-mark:3em}
+.archive-month li::before{
+  transform-origin:center;
+  transition:width .22s ease,height .22s ease,top .22s ease,border-radius .25s ease,background-color .22s ease,box-shadow .25s ease;
+}
+.archive-month li:hover::before{
+  width:7px;
+  height:7px;
+  top:15px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 12%,transparent);
+}
+.archive-year>h2{position:relative}
+
+/* --------------------------------------------------------------------------
+   Search: Reimu's scale entrance, softened so it reads as a drawer rather than
+   a bubble. Native dialog animation is scoped to the open state only.
+   -------------------------------------------------------------------------- */
+#search-dialog[open]{
+  animation:dialog-in .42s var(--ease-out) both;
+}
+#search-dialog::backdrop{
+  animation:backdrop-in .32s ease both;
+}
+@keyframes dialog-in{
+  from{opacity:0;scale:.94;translate:0 14px;filter:blur(5px)}
+  to{opacity:1;scale:1;translate:none;filter:none}
+}
+@keyframes backdrop-in{from{opacity:0}to{opacity:1}}
+#search-dialog input{
+  transition:border-color .25s ease,box-shadow .3s ease,background-color .25s ease;
+}
+#search-dialog input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent);
+}
+
+/* --------------------------------------------------------------------------
+   Reimu shortcodes: tabs, spoiler, tag roulette.
+   -------------------------------------------------------------------------- */
+.reimu-tabs{
+  position:relative;
+  margin:1.8em 0;
+}
+.reimu-tabs-nav{
+  position:relative;
+  display:flex;
+  gap:22px;
+  border-bottom:1px solid var(--line);
+}
+.reimu-tabs-nav button{
+  position:relative;
+  padding:.65em 0;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:.9rem;
+  font-weight:600;
+  letter-spacing:.03em;
+}
+.reimu-tabs-nav button:hover{color:var(--accent);background:transparent}
+.reimu-tabs-nav button[aria-selected=true]{color:var(--ink)}
+.reimu-tabs-ink{
+  position:absolute;
+  left:var(--tab-x,0);
+  bottom:-1px;
+  width:var(--tab-w,0);
+  height:3px;
+  border-radius:3px;
+  background:linear-gradient(90deg,var(--accent-deep),var(--accent));
+  box-shadow:0 2px 9px color-mix(in srgb,var(--accent) 30%,transparent);
+  transition:left .38s var(--ease-out),width .38s var(--ease-out);
+}
+.reimu-tab-panel{
+  padding:1.15em .15em .1em;
+  animation:tab-panel-in .42s var(--ease-out) both;
+}
+.reimu-tab-panel[hidden]{display:none}
+
+.reimu-spoiler{
+  display:inline;
+  padding:.05em .32em;
+  border-radius:4px;
+  background:var(--ink);
+  color:transparent;
+  filter:blur(5px);
+  cursor:pointer;
+  user-select:none;
+  transition:filter .25s ease,color .25s ease,background-color .25s ease;
+}
+.reimu-spoiler:hover,
+.reimu-spoiler:focus-visible,
+.reimu-spoiler.is-revealed{
+  color:inherit;
+  background:color-mix(in srgb,var(--accent) 10%,transparent);
+  filter:none;
+  user-select:text;
+}
+
+.tag-roulette{
+  display:grid;
+  justify-items:center;
+  gap:12px;
+  margin:1.8em 0;
+  padding:1.5em 1em;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:color-mix(in srgb,var(--tint) 55%,transparent);
+}
+.tag-roulette-window{
+  display:grid;
+  place-items:center;
+  min-height:56px;
+  width:100%;
+  overflow:hidden;
+}
+.tag-roulette-word{
+  grid-area:1/1;
+  padding:.42em 1.1em;
+  border-radius:999px;
+  background:var(--tint);
+  color:var(--accent);
+  font-weight:600;
+  letter-spacing:.03em;
+}
+.tag-roulette-word.is-blur{filter:blur(2px);opacity:.68}
+.tag-roulette-word.is-leaving{animation:roulette-out .16s ease-in both}
+@keyframes roulette-out{to{opacity:0;translate:0 7px;filter:blur(3px)}}
+.tag-roulette-button{
+  display:inline-grid;
+  place-items:center;
+  width:42px;
+  height:42px;
+  padding:0;
+  border-radius:50%;
+  font-size:20px;
+  transition:scale .25s var(--ease-out),background-color .25s ease,rotate .35s ease;
+}
+.tag-roulette-button:hover{scale:1.08;rotate:-8deg;background:var(--tint)}
+
+/* --------------------------------------------------------------------------
+   Motion toggle: the aggressive pass is opt-out, not hidden in a config file.
+   -------------------------------------------------------------------------- */
+.motion-toggle svg{transition:rotate .6s var(--ease-out),opacity .25s ease}
+.motion-toggle[aria-pressed=false]{opacity:.55}
+.motion-toggle[aria-pressed=false] svg{rotate:-35deg}
+
+/* --------------------------------------------------------------------------
+   Explicit motion-off state. The inline head script sets html.motion-off
+   before first paint when the reader has opted out.
+   -------------------------------------------------------------------------- */
+html.motion-off *,
+html.motion-off *::before,
+html.motion-off *::after{
+  animation-duration:1ms!important;
+  animation-delay:0ms!important;
+  transition-duration:1ms!important;
+  transition-delay:0ms!important;
+  scroll-behavior:auto!important;
+}
+html.motion-off .hero-motion .hero-image,
+html.motion-off .hero-motion .hero-rise,
+html.motion-off .hero-motion .hero-image>span,
+html.motion-off.article-arriving .article-heading .eyebrow,
+html.motion-off.article-arriving .article-heading h1,
+html.motion-off.article-arriving .article-heading .post-meta,
+html.motion-off.article-arriving .article-cover,
+html.motion-off.article-arriving .prose,
+html.motion-off .prose>.motion-prose-child{
+  opacity:1!important;
+  translate:none!important;
+  filter:none!important;
+  scale:1!important;
+  clip-path:none!important;
+}
+
+/* Touch screens do not hover: keep the reveal and scroll-in life, but avoid
+   sticky hover states after a tap. */
+@media(hover:none){
+  .post-card:hover{transform:none}
+  .post-card:hover::after{scale:0 1}
+  .post-image:hover img{scale:1}
+  .archive-month li:hover::before{
+    width:4px;
+    height:4px;
+    top:17px;
+    border-radius:50%;
+    box-shadow:none;
+  }
+}
+
+@media(max-width:760px){
+  .hero-motion .hero-image{clip-path:inset(0 0 100% 0);border-radius:16px}
+  .hero-motion .hero-image.is-in{clip-path:inset(0 0 0 0);border-radius:16px}
+  html.reveal-on [data-reveal]{translate:0 26px}
+  html.reveal-on .post-card[data-reveal]{translate:0 32px}
+  html.article-arriving .article-heading h1{translate:0 14px}
+  .reimu-tabs-nav{gap:18px;overflow-x:auto;scrollbar-width:none}
+  .reimu-tabs-nav::-webkit-scrollbar{display:none}
+  .tag-roulette{padding:1.2em .8em}
+}
+

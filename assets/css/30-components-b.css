@@ -170,13 +170,6 @@ body.player-expanded #music-lyrics{bottom:118px}
 #floating-player .music-controls button{padding:3px 4px}
 }
 
-@media(prefers-reduced-motion:reduce){#music-title.is-scrolling,#player-rail-title.is-scrolling{animation:none}
-.music-title-window{overflow-x:auto}
-#floating-player.rail #player-rail-title{overflow-y:auto}
-#music-lyrics{transition:none}
-}
-
-
 /* Icon-only controls retain accessible labels and tooltips. */
 #floating-player .music-controls #music-order,#floating-player .music-controls #music-lyrics-toggle,#floating-player .music-controls #music-list-toggle{display:grid;place-items:center;width:30px;height:26px;padding:4px}
 
@@ -437,8 +430,6 @@ body.toc-open:before{content:"";position:fixed;inset:0;z-index:68;background:#0e
 body.toc-open #toc-toggle{display:none}
 }
 
-@media(prefers-reduced-motion:reduce){#floating-player.rail,.toc-drawer{transition:none}
-}
 .culture-page{max-width:1100px;margin-inline:auto}
 .bangumi-heading{font-size:20px;font-weight:500;margin:0 0 16px}
 .bangumi-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;font-size:13px;color:var(--muted)}

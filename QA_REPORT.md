@@ -17,8 +17,8 @@ Validated 2026-10-19 using Hugo Extended 0.162.1 and Playwright Chromium 151.
   sheet spans the full viewport from the top edge, the header rides above it at
   `z-index:22` and stays clickable mid-wait, the sheet's own paper is the page's
   `--bg` with no seam at the header, the page is laid in behind the closed sheet
-  and the sheet draws back over the new page, and reduced motion stills the whole
-  gesture.
+  and the sheet draws back over the new page, and the header motion switch stills the
+  whole gesture.
 - Switching reading schemes no longer moves the header at either width, and the
   progress rail and the sheet's top edge follow the re-measured `--header-h`.
 - Cog: centred in its viewBox (`transform-box:view-box`, pivot at 66px/66px of a
@@ -48,8 +48,8 @@ Headless Chromium against a build of `exampleSite` served over HTTP.
   true.
 - Scrolling past the hero adds `is-asleep` and reports `hero-drift paused`;
   scrolling back removes it and the animation returns to `running`.
-- `prefers-reduced-motion: reduce`: banner and copy are at opacity 1 with no
-  transition, and both loops report `animation-name: none`.
+- `motion-off`: banner and copy are at opacity 1 with no transition, and both
+  loops report `animation-name: none`.
 - `ruri.heroMotion: false`: the section is plain `hero shell`, and no
   `.hero-rise` element is rendered anywhere on the page (count 0).
 - No console errors or page errors in any run.

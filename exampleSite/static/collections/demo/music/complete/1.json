@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "Afterimage",
+      "cover": "/collections/demo/music/cover-1.webp",
+      "subtitle": "残响",
+      "status": "complete",
+      "community_rating": 8.7,
+      "rating": 9.0,
+      "progress": null,
+      "comment": "Layered guitars and soft percussion for walking home slowly."
+    }
+  ],
+  "total": 1,
+  "pages": 1,
+  "source": "sasaOrange local demo",
+  "updated_at": "2026-10-23T00:00:00+08:00",
+  "unavailable": false
+}

@@ -1,0 +1,23 @@
+{
+  "items": [
+    {
+      "url": "https://github.com/TruE-aL/sasaOrange-blog-hugo",
+      "title": "Asterism Notes",
+      "cover": "/collections/demo/anime/cover-1.webp",
+      "subtitle": "星芒手记",
+      "status": "complete",
+      "community_rating": 9.0,
+      "rating": 9.3,
+      "progress": {
+        "watched": 12,
+        "total": 12
+      },
+      "comment": "A small constellation of characters learning how to say goodbye."
+    }
+  ],
+  "total": 1,
+  "pages": 1,
+  "source": "sasaOrange local demo",
+  "updated_at": "2026-10-23T00:00:00+08:00",
+  "unavailable": false
+}
