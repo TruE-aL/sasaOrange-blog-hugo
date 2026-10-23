@@ -179,6 +179,11 @@ function pageMotionConfig(){
 }
 function initPageMotion(){
   motionCleanup?.();motionCleanup=null;
+  /* A new page starts at the top, so the header must be back before the sheet
+     draws away. Without this the class survives the swap: the next page opens
+     at scrollY 0 while the header is still translated off-screen, and it only
+     returns after the reader scrolls again. */
+  document.documentElement.classList.remove('header-away');
   const config=pageMotionConfig();
   if(!config.enable||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const cleanups=[];
@@ -553,6 +558,26 @@ function trackPageView(url){
     analytics.clarity?.(url);
   }catch{}
 }
+/* The content's own arrival, timed to the sheet's opening. `nav-arriving`
+   holds the start state (faded, nudged down) with no transition; the next frame
+   adds `nav-arrived`, which owns the transition to rest. Both classes are
+   dropped when it ends so nothing is left to interfere with the scroll-reveal
+   observer or a later navigation. */
+function arriveWithVeil(){
+  const html=document.documentElement;
+  html.classList.remove('nav-arrived');
+  html.classList.add('nav-arriving');
+  const done=()=>{html.classList.remove('nav-arriving','nav-arrived')};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){done();return}
+  requestAnimationFrame(()=>{
+    html.classList.add('nav-arrived');
+    const main=document.getElementById('main');
+    if(!main){done();return}
+    const end=()=>{main.removeEventListener('transitionend',end);done()};
+    main.addEventListener('transitionend',end,{once:true});
+    setTimeout(end,600);
+  });
+}
 async function navigate(url,push=true,link){
   closeMenu(false);
   navigationController?.abort();
@@ -574,6 +599,13 @@ async function navigate(url,push=true,link){
        the moment the page is ready, which is what it has always meant. */
     await waitForVeilClosed();
     if(controller.signal.aborted)return;
+    /* The sheet is opaque and covers the viewport, so the scroll position can
+       be reset here, before the swap, instead of afterwards. Resetting after
+       the swap made the new page paint at the old offset for a frame and then
+       glide up to the top — html{scroll-behavior:smooth} turned the reset into
+       an animation the reader could see. behavior:"instant" opts out of that
+       rule; the sheet hides the jump either way. */
+    window.scrollTo({top:0,left:0,behavior:'instant'});
     window.RuriFeatures.destroy();waline?.destroy();waline=null;pageVersion++;
     document.querySelectorAll('#ruri-page-extras').forEach(x=>x.remove());
     $('#page-shell').replaceWith(next);
@@ -598,7 +630,15 @@ async function navigate(url,push=true,link){
     }
     const hash=new URL(url).hash;
     const target=hash?document.getElementById(decodeURIComponent(hash.slice(1))):null;
-    if(target)target.scrollIntoView();else window.scrollTo(0,0);
+    /* The top reset already happened behind the sheet. Only an in-page anchor
+       still needs positioning, and it should not glide across the new page. */
+    if(target)target.scrollIntoView({behavior:'instant',block:'start'});
+    /* Let the content arrive with the paper rather than already being there
+       when it draws back. The first frame must render at the start state, so
+       the transition class is added on the next frame instead of immediately;
+       otherwise both class changes land in one style recalculation and the
+       browser skips straight to the end. */
+    arriveWithVeil();
     /* The page is in place behind the paper: the bar fills and the sheet draws
        back, revealing it. */
     finishProgress();
