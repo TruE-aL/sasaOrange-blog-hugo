@@ -24,12 +24,13 @@ function chooseScheme(name){
 }
 document.addEventListener('click',event=>{const button=event.target.closest('.scheme-switch button');if(button)chooseScheme(button.dataset.scheme)});
 paintScheme();
-let archiveObserver=null,tocObserver=null;
+let archiveObserver=null,archiveArm=null,tocObserver=null;
 /* The folded rail only exists below this width, so every measurement of it is
    skipped on the desktop layout instead of forcing a layout read for nothing. */
 const narrow=matchMedia('(max-width:760px)');
 function initArchive(){
   archiveObserver?.disconnect();archiveObserver=null;
+  archiveArm?.();archiveArm=null;
   const tree=$('.archive-tree');if(!tree)return;
   const years=[...tree.querySelectorAll(':scope > .archive-year')];
   if(years.length<2)return;
@@ -53,10 +54,28 @@ function initArchive(){
   };
   button.addEventListener('click',load);
   if('IntersectionObserver' in window){
+    /* The footer can sit inside the observer's preload margin on the first
+       frame. Expanding a year as soon as the archive opens then changes the
+       document height while the navigation sheet is drawing back, which reads
+       as the page twitching. Keep the automatic loader for readers who have
+       actually scrolled, and leave the button available immediately. */
+    let armed=false;
     archiveObserver=new IntersectionObserver(entries=>{
-      if(entries.some(entry=>entry.isIntersecting))load();
+      if(armed&&entries.some(entry=>entry.isIntersecting))load();
     },{rootMargin:'0px 0px 160px 0px'});
     archiveObserver.observe(footer);
+    const arm=()=>{
+      if(armed||scrollY<=0)return;
+      armed=true;
+      /* The initial observation already ran while this was disarmed. Observe
+         the footer again so a reader who lands inside the preload margin gets
+         the callback they would have had on a normal approach. */
+      archiveObserver.unobserve(footer);
+      archiveObserver.observe(footer);
+      archiveArm?.();archiveArm=null;
+    };
+    addEventListener('scroll',arm,{passive:true});
+    archiveArm=()=>removeEventListener('scroll',arm);
   }
 }
 /* reimu's scroll-in motion, kept for this theme's components: a card that has
