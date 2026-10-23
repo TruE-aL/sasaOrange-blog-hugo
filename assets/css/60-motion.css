@@ -56,6 +56,41 @@ html.nav-arriving.nav-arrived #main{opacity:1;translate:none;transition:opacity 
 html.nav-arriving #main,html.nav-arriving.nav-arrived #main{opacity:1;translate:none;transition:none}
 }
 
+/* ---- Article arrival: held behind the paper, released when it opens ----
+   This is deliberately not a CSS animation on the article markup. The shell is
+   inserted before its deferred scripts finish, so an animation that starts at
+   insertion can play out while the opaque veil is still closed. ruri.js holds
+   the article at this start state immediately after the swap, behind the
+   closed sheet. Only after the veil's delayed `visibility:hidden` does it add
+   `article-arrived`, allowing the pieces to rise without a visible-to-hidden
+   flash. The classes are removed after the last child settles, so nothing
+   lingers to interfere with a later navigation. */
+html.article-arriving .article-heading .eyebrow,
+html.article-arriving .article-heading h1,
+html.article-arriving .article-heading .post-meta,
+html.article-arriving .article-cover,
+html.article-arriving .prose{opacity:0}
+html.article-arriving .article-heading .eyebrow{translate:0 8px}
+html.article-arriving .article-heading h1{translate:0 -14px}
+html.article-arriving .article-heading .post-meta{translate:0 10px}
+html.article-arriving .article-cover{translate:0 16px}
+html.article-arriving .prose{translate:0 20px}
+html.article-arriving .article-heading::after{opacity:0;scale:.55 1}
+html.article-arriving.article-arrived .article-heading .eyebrow{opacity:1;translate:none;transition:opacity .36s ease .05s,translate .36s cubic-bezier(.22,.61,.36,1) .05s}
+html.article-arriving.article-arrived .article-heading h1{opacity:1;translate:none;transition:opacity .55s ease .11s,translate .55s cubic-bezier(.22,.61,.36,1) .11s}
+html.article-arriving.article-arrived .article-heading .post-meta{opacity:1;translate:none;transition:opacity .36s ease .19s,translate .36s cubic-bezier(.22,.61,.36,1) .19s}
+html.article-arriving.article-arrived .article-heading::after{opacity:1;scale:1 1;transition:opacity .38s ease .25s,scale .38s cubic-bezier(.22,.61,.36,1) .25s}
+html.article-arriving.article-arrived .article-cover{opacity:1;translate:none;transition:opacity .55s ease .25s,translate .55s cubic-bezier(.22,.61,.36,1) .25s}
+html.article-arriving.article-arrived .prose{opacity:1;translate:none;transition:opacity .62s ease .34s,translate .62s cubic-bezier(.22,.61,.36,1) .34s}
+@media(prefers-reduced-motion:reduce){
+html.article-arriving .article-heading .eyebrow,
+html.article-arriving .article-heading h1,
+html.article-arriving .article-heading .post-meta,
+html.article-arriving .article-cover,
+html.article-arriving .prose,
+html.article-arriving .article-heading::after{opacity:1;translate:none;scale:none;transition:none}
+}
+
 /* ---- Home card: cover beside the text on desktop, above it on a phone ----
    The last word on `.post-card`, deliberately: the card picked up several
    generations of layout rules on the way here (a thumbnail on the right, then

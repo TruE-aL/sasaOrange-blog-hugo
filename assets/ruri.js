@@ -558,20 +558,86 @@ function trackPageView(url){
     analytics.clarity?.(url);
   }catch{}
 }
-/* The content's own arrival, timed to the sheet's opening. `nav-arriving`
-   holds the start state (faded, nudged down) with no transition; the next frame
-   adds `nav-arrived`, which owns the transition to rest. Both classes are
-   dropped when it ends so nothing is left to interfere with the scroll-reveal
-   observer or a later navigation. */
+/* The content's own arrival. `nav-arriving` holds the start state for an
+   ordinary page and the next frame adds `nav-arrived`, the transition to rest.
+   An article starts hidden behind the sheet, so the opening never reveals a
+   fully visible article and then blanks it for the entrance. The sheet draws
+   back first; when its delayed `visibility:hidden` arrives, the already-held
+   article pieces rise into place. The wings finish moving half a second before
+   that visibility change, so listening to a wing would start too early. Both
+   paths clear their classes afterwards so nothing interferes with a later
+   navigation. */
+let articleArrivalToken=0;
 function arriveWithVeil(){
-  const html=document.documentElement;
-  html.classList.remove('nav-arrived');
+  const html=document.documentElement,main=document.getElementById('main');
+  const token=++articleArrivalToken;
+  html.classList.remove('nav-arriving','nav-arrived','article-arriving','article-arrived');
+  const article=main?.querySelector('.article');
+  if(article){
+    window.__ruriArticleReady=true;
+    /* Hold the article at its start state immediately after the shell swap.
+       The sheet is still closed at this point, so the reader never sees a
+       visible article becoming transparent. One frame after the visibility
+       transition, the held pieces can safely begin their entrance. */
+    html.classList.add('article-arriving');
+    /* Remove the start state after the last child has settled. The duration is
+       measured rather than guessed: it must cover the prose's .62s transition
+       plus its .34s delay. The cleanup comes after that so the browser cannot
+       expose a transient 0.999... tail when the classes vanish. */
+    let arrivalCleanup=0;
+    const clearArrival=()=>{
+      clearTimeout(arrivalCleanup);
+      if(token===articleArrivalToken)html.classList.remove('article-arriving','article-arrived');
+    };
+    const start=()=>{
+      if(token!==articleArrivalToken)return;
+      /* The start state has been painted under the veil for the whole opening.
+         Give the hidden veil one frame to paint, then release the entrance. */
+      requestAnimationFrame(()=>{
+        if(token!==articleArrivalToken)return;
+        html.classList.add('article-arrived');
+        const prose=article.querySelector('.prose');
+        const style=prose&&getComputedStyle(prose);
+        const duration=style?parseFloat(style.transitionDuration.split(',')[0])||.62:0;
+        const delay=style?parseFloat(style.transitionDelay.split(',')[0])||0:0;
+        arrivalCleanup=setTimeout(clearArrival,Math.ceil((duration+delay)*1000)+80);
+      });
+    };
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){
+      html.classList.remove('article-arriving','article-arrived');
+      return;
+    }
+    /* The opening is its own visible gesture. The article is held hidden
+       beneath it, so the wings never reveal a fully formed page that then
+       flickers away. The veil keeps `visibility:visible` until the wing
+       transition has finished and its own .5s delay has elapsed, so its
+       visibility transition is the exact end of the opening. Listen there, with
+       a later timeout only as a safety net for a cancelled transition or a
+       missed event. */
+    const veil=$('.nav-veil');
+    let fallback=0;
+    const startOnce=event=>{
+      if(event&&(event.target!==veil||event.propertyName!=='visibility'))return;
+      veil?.removeEventListener('transitionend',startOnce);
+      clearTimeout(fallback);
+      start();
+    };
+    if(veil){
+      veil.addEventListener('transitionend',startOnce);
+      /* The wings take 500ms and visibility waits another 500ms in the static
+         state. This covers a missed event and deliberately outlasts both. */
+      fallback=setTimeout(startOnce,1120);
+    }else{
+      start();
+    }
+    return;
+  }
   html.classList.add('nav-arriving');
-  const done=()=>{html.classList.remove('nav-arriving','nav-arrived')};
+  const done=()=>{if(token===articleArrivalToken)html.classList.remove('nav-arriving','nav-arrived')};
   if(matchMedia('(prefers-reduced-motion: reduce)').matches){done();return}
   requestAnimationFrame(()=>{
+    if(token!==articleArrivalToken)return;
     html.classList.add('nav-arrived');
-    const main=document.getElementById('main');
     if(!main){done();return}
     const end=()=>{main.removeEventListener('transitionend',end);done()};
     main.addEventListener('transitionend',end,{once:true});
@@ -677,4 +743,20 @@ window.addEventListener('pageshow',event=>{if(event.persisted)finishProgress()})
 document.addEventListener('click',e=>{const a=e.target.closest('a');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download'))return;const u=new URL(a.href,location.href);if(u.origin!==location.origin||!/^https?:$/.test(u.protocol)||/\.[a-z0-9]+$/i.test(u.pathname))return;if(u.pathname===location.pathname&&u.search===location.search&&u.hash)return;e.preventDefault();navigate(u.href,true,a)});
 window.addEventListener('popstate',()=>navigate(location.href,false));document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();$('#search-open')?.click()}});
 initPage();
+/* Direct article visits have no navigation veil, so release the pre-paint start
+   state here. In-page navigation calls the same function after its shell swap. */
+if(document.querySelector('.article')){
+  const html=document.documentElement;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches)html.classList.remove('article-arriving');
+  else{
+    html.classList.add('article-arriving');
+    requestAnimationFrame(()=>{
+      html.classList.add('article-arrived');
+      const prose=document.querySelector('.prose'),style=prose&&getComputedStyle(prose);
+      const duration=style?parseFloat(style.transitionDuration.split(',')[0])||.62:0;
+      const delay=style?parseFloat(style.transitionDelay.split(',')[0])||0:0;
+      setTimeout(()=>html.classList.remove('article-arriving','article-arrived'),Math.ceil((duration+delay)*1000)+80);
+    });
+  }
+}
 })();
